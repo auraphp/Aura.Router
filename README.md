@@ -331,9 +331,9 @@ This technique can be very effective with modular application packages. Each pac
     <?php
     // get a routes array from each application packages
     $attach = array(
-        '/blog'  => require 'package/blog/routes.php',
-        '/forum' => require 'package/forum/routes.php',
-        '/wiki'  => require 'package/wiki/routes.php',
+        '/blog'  => require 'projectname/blog/routes.php',
+        '/forum' => require 'projectname/forum/routes.php',
+        '/wiki'  => require 'projectname/wiki/routes.php',
     );
     
     // create the route factory
