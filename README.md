@@ -239,9 +239,9 @@ You can add a series of routes all at once under a single "mount point" in your 
     
 Each of the route paths will be prefixed with `/blog`, so the effective paths become:
 
-    - `browse: /blog/`
-    - `read:   /blog/{:id}{:format}`
-    - `edit:   /blog/{:id}/edit`
+- `browse: /blog/`
+- `read:   /blog/{:id}{:format}`
+- `edit:   /blog/{:id}/edit`
 
 You can set other route specification keys as part of the attachment specification; these will be used as the defaults for each attached route, so you don't need to repeat common information:
 
