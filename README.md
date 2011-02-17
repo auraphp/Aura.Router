@@ -76,7 +76,7 @@ Now that you have route, you can dispatch it. The following is what a foundation
     }
     
     // does the route indicate a controller?
-    if ($route->values['controller']) {
+    if (isset($route->values['controller'])) {
         // take the controller class directly from the route
         $controller = $route->values['controller'];
     } else {
@@ -85,7 +85,7 @@ Now that you have route, you can dispatch it. The following is what a foundation
     }
     
     // does the route indicate an action?
-    if ($route->values['action']) {
+    if (isset($route->values['action'])) {
         // take the action method directly from the route
         $action = $route->values['action'];
     } else {
