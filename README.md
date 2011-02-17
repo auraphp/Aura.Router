@@ -283,7 +283,7 @@ Note that you can specify a `name_prefix` as part of the common route informatio
         '/blog' => array(
             
             // prefix for route names
-            'name_prefix' => 'package.blog.',
+            'name_prefix' => 'projectname.blog.',
             
             // common params for the routes
             'params' => array(
