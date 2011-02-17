@@ -212,6 +212,7 @@ Attaching Route Groups
 
 You can add a series of routes all at once under a single "mount point" in your application.  For example, if you want all your blog-related routes to be mounted at `'/blog'` in your application, you can do this:
 
+    <?php
     $map->attach('/blog', array(
         
         // the routes to attach
@@ -245,6 +246,7 @@ Each of the route paths will be prefixed with `/blog`, so the effective paths be
 
 You can set other route specification keys as part of the attachment specification; these will be used as the defaults for each attached route, so you don't need to repeat common information:
 
+    <?php
     $map->attach('/blog', array(
         
         // common params for the routes
