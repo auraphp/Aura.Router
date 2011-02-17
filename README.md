@@ -308,14 +308,14 @@ Note that you can specify a `name_prefix` as part of the common route informatio
         // attach to '/forum'
         '/forum' => array(
             // prefix for route names
-            'name_prefix' => 'package.forum.',
+            'name_prefix' => 'projectname.forum.',
             // ...
         ),
     
         // attach to '/wiki'
         '/wiki' => array(
             // prefix for route names
-            'name_prefix' => 'package.wiki.',
+            'name_prefix' => 'projectname.wiki.',
             // ...
         ),
     );
