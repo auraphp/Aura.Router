@@ -1,5 +1,5 @@
-Overview
-========
+Introduction
+============
 
 Aura Router is a PHP 5.3+ library that implements web routing. Given a URI path and a copy of `$_SERVER`, it will extract controller, action, and parameter values for a specific application route.
 
@@ -41,7 +41,7 @@ To create a route for your application, instantiate a `Map` object from the `aur
             'action'    => 'read'
             'format'    => 'html',
         ),
-    );
+    ));
 
 You will need to place the `Map` object where you can get to it from your application; e.g., in a registry, a service locator, or a dependency injection container.  Describing such placement is beyond the scope of this document.
 
@@ -181,7 +181,7 @@ Here is a complete long-form route specification named `read` with all keys in p
             return true;
             
         },
-    );
+    ));
 
 Short-Form Route Specification
 ------------------------------
