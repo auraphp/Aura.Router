@@ -19,6 +19,24 @@ class Map
 {
     /**
      * 
+     * Currently processing this attached common route information.
+     * 
+     * @var array
+     * 
+     */
+    protected $attach_common = null;
+    
+    /**
+     * 
+     * Currently processing these attached routes.
+     * 
+     * @var array
+     * 
+     */
+    protected $attach_routes = null;
+    
+    /**
+     * 
      * Route definitions; these will be converted into objects.
      * 
      * @var array
@@ -59,8 +77,8 @@ class Map
         array $attach = null
     ) {
         $this->factory = $factory;
-        foreach ((array) $attach as $path_prefix => $info) {
-            $this->attach($path_prefix, $info);
+        foreach ((array) $attach as $path_prefix => $spec) {
+            $this->attach($path_prefix, $spec);
         }
     }
     
@@ -91,7 +109,7 @@ class Map
         unset($spec['path_prefix']);
         
         // append to the route definitions
-        $this->append($spec);
+        $this->append('single', $spec);
     }
     
     /**
@@ -101,66 +119,24 @@ class Map
      * @param string $path_prefix The path that the routes should be attached
      * to.
      * 
-     * @param array $info An array of common route information, with an
+     * @param array $spec An array of common route information, with an
      * additional `routes` key to define the routes themselves.
      * 
      * @return void
      * 
      */
-    public function attach($path_prefix, array $info)
+    public function attach($path_prefix, array $spec)
     {
         // ... with routes defined for attachment.
-        if (! isset($info['routes'])) {
+        if (! isset($spec['routes'])) {
             throw new \UnexpectedValueException('No routes defined for attachment.');
         }
         
-        // retain the routes and remove from info
-        $routes = $info['routes'];
-        unset($info['routes']);
+        // set the path_prefix in the specification
+        $spec['path_prefix'] = $path_prefix;
         
-        // set the path_prefix in the info
-        $info['path_prefix'] = $path_prefix;
-        
-        // append each attached route definition
-        foreach ($routes as $key => $val) {
-            
-            // which definition form are we using?
-            if (is_string($key) && is_string($val)) {
-                // short form, named in key
-                $spec = array(
-                    'name' => $key,
-                    'path' => $val,
-                    'values' => array(
-                        'action' => $key,
-                    ),
-                );
-            } elseif (is_int($key) && is_string($val)) {
-                // short form, no name
-                $spec = array(
-                    'path' => $val,
-                );
-            } elseif (is_string($key) && is_array($val)) {
-                // long form, named in key
-                $spec = $val;
-                $spec['name'] = $key;
-                // if no action, use key
-                if (! isset($spec['values']['action'])) {
-                    $spec['values']['action'] = $key;
-                }
-            } elseif (is_int($key) && is_array($val)) {
-                // long form, no name
-                $spec = $val;
-            } else {
-                throw new \UnexpectedValueException("Route spec for '$key' should be a string or array.");
-            }
-            
-            // unset any path or name prefix on the spec itself
-            unset($spec['name_prefix']);
-            unset($spec['path_prefix']);
-            
-            // append, merging with common info
-            $this->append($spec, $info);
-        }
+        // append to the definitions
+        $this->append('attach', $spec);
     }
     
     /**
@@ -246,14 +222,13 @@ class Map
         }
         
         // are there any route definitions left to convert to objects?
-        if (! $this->definitions) {
+        if (! $this->definitions && ! $this->attach_routes) {
             // no, so we're done
             return false;
         }
         
-        // shift a route definition off the stack and create a route object 
-        // from it
-        $spec = array_shift($this->definitions);
+        // get the next route definition and create a route object from it
+        $spec = $this->getNextDefinition();
         $route = $this->factory->newInstance($spec);
         
         // retain the route object ...
@@ -272,22 +247,109 @@ class Map
     
     /**
      * 
-     * Appends a single route definition to the stack, merging with common 
-     * data to be used across several routes.
+     * Appends a single route definition to the stack.
      * 
-     * @param array $spec The route definition.
+     * @param array $type The definition type: a 'single' route, or 'attach' a
+     * group of routes.
      * 
-     * @param array $info Common information to be used when storing the 
-     * definition.
+     * @param array $spec The definition itself.
      * 
      * @return void
      * 
      */
-    protected function append($spec, $info = array())
+    protected function append($type, $spec)
     {
-        if ($info) {
-            $spec = array_merge_recursive($info, $spec);
-        }
+        $spec['__type'] = $type;
         $this->definitions[] = $spec;
+    }
+    
+    /**
+     * 
+     * Gets the next route definition from the stack.
+     * 
+     * @return array A route definition.
+     * 
+     */
+    protected function getNextDefinition()
+    {
+        // are there attached routes left to process?
+        if ($this->attach_routes) {
+            return $this->getNextAttach();
+        }
+        
+        // get the next definition and extract the definition type
+        $spec = array_shift($this->definitions);
+        $type = $spec['__type'];
+        unset($spec['__type']);
+        
+        // is it a 'single' definition type?
+        if ($type == 'single') {
+            // done!
+            return $spec;
+        }
+        
+        // it's an 'attach' definition; set up for attach processing.
+        // retain the routes ...
+        $this->attach_routes = $spec['routes'];
+        unset($spec['routes']);
+        
+        // ... and the remaining common information
+        $this->attach_common = $spec;
+        
+        // now get the next attached route
+        return $this->getNextAttach();
+    }
+    
+    /**
+     * 
+     * Gets the next attached route definition.
+     * 
+     * @return array A route definition.
+     * 
+     */
+    protected function getNextAttach()
+    {
+        $key = key($this->attach_routes);
+        $val = array_shift($this->attach_routes);
+        
+        // which definition form are we using?
+        if (is_string($key) && is_string($val)) {
+            // short form, named in key
+            $spec = array(
+                'name' => $key,
+                'path' => $val,
+                'values' => array(
+                    'action' => $key,
+                ),
+            );
+        } elseif (is_int($key) && is_string($val)) {
+            // short form, no name
+            $spec = array(
+                'path' => $val,
+            );
+        } elseif (is_string($key) && is_array($val)) {
+            // long form, named in key
+            $spec = $val;
+            $spec['name'] = $key;
+            // if no action, use key
+            if (! isset($spec['values']['action'])) {
+                $spec['values']['action'] = $key;
+            }
+        } elseif (is_int($key) && is_array($val)) {
+            // long form, no name
+            $spec = $val;
+        } else {
+            throw new \UnexpectedValueException("Route spec for '$key' should be a string or array.");
+        }
+        
+        // unset any path or name prefix on the spec itself
+        unset($spec['name_prefix']);
+        unset($spec['path_prefix']);
+        
+        // now merge with the attach info
+        $spec = array_merge_recursive($this->attach_common, $spec);
+        
+        // done!
+        return $spec;
     }
 }

@@ -88,6 +88,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'name' => 42,
             )
         ));
+        
+        $this->map->getRoute('/', $this->server);
     }
     
     public function testAttachRoutesWithoutPathPrefix()
@@ -550,16 +552,38 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         $this->assertSame('/page/84', $actual);
         
-        // fail to match
-        $actual = $this->map->getPath('no-route');
-        $this->assertFalse($actual);
-        
         // fail to match again, for code coverage of the portion that checks
         // if there are definitions left to convert
         $actual = $this->map->getPath('no-route-again');
         $this->assertFalse($actual);
     }
-
+    
+    
+    public function testGetPathWhenMissing()
+    {
+        $this->map->attach('/page', array(
+            'routes' => array(
+                'browse' => '/',
+                'read' => '/{:id}{:format}',
+                'edit' => '/{:id}/edit',
+                'add' => '/add',
+                'delete' => '/{:id}/delete',
+            ),
+            'params' => array(
+                'id'            => '([0-9]+)',
+                'format'        => '(\.[a-z0-9]+$)?',
+            ),
+            'values'     => array(
+                'controller' => 'page',
+                'format' => null,
+            ),
+            'name_prefix' => 'page:',
+        ));
+        
+        // fail to match
+        $actual = $this->map->getPath('no-route');
+        $this->assertFalse($actual);
+    }
     
     public function testAttachAtConstructionTime()
     {
@@ -659,5 +683,37 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'format' => null,
         );
         $this->assertEquals($expect_values, $actual->values);
+    }
+    
+    public function testRunOutOfAttachedRoutesToMatch()
+    {
+        $type = 'aura\router\Route';
+        
+        $attach = array(
+            '/page' => array(
+                'routes' => array(
+                    'browse' => '/',
+                    'read' => '/{:id}{:format}',
+                    'edit' => '/{:id}/edit',
+                    'add' => '/add',
+                    'delete' => '/{:id}/delete',
+                ),
+                'params' => array(
+                    'id'            => '([0-9]+)',
+                    'format'        => '(\.[a-z0-9]+$)?',
+                ),
+                'values'     => array(
+                    'controller' => 'page',
+                    'format' => null,
+                ),
+                'name_prefix' => 'page:',
+            ),
+        );
+        
+        $this->map = new Map(new RouteFactory, $attach);
+        $this->map->add('home', '/');
+        
+        $actual = $this->map->getRoute('/no/such/path', $this->server);
+        $this->assertFalse($actual);
     }
 }
