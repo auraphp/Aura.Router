@@ -150,7 +150,9 @@ When you add a route, you define it as an array with one or more of the followin
 
 - `secure` -- When `true` the `$server['HTTPS']` value must be on, or the request must be on port 443; when `false`, neither of those must be in place.
 
-- `is_match` -- A custom closure with the signature `function($server, &$matches)` that returns true on a match, or false if not. This allows developers to build any kind of matching logic for the route, and to change the `$matches` for param values from the path.
+- `is_match` -- A custom callback or closure with the signature `function(array $server, \ArrayObject $matches)` that returns true on a match, or false if not. This allows developers to build any kind of matching logic for the route, and to change the `$matches` for param values from the path.
+
+- `get_path` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
 
 Here is a complete long-form route specification named `read` with all keys in place:
 
@@ -169,7 +171,7 @@ Here is a complete long-form route specification named `read` with all keys in p
         ),
         'secure' => false,
         'method' => array('GET'),
-        'is_match' => function($server, &$matches) {
+        'is_match' => function(array $server, \ArrayObject $matches) {
                 
             // disallow matching if referred from example.com
             if ($server['HTTP_REFERER'] == 'http://example.com') {
@@ -181,7 +183,14 @@ Here is a complete long-form route specification named `read` with all keys in p
             return true;
             
         },
+        'get_path' => function(\aura\router\Route $route, array $data) {
+            $data['foo'] = 'bar';
+            return $data;
+        }
     ));
+
+Note that using closures, instead of callbacks, means you will not be able to `serialize()` or `var_export()` the router map for caching.
+
 
 Short-Form Route Specification
 ------------------------------

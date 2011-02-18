@@ -191,7 +191,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         )));
     }
     
-    public function testIsCustomMatch()
+    public function testIsCustomMatchWithClosure()
     {
         $type = 'aura\router\Route';
         
@@ -209,13 +209,46 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
-            'is_match' => function($server, &$matches) {
+            'is_match' => function($server, $matches) {
                 return false;
             },
         ));
         
         // even though path is correct, should fail because of the closure
         $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
+    }
+    
+    public function testIsCustomMatchWithCallback()
+    {
+        $type = 'aura\router\Route';
+        
+        $route = $this->factory->newInstance(array(
+            'path' => '/foo/bar/baz',
+            'is_match' => array($this, 'callbackForIsMatchTrue'),
+        ));
+        
+        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $this->assertTrue($actual);
+        $this->assertEquals('gir', $route->values['zim']);
+        
+        $route = $this->factory->newInstance(array(
+            'path' => '/foo/bar/baz',
+            'is_match' => array($this, 'callbackForIsMatchFalse'),
+        ));
+        
+        // even though path is correct, should fail because of the closure
+        $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
+    }
+    
+    public function callbackForIsMatchTrue(array $server, \ArrayObject $matches)
+    {
+        $matches['zim'] = 'gir';
+        return true;
+    }
+    
+    public function callbackForIsMatchFalse(array $server, \ArrayObject $matches)
+    {
+        return false;
     }
     
     /**
@@ -252,13 +285,34 @@ class RouteTest extends \PHPUnit_Framework_TestCase
           'params' => array(
               'id' => '([0-9]+)',
           ),
-          'get_path' => function($route, &$data) {
+          'get_path' => function($route, $data) {
               $data['id'] = 99;
+              return $data;
           }
         ));
         
         $uri = $route->getPath(array('id' => 42, 'foo' => 'bar'));
         $this->assertEquals('/blog/99/edit', $uri);
+    }
+    
+    public function testGetPathWithCallback()
+    {
+        $route = $this->factory->newInstance(array(
+          'path' => '/blog/{:id}/edit',
+          'params' => array(
+              'id' => '([0-9]+)',
+          ),
+          'get_path' => array($this, 'callbackForGetPath'),
+        ));
+        
+        $uri = $route->getPath(array('id' => 42, 'foo' => 'bar'));
+        $this->assertEquals('/blog/99/edit', $uri);
+    }
+    
+    public function callbackForGetPath(\aura\router\Route $route, array $data)
+    {
+        $data['id'] = 99;
+        return $data;
     }
     
     public function testIsMatchOnDefaultAndInlineSubpatterns()
