@@ -209,6 +209,41 @@ class Map
     
     /**
      * 
+     * Reset the map to use an array of Route objects.
+     * 
+     * @param array $routes Use this array of route objects, likely generated
+     * from `getRoutes()`.
+     * 
+     * @return void
+     * 
+     */
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
+        $this->definitions = array();
+        $this->attach_custom = array();
+        $this->attach_routes = array();
+    }
+    
+    /**
+     * 
+     * Get the array of Route objects in this map, likely for caching and
+     * re-setting via `setRoutes()`.
+     * 
+     * @return array
+     * 
+     */
+    public function getRoutes()
+    {
+        // convert remaining definitions as needed
+        while ($this->attach_routes || $this->definitions) {
+            $this->createNextRoute();
+        }
+        return $this->routes;
+    }
+    
+    /**
+     * 
      * Gets the next Route object in the stack, converting definitions to 
      * Route objects as needed.
      * 

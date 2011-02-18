@@ -19,7 +19,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->map = new Map(new RouteFactory());
+        $this->map = new Map(new RouteFactory);
         $this->server = $_SERVER;
     }
 
@@ -715,5 +715,48 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         $actual = $this->map->getRoute('/no/such/path', $this->server);
         $this->assertFalse($actual);
+    }
+    
+    public function testGetAndSetRoutes()
+    {
+        $this->map->attach('/page', array(
+            'routes' => array(
+                'browse' => '/',
+                'read' => '/{:id}{:format}',
+            ),
+            'params' => array(
+                'id'            => '([0-9]+)',
+                'format'        => '(\.[a-z0-9]+$)?',
+            ),
+            'values'     => array(
+                'controller' => 'page',
+                'format' => null,
+            ),
+            'name_prefix' => 'page:',
+        ));
+        
+        $actual = $this->map->getRoutes();
+        $this->assertTrue(is_array($actual));
+        $this->assertTrue(count($actual) == 2);
+        $this->assertType('aura\router\Route', $actual['page:browse']);
+        $this->assertEquals('/page/', $actual['page:browse']->path);
+        $this->assertType('aura\router\Route', $actual['page:read']);
+        $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
+        
+        // emulate caching the values
+        $saved = serialize($actual);
+        $restored = unserialize($saved);
+        
+        // set routes from the restored values
+        $map = new Map(new RouteFactory);
+        $map->setRoutes($restored);
+        $actual = $map->getRoutes();
+        $this->assertTrue(is_array($actual));
+        $this->assertTrue(count($actual) == 2);
+        $this->assertType('aura\router\Route', $actual['page:browse']);
+        $this->assertEquals('/page/', $actual['page:browse']->path);
+        $this->assertType('aura\router\Route', $actual['page:read']);
+        $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
+        
     }
 }

@@ -351,5 +351,36 @@ This technique can be very effective with modular application packages. Each pac
     // create a Map with attached route groups
     $map = new \aura\router\Map($route_factory, $attach);
 
-* * *
 
+Caching
+-------
+
+You may wish to cache the route map for production deployments so that the `Map` does not have to build the route objects from definitions on each page load. The methods `getRoutes()` and `setRoutes()` may be used for that purpose.
+
+The following is a naive example for file-based caching and restoring of `Map` routes:
+
+    <?php
+    // create a Map object
+    $map = new \aura\router\Map(new \aura\router\RouteFactory);
+    
+    // the cache file location
+    $cache = '/path/to/routes.cache';
+    
+    // does the cache exist?
+    if (file_exists($cache)) {
+        
+        // restore from the cache
+        $routes = unserialize(file_get_contents($cache));
+        $map->setRoutes($routes);
+        
+    } else {
+        
+        // build the map routes using add() and attach() ...
+        // ... ... ...
+        // ... then save to the cache for the next page load
+        $routes = $map->getRoutes();
+        file_put_contents($cache, serialize($routes));
+        
+    }
+
+Note that if there are closures in the route definitions, you will not be able to cache the `Map` routes; this is because closures cannot be represented properly for caching.  Use traditional callbacks instead of closures if you wish to pursue a cache strategy.

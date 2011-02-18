@@ -280,17 +280,13 @@ class Route
      */
     public function getPath(array $data = null)
     {
-        if ($data === null) {
-            $data = array();
-        }
-        
         // use a closure to modify the path data?
         if ($this->get_path) {
             if ($this->get_path instanceof \Closure) {
                 $function = $this->get_path;
-                $data = $function($this, $data);
+                $data = $function($this, (array) $data);
             } else {
-                $data = call_user_func($this->get_path, $this, $data);
+                $data = call_user_func($this->get_path, $this, (array) $data);
             }
         }
         
