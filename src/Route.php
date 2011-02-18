@@ -336,7 +336,7 @@ class Route
             foreach ($this->params as $name => $subpattern) {
                 if ($subpattern[0] != '(') {
                     $message = "Subpattern for param '$name' must start with '('.";
-                    throw new \UnexpectedValueException($message);
+                    throw new Exception($message);
                 } else {
                     $keys[] = "{:$name}";
                     $vals[] = "(?<$name>" . substr($subpattern, 1);

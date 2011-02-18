@@ -130,7 +130,7 @@ class Map
     {
         // ... with routes defined for attachment.
         if (! isset($spec['routes'])) {
-            throw new \UnexpectedValueException('No routes defined for attachment.');
+            throw new Exception('No routes defined for attachment.');
         }
         
         // set the path_prefix in the specification
@@ -350,7 +350,7 @@ class Map
             // long form, no name
             $spec = $val;
         } else {
-            throw new \UnexpectedValueException("Route spec for '$key' should be a string or array.");
+            throw new Exception("Route spec for '$key' should be a string or array.");
         }
         
         // unset any path or name prefix on the spec itself
