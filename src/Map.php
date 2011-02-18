@@ -109,7 +109,8 @@ class Map
         unset($spec['path_prefix']);
         
         // append to the route definitions
-        $this->append('single', $spec);
+        $spec['__type'] = 'single';
+        $this->definitions[] = $spec;
     }
     
     /**
@@ -135,8 +136,9 @@ class Map
         // set the path_prefix in the specification
         $spec['path_prefix'] = $path_prefix;
         
-        // append to the definitions
-        $this->append('attach', $spec);
+        // append to the route definitions
+        $spec['__type'] = 'attach';
+        $this->definitions[] = $spec;
     }
     
     /**
@@ -153,13 +155,22 @@ class Map
      */
     public function getRoute($path, array $server = null)
     {
-        reset($this->routes);
-        while ($route = $this->getNextRoute()) {
-            $result = $route->isMatch($path, $server);
-            if ($result) {
-                return $result;
+        // look through existing route objects
+        foreach ($this->routes as $route) {
+            if ($route->isMatch($path, $server)) {
+                return $route;
             }
         }
+        
+        // convert remaining definitions as needed
+        while ($this->attach_routes || $this->definitions) {
+            $route = $this->createNextRoute();
+            if ($route->isMatch($path, $server)) {
+                return $route;
+            }
+        }
+        
+        // no joy
         return false;
     }
     
@@ -184,14 +195,9 @@ class Map
             return $this->routes[$name]->getPath($data);
         }
         
-        // are there routes left to convert to objects?
-        if (! $this->definitions) {
-            // no, which means there is no matching route name
-            return false;
-        }
-        
-        // create objects from route specs and check the names
-        while ($route = $this->getNextRoute()) {
+        // convert remaining definitions as needed
+        while ($this->attach_routes || $this->definitions) {
+            $route = $this->createNextRoute();
             if ($route->name == $name) {
                 return $route->getPath($data);
             }
@@ -210,25 +216,18 @@ class Map
      * stack.
      * 
      */
-    protected function getNextRoute()
+    protected function createNextRoute()
     {
-        // do we have a current route?
-        $route = current($this->routes);
-        if ($route) {
-            // advance the pointer for next time ...
-            next($this->routes);
-            // ... and return the current route.
-            return $route;
+        // do we have attached routes left to process?
+        if ($this->attach_routes) {
+            // yes, get the next attached definition
+            $spec = $this->getNextAttach();
+        } else {
+            // no, get the next unattached definition
+            $spec = $this->getNextDefinition();
         }
         
-        // are there any route definitions left to convert to objects?
-        if (! $this->definitions && ! $this->attach_routes) {
-            // no, so we're done
-            return false;
-        }
-        
-        // get the next route definition and create a route object from it
-        $spec = $this->getNextDefinition();
+        // create a route object from it
         $route = $this->factory->newInstance($spec);
         
         // retain the route object ...
@@ -241,26 +240,8 @@ class Map
             $this->routes[] = $route;
         }
         
-        // return whatever route got added next
+        // return whatever route got retained
         return $route;
-    }
-    
-    /**
-     * 
-     * Appends a single route definition to the stack.
-     * 
-     * @param array $type The definition type: a 'single' route, or 'attach' a
-     * group of routes.
-     * 
-     * @param array $spec The definition itself.
-     * 
-     * @return void
-     * 
-     */
-    protected function append($type, $spec)
-    {
-        $spec['__type'] = $type;
-        $this->definitions[] = $spec;
     }
     
     /**
@@ -272,11 +253,6 @@ class Map
      */
     protected function getNextDefinition()
     {
-        // are there attached routes left to process?
-        if ($this->attach_routes) {
-            return $this->getNextAttach();
-        }
-        
         // get the next definition and extract the definition type
         $spec = array_shift($this->definitions);
         $type = $spec['__type'];

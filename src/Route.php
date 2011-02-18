@@ -240,8 +240,7 @@ class Route
      * @param array $server A copy of $_SERVER so that this Route can check 
      * against the server values.
      * 
-     * @return mixed Returns this Route if it matches the path and server 
-     * values, or boolean false if it does not match.
+     * @return bool
      * 
      */
     public function isMatch($path, array $server)
@@ -263,7 +262,7 @@ class Route
         }
         
         // done!
-        return $this;
+        return true;
     }
     
     /**

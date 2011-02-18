@@ -44,10 +44,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         // right path
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
-        $this->assertType('aura\router\Route', $actual);
-        $values = $actual->values;
-        $this->assertEquals('zim', $actual->values['controller']);
-        $this->assertEquals('dib', $actual->values['action']);
+        $this->assertTrue($actual);
+        $this->assertEquals('zim', $route->values['controller']);
+        $this->assertEquals('dib', $route->values['action']);
         
         // wrong path
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
@@ -69,14 +68,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
         
         $actual = $route->isMatch('/foo/bar/42', $this->server);
-        $this->assertType('aura\router\Route', $actual);
+        $this->assertTrue($actual);
         $expect = array(
             'controller' => 'foo',
             'action' => 'bar',
             'id' => 42,
             'format' => '.html'
         );
-        $this->assertEquals($expect, $actual->values);
+        $this->assertEquals($expect, $route->values);
     }
     
     public function testIsMethodMatch()
@@ -92,7 +91,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
     
         // correct
-        $this->assertType($type, $route->isMatch('/foo/bar/baz', array(
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'POST',
         )));
     
@@ -115,11 +114,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
     
         // correct
-        $this->assertType($type, $route->isMatch('/foo/bar/baz', array(
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'GET',
         )));
         
-        $this->assertType($type, $route->isMatch('/foo/bar/baz', array(
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'POST',
         )));
     
@@ -154,7 +153,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
         
         // correct
-        $this->assertType($type, $route->isMatch('/foo/bar/baz', array(
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'on',
         )));
         
@@ -177,7 +176,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
         
         // correct
-        $this->assertType($type, $route->isMatch('/foo/bar/baz', array(
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'off',
         )));
         
@@ -205,8 +204,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
         
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
-        $this->assertType($type, $actual);
-        $this->assertEquals('gir', $actual->values['zim']);
+        $this->assertTrue($actual);
+        $this->assertEquals('gir', $route->values['zim']);
         
         $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
@@ -269,12 +268,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
         
         $actual = $route->isMatch('/any-value/read/42', $this->server);
-        $this->assertType('aura\router\Route', $actual);
+        $this->assertTrue($actual);
         $expect = array(
             'controller' => 'any-value',
             'action' => 'read',
             'id' => 42,
         );
-        $this->assertEquals($expect, $actual->values);
+        $this->assertEquals($expect, $route->values);
     }
 }
