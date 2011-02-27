@@ -1,10 +1,5 @@
 <?php
 /**
- * Autoloader info.
- */
-$loader->setPath('aura\router\\', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src');
-
-/**
  * Dependency services.
  */
 $di->set('router_map', function() use ($di) {
