@@ -19,20 +19,20 @@ class RouteFactory
 {
     /**
      * 
-     * The list of Route constructor parameters with default values.
+     * An array of default parameters for Route objects.
      * 
      * @var array
      * 
      */
-    protected $ctor = array(
-        'name'     => null,
-        'path'     => null,
-        'params'   => null,
-        'values'   => null,
-        'method'   => null,
-        'secure'   => null,
-        'is_match' => null,
-        'get_path' => null,
+    protected $params = array(
+        'name'        => null,
+        'path'        => null,
+        'params'      => null,
+        'values'      => null,
+        'method'      => null,
+        'secure'      => null,
+        'is_match'    => null,
+        'get_path'    => null,
         'name_prefix' => null,
         'path_prefix' => null,
     );
@@ -41,26 +41,26 @@ class RouteFactory
      * 
      * Returns a new Route instance.
      * 
-     * @param array $spec An array of key-value pairs corresponding to the
-     * Route constructor parameters.
+     * @param array $params An array of key-value pairs corresponding to the
+     * Route parameters.
      * 
      * @return Route
      * 
      */
-    public function newInstance(array $spec)
+    public function newInstance(array $params)
     {
-        $spec = array_merge($this->ctor, $spec);
+        $params = array_merge($this->params, $params);
         return new Route(
-            $spec['name'],
-            $spec['path'],
-            $spec['params'],
-            $spec['values'],
-            $spec['method'],
-            $spec['secure'],
-            $spec['is_match'],
-            $spec['get_path'],
-            $spec['name_prefix'],
-            $spec['path_prefix']
+            $params['name'],
+            $params['path'],
+            $params['params'],
+            $params['values'],
+            $params['method'],
+            $params['secure'],
+            $params['is_match'],
+            $params['get_path'],
+            $params['name_prefix'],
+            $params['path_prefix']
         );
     }
 }
