@@ -17,11 +17,8 @@ Mapping A Route
 To create a route for your application, instantiate a `Map` object from the `aura\router` package and call `add()`.
 
     <?php
-    // create a route factory for the map object
-    $route_factory = new \aura\router\RouteFactory;
-    
-    // create the map object
-    $map = \aura\router\Map($route_factory);
+        // create the map object
+    $map = require '/path/to/aura.router/instance.php';
     
     // add a short-form named route without params
     $map->add('home', '/');
@@ -361,7 +358,7 @@ The following is a naive example for file-based caching and restoring of `Map` r
 
     <?php
     // create a Map object
-    $map = new \aura\router\Map(new \aura\router\RouteFactory);
+    $map = require '/path/to/aura.router/instance.php';
     
     // the cache file location
     $cache = '/path/to/routes.cache';
