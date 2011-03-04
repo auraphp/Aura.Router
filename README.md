@@ -17,8 +17,8 @@ Mapping A Route
 To create a route for your application, instantiate a `Map` object from the `aura\router` package and call `add()`.
 
     <?php
-        // create the map object
-    $map = require '/path/to/aura.router/instance.php';
+    // create the map object
+    $map = require '/path/to/aura.router/scripts/instance.php';
     
     // add a short-form named route without params
     $map->add('home', '/');
