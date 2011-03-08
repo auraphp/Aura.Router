@@ -34,7 +34,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testAddUnnamedRoute()
     {
         $this->map->add(null, '/foo/bar/baz');
-        $actual = $this->map->getRoute('/foo/bar/baz', $this->server);
+        $actual = $this->map->match('/foo/bar/baz', $this->server);
         $this->assertType('aura\router\Route', $actual);
         $this->assertSame('/foo/bar/baz', $actual->path);
     }
@@ -42,7 +42,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testAddNamedRoute()
     {
         $this->map->add('zim', '/zim/dib/gir');
-        $actual = $this->map->getRoute('/zim/dib/gir', $this->server);
+        $actual = $this->map->match('/zim/dib/gir', $this->server);
         $this->assertType('aura\router\Route', $actual);
         $this->assertSame('/zim/dib/gir', $actual->path);
         $this->assertSame('zim', $actual->name);
@@ -61,7 +61,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             ),
         ));
         
-        $actual = $this->map->getRoute('/resource/42', $this->server);
+        $actual = $this->map->match('/resource/42', $this->server);
         $this->assertType('aura\router\Route', $actual);
         $this->assertSame('foo', $actual->values['controller']);
         $this->assertSame('bar', $actual->values['action']);
@@ -88,7 +88,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             )
         ));
         
-        $this->map->getRoute('/', $this->server);
+        $this->map->match('/', $this->server);
     }
     
     public function testAttachRoutesWithoutPathPrefix()
@@ -117,29 +117,29 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // fail to match
-        $actual = $this->map->getRoute('/foo/bar/baz/dib', $this->server);
+        $actual = $this->map->match('/foo/bar/baz/dib', $this->server);
         $this->assertFalse($actual);
         
         // path: /
-        $actual = $this->map->getRoute('/', $this->server);
+        $actual = $this->map->match('/', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('default_controller', $actual->values['controller']);
         $this->assertSame('default_action', $actual->values['action']);
         
         // path: /controller
-        $actual = $this->map->getRoute('/foo', $this->server);
+        $actual = $this->map->match('/foo', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('foo', $actual->values['controller']);
         $this->assertSame('default_action', $actual->values['action']);
         
         // path: /controller/action
-        $actual = $this->map->getRoute('/foo/bar', $this->server);
+        $actual = $this->map->match('/foo/bar', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('foo', $actual->values['controller']);
         $this->assertSame('bar', $actual->values['action']);
         
         // path: /controller/action/id
-        $actual = $this->map->getRoute('/foo/bar/42', $this->server);
+        $actual = $this->map->match('/foo/bar/42', $this->server);
         $expect_values = array(
             'controller' => 'foo',
             'action' => 'bar',
@@ -150,7 +150,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // path: /controller/action/id.format
-        $actual = $this->map->getRoute('/foo/bar/42.json', $this->server);
+        $actual = $this->map->match('/foo/bar/42.json', $this->server);
         $expect_values = array(
             'controller' => 'foo',
             'action' => 'bar',
@@ -185,18 +185,18 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // fail to match
-        $actual = $this->map->getRoute('/foo/bar/baz/dib', $this->server);
+        $actual = $this->map->match('/foo/bar/baz/dib', $this->server);
         $this->assertFalse($actual);
         
         // browse
-        $actual = $this->map->getRoute('/', $this->server);
+        $actual = $this->map->match('/', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page', $actual->values['controller']);
         $this->assertSame('browse', $actual->values['action']);
         $this->assertSame('browse', $actual->name);
         
         // read
-        $actual = $this->map->getRoute('/42', $this->server);
+        $actual = $this->map->match('/42', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('read', $actual->name);
         $expect_values = array(
@@ -208,7 +208,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // read w/ format
-        $actual = $this->map->getRoute('/42.json', $this->server);
+        $actual = $this->map->match('/42.json', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('read', $actual->name);
         $expect_values = array(
@@ -220,7 +220,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // edit
-        $actual = $this->map->getRoute('/42/edit', $this->server);
+        $actual = $this->map->match('/42/edit', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('edit', $actual->name);
         $expect_values = array(
@@ -232,14 +232,14 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // add
-        $actual = $this->map->getRoute('/add', $this->server);
+        $actual = $this->map->match('/add', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page', $actual->values['controller']);
         $this->assertSame('add', $actual->values['action']);
         $this->assertSame('add', $actual->name);
         
         // delete
-        $actual = $this->map->getRoute('/42/delete', $this->server);
+        $actual = $this->map->match('/42/delete', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('delete', $actual->name);
         $expect_values = array(
@@ -277,29 +277,29 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // fail to match
-        $actual = $this->map->getRoute('/foo/bar/baz/dib', $this->server);
+        $actual = $this->map->match('/foo/bar/baz/dib', $this->server);
         $this->assertFalse($actual);
         
         // path: /
-        $actual = $this->map->getRoute('/', $this->server);
+        $actual = $this->map->match('/', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('default_controller', $actual->values['controller']);
         $this->assertSame('default_action', $actual->values['action']);
         
         // path: /controller
-        $actual = $this->map->getRoute('/foo', $this->server);
+        $actual = $this->map->match('/foo', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('foo', $actual->values['controller']);
         $this->assertSame('default_action', $actual->values['action']);
         
         // path: /controller/action
-        $actual = $this->map->getRoute('/foo/bar', $this->server);
+        $actual = $this->map->match('/foo/bar', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('foo', $actual->values['controller']);
         $this->assertSame('bar', $actual->values['action']);
         
         // path: /controller/action/id
-        $actual = $this->map->getRoute('/foo/bar/42', $this->server);
+        $actual = $this->map->match('/foo/bar/42', $this->server);
         $this->assertType($type, $actual);
         $expect_values = array(
             'controller' => 'foo',
@@ -310,7 +310,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // path: /controller/action/id.format
-        $actual = $this->map->getRoute('/foo/bar/42.json', $this->server);
+        $actual = $this->map->match('/foo/bar/42.json', $this->server);
         $this->assertType($type, $actual);
         $expect_values = array(
             'controller' => 'foo',
@@ -345,11 +345,11 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // fail to match
-        $actual = $this->map->getRoute('/foo/bar/baz/dib', $this->server);
+        $actual = $this->map->match('/foo/bar/baz/dib', $this->server);
         $this->assertFalse($actual);
         
         // browse
-        $actual = $this->map->getRoute('/page/', $this->server);
+        $actual = $this->map->match('/page/', $this->server);
         
         $this->assertType($type, $actual);
         $this->assertSame('page', $actual->values['controller']);
@@ -357,7 +357,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('page:browse', $actual->name);
         
         // read
-        $actual = $this->map->getRoute('/page/42', $this->server);
+        $actual = $this->map->match('/page/42', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:read', $actual->name);
         $expect_values = array(
@@ -369,7 +369,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // read w/ format
-        $actual = $this->map->getRoute('/page/42.json', $this->server);
+        $actual = $this->map->match('/page/42.json', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:read', $actual->name);
         $expect_values = array(
@@ -381,7 +381,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // edit
-        $actual = $this->map->getRoute('/page/42/edit', $this->server);
+        $actual = $this->map->match('/page/42/edit', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:edit', $actual->name);
         $expect_values = array(
@@ -393,7 +393,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // add
-        $actual = $this->map->getRoute('/page/add', $this->server);
+        $actual = $this->map->match('/page/add', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:add', $actual->name);
         $expect_values = array(
@@ -404,7 +404,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // delete
-        $actual = $this->map->getRoute('/page/42/delete', $this->server);
+        $actual = $this->map->match('/page/42/delete', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:delete', $actual->name);
         $expect_values = array(
@@ -456,12 +456,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // fail to match
-        $actual = $this->map->getRoute('/foo/bar/baz/dib', $this->server);
+        $actual = $this->map->match('/foo/bar/baz/dib', $this->server);
         $this->assertFalse($actual);
         
         // browse
         $server = array('REQUEST_METHOD' => 'GET');
-        $actual = $this->map->getRoute('/resource/', $server);
+        $actual = $this->map->match('/resource/', $server);
         $this->assertType($type, $actual);
         $this->assertSame('resource', $actual->values['controller']);
         $this->assertSame('browse', $actual->values['action']);
@@ -469,7 +469,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // read
         $server = array('REQUEST_METHOD' => 'GET');
-        $actual = $this->map->getRoute('/resource/42', $server);
+        $actual = $this->map->match('/resource/42', $server);
         $this->assertType($type, $actual);
         $this->assertSame('resource:read', $actual->name);
         $expect_values = array(
@@ -481,7 +481,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // edit
         $server = array('REQUEST_METHOD' => 'PUT');
-        $actual = $this->map->getRoute('/resource/42', $server);
+        $actual = $this->map->match('/resource/42', $server);
         $this->assertType($type, $actual);
         $this->assertSame('resource:edit', $actual->name);
         $expect_values = array(
@@ -493,7 +493,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // add
         $server = array('REQUEST_METHOD' => 'POST');
-        $actual = $this->map->getRoute('/resource/', $server);
+        $actual = $this->map->match('/resource/', $server);
         $this->assertType($type, $actual);
         $this->assertSame('resource', $actual->values['controller']);
         $this->assertSame('add', $actual->values['action']);
@@ -501,7 +501,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // delete
         $server = array('REQUEST_METHOD' => 'DELETE');
-        $actual = $this->map->getRoute('/resource/42', $server);
+        $actual = $this->map->match('/resource/42', $server);
         $this->assertType($type, $actual);
         $this->assertSame('resource:delete', $actual->name);
         $expect_values = array(
@@ -513,9 +513,9 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @todo Implement testGetPath().
+     * @todo Implement testGenerate().
      */
-    public function testGetPath()
+    public function testGenerate()
     {
         $this->map->attach('/page', array(
             'routes' => array(
@@ -537,7 +537,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // get a named route
-        $actual = $this->map->getPath('page:read', array(
+        $actual = $this->map->generate('page:read', array(
             'id' => 42,
             'format' => null,
         ));
@@ -545,7 +545,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // get the same one again, for code coverage of the portion that
         // looks up previously-generated route objects
-        $actual = $this->map->getPath('page:read', array(
+        $actual = $this->map->generate('page:read', array(
             'id' => 84,
             'format' => null,
         ));
@@ -553,12 +553,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // fail to match again, for code coverage of the portion that checks
         // if there are definitions left to convert
-        $actual = $this->map->getPath('no-route-again');
+        $actual = $this->map->generate('no-route-again');
         $this->assertFalse($actual);
     }
     
     
-    public function testGetPathWhenMissing()
+    public function testGenerateWhenMissing()
     {
         $this->map->attach('/page', array(
             'routes' => array(
@@ -580,7 +580,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         // fail to match
-        $actual = $this->map->getPath('no-route');
+        $actual = $this->map->generate('no-route');
         $this->assertFalse($actual);
     }
     
@@ -613,11 +613,11 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         /** SAME AS namedRoutesWithPrefixes */
         // fail to match
-        $actual = $this->map->getRoute('/foo/bar/baz/dib', $this->server);
+        $actual = $this->map->match('/foo/bar/baz/dib', $this->server);
         $this->assertFalse($actual);
         
         // browse
-        $actual = $this->map->getRoute('/page/', $this->server);
+        $actual = $this->map->match('/page/', $this->server);
         
         $this->assertType($type, $actual);
         $this->assertSame('page', $actual->values['controller']);
@@ -625,7 +625,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('page:browse', $actual->name);
         
         // read
-        $actual = $this->map->getRoute('/page/42', $this->server);
+        $actual = $this->map->match('/page/42', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:read', $actual->name);
         $expect_values = array(
@@ -637,7 +637,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // read w/ format
-        $actual = $this->map->getRoute('/page/42.json', $this->server);
+        $actual = $this->map->match('/page/42.json', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:read', $actual->name);
         $expect_values = array(
@@ -649,7 +649,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // edit
-        $actual = $this->map->getRoute('/page/42/edit', $this->server);
+        $actual = $this->map->match('/page/42/edit', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:edit', $actual->name);
         $expect_values = array(
@@ -661,7 +661,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // add
-        $actual = $this->map->getRoute('/page/add', $this->server);
+        $actual = $this->map->match('/page/add', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:add', $actual->name);
         $expect_values = array(
@@ -672,7 +672,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->values);
         
         // delete
-        $actual = $this->map->getRoute('/page/42/delete', $this->server);
+        $actual = $this->map->match('/page/42/delete', $this->server);
         $this->assertType($type, $actual);
         $this->assertSame('page:delete', $actual->name);
         $expect_values = array(
@@ -712,7 +712,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map = new Map(new RouteFactory, $attach);
         $this->map->add('home', '/');
         
-        $actual = $this->map->getRoute('/no/such/path', $this->server);
+        $actual = $this->map->match('/no/such/path', $this->server);
         $this->assertFalse($actual);
     }
     

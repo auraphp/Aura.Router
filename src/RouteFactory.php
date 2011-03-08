@@ -31,8 +31,9 @@ class RouteFactory
         'values'      => null,
         'method'      => null,
         'secure'      => null,
+        'routable'    => true,
         'is_match'    => null,
-        'get_path'    => null,
+        'generate'    => null,
         'name_prefix' => null,
         'path_prefix' => null,
     );
@@ -57,8 +58,9 @@ class RouteFactory
             $params['values'],
             $params['method'],
             $params['secure'],
+            $params['routable'],
             $params['is_match'],
-            $params['get_path'],
+            $params['generate'],
             $params['name_prefix'],
             $params['path_prefix']
         );

@@ -46,16 +46,16 @@ You will need to place the `Map` object where you can get to it from your applic
 Matching A Route
 ----------------
 
-To match a URI path against your route map, call `getRoute()` with a path string and the `$_SERVER` values.
+To match a URI path against your route map, call `match()` with a path string and the `$_SERVER` values.
 
     <?php
     // get the incoming request URI path
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
     // get the route based on the path and server
-    $route = $map->getRoute($path, $_SERVER);
+    $route = $map->match($path, $_SERVER);
 
-The `getRoute()` method does not parse the URI or use `$_SERVER` internally. This is becuase different systems may have different ways of representing that information; e.g., through a URI object or a context object.  As long as you can pass the string path and a server array, you can use Aura Router in your application foundation or framework.
+The `match()` method does not parse the URI or use `$_SERVER` internally. This is becuase different systems may have different ways of representing that information; e.g., through a URI object or a context object.  As long as you can pass the string path and a server array, you can use Aura Router in your application foundation or framework.
 
 The returned `$route` object will contain, among other things, a `$values` array with values for each of the parameters identified by the route path. For example, matching a route with the path `/{:controller}/{:action}/{:id}` will populate the `$route->values` array with `controller`, `action`, and `id` keys.
 
@@ -102,11 +102,11 @@ Again, note that Aura Router will not dispatch for you; the above is provided as
 Generating A Route Path
 -----------------------
 
-To generate a URI path from a route so that you can create links, call `getPath()` on the `Map` object and provide the route name.
+To generate a URI path from a route so that you can create links, call `generate()` on the `Map` object and provide the route name.
 
     <?php
     // $path => "/blog/read/42.atom"
-    $path = $map->getPath('read', array(
+    $path = $map->generate('read', array(
         'id' => 42,
         'format' => '.atom',
     ));
@@ -149,7 +149,7 @@ When you add a route, you define it as an array with one or more of the followin
 
 - `is_match` -- A custom callback or closure with the signature `function(array $server, \ArrayObject $matches)` that returns true on a match, or false if not. This allows developers to build any kind of matching logic for the route, and to change the `$matches` for param values from the path.
 
-- `get_path` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
+- `generate` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
 
 Here is a complete long-form route specification named `read` with all keys in place:
 
@@ -180,7 +180,7 @@ Here is a complete long-form route specification named `read` with all keys in p
             return true;
             
         },
-        'get_path' => function(\aura\router\Route $route, array $data) {
+        'generate' => function(\aura\router\Route $route, array $data) {
             $data['foo'] = 'bar';
             return $data;
         }

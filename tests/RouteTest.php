@@ -264,7 +264,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
     }
     
-    public function testGetPath()
+    public function testGenerate()
     {
         $route = $this->factory->newInstance(array(
           'path' => '/blog/{:id}/edit',
@@ -273,42 +273,42 @@ class RouteTest extends \PHPUnit_Framework_TestCase
           ),
         ));
         
-        $uri = $route->getPath(array('id' => 42, 'foo' => 'bar'));
+        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
         $this->assertEquals('/blog/42/edit', $uri);
     }
     
-    public function testGetPathWithClosure()
+    public function testGenerateWithClosure()
     {
         $route = $this->factory->newInstance(array(
           'path' => '/blog/{:id}/edit',
           'params' => array(
               'id' => '([0-9]+)',
           ),
-          'get_path' => function($route, $data) {
+          'generate' => function($route, $data) {
               $data['id'] = 99;
               return $data;
           }
         ));
         
-        $uri = $route->getPath(array('id' => 42, 'foo' => 'bar'));
+        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
         $this->assertEquals('/blog/99/edit', $uri);
     }
     
-    public function testGetPathWithCallback()
+    public function testGenerateWithCallback()
     {
         $route = $this->factory->newInstance(array(
           'path' => '/blog/{:id}/edit',
           'params' => array(
               'id' => '([0-9]+)',
           ),
-          'get_path' => array($this, 'callbackForGetPath'),
+          'generate' => array($this, 'callbackForGenerate'),
         ));
         
-        $uri = $route->getPath(array('id' => 42, 'foo' => 'bar'));
+        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
         $this->assertEquals('/blog/99/edit', $uri);
     }
     
-    public function callbackForGetPath(\aura\router\Route $route, array $data)
+    public function callbackForGenerate(\aura\router\Route $route, array $data)
     {
         $data['id'] = 99;
         return $data;
@@ -328,5 +328,38 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => 42,
         );
         $this->assertEquals($expect, $route->values);
+    }
+    
+    public function testIsNotRoutable()
+    {
+        $route = $this->factory->newInstance(array(
+            'path' => '/foo/bar/baz',
+            'values' => array(
+                'controller' => 'zim',
+                'action' => 'dib',
+            ),
+            'routable' => false,
+        ));
+        
+        // right path
+        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $this->assertFalse($actual);
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+    }
+    
+    public function testGenerateOnFullUri()
+    {
+        $route = $this->factory->newInstance(array(
+            'name' => 'google-search',
+            'path' => 'http://google.com/?q={:q}',
+            'routable' => false,
+            'path_prefix' => '/foo/bar', // SHOULD NOT show up
+        ));
+        
+        $actual = $route->generate(array('q' => "what's up doc?"));
+        $expect = "http://google.com/?q=what%27s+up+doc%3F";
+        $this->assertSame($expect, $actual);
     }
 }

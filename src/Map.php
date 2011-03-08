@@ -86,7 +86,7 @@ class Map
      * 
      * Adds a single route definition to the stack.
      * 
-     * @param string $name The route name for `getPath()` lookups.
+     * @param string $name The route name for `generate()` lookups.
      * 
      * @param string $path The route path.
      * 
@@ -153,7 +153,7 @@ class Map
      * boolean false if there is no match.
      * 
      */
-    public function getRoute($path, array $server = null)
+    public function match($path, array $server = null)
     {
         // look through existing route objects
         foreach ($this->routes as $route) {
@@ -188,18 +188,18 @@ class Map
      * boolean false if not.
      * 
      */
-    public function getPath($name, $data = null)
+    public function generate($name, $data = null)
     {
         // do we already have the route object?
         if (isset($this->routes[$name])) {
-            return $this->routes[$name]->getPath($data);
+            return $this->routes[$name]->generate($data);
         }
         
         // convert remaining definitions as needed
         while ($this->attach_routes || $this->definitions) {
             $route = $this->createNextRoute();
             if ($route->name == $name) {
-                return $route->getPath($data);
+                return $route->generate($data);
             }
         }
         

@@ -105,10 +105,20 @@ class Route
      * 
      * @var callback|\Closure
      * 
-     * @see getPath()
+     * @see generate()
      * 
      */
-    protected $get_path;
+    protected $generate;
+    
+    /**
+     * 
+     * If routable, this route should be used in matching.  If not, it should
+     * be used only to generate a path.
+     * 
+     * @var bool
+     * 
+     */
+    protected $routable;
     
     /**
      * 
@@ -166,9 +176,12 @@ class Route
      * 
      * @param bool $secure If true, the server must indicate an HTTPS request.
      * 
+     * @param bool $routable If true, this Route can be matched; if not, it
+     * can be used only to generate a path.
+     * 
      * @param callback|\Closure $is_match A custom callback or closure to evaluate the route.
      * 
-     * @param callback|\Closure $get_path A custom callback or closure to generate a path.
+     * @param callback|\Closure $generate A custom callback or closure to generate a path.
      * 
      * @param string $name_prefix A prefix for the name.
      * 
@@ -184,8 +197,9 @@ class Route
         $values      = null,
         $method      = null,
         $secure      = null,
+        $routable    = true,
         $is_match    = null,
-        $get_path    = null,
+        $generate    = null,
         $name_prefix = null,
         $path_prefix = null
     ) {
@@ -199,19 +213,20 @@ class Route
         
         // set the path, with prefix if needed
         $this->path_prefix = (string) $path_prefix;
-        if ($path_prefix && $path) {
+        if ($path_prefix && $path && strpos($path, '://') === false) {
             $this->path = (string) $path_prefix . $path;
         } else {
             $this->path = (string) $path;
         }
         
         // other properties
-        $this->params      = (array)  $params;
-        $this->values      = (array)  $values;
+        $this->params      = (array) $params;
+        $this->values      = (array) $values;
         $this->method      = ($method === null) ? null : (array) $method;
         $this->secure      = ($secure === null) ? null : (bool)  $secure;
+        $this->routable    = (bool) $routable;
         $this->is_match    = $is_match;
-        $this->get_path    = $get_path;
+        $this->generate    = $generate;
         
         // convert path and params to a regular expression
         $this->setRegex();
@@ -233,8 +248,8 @@ class Route
     
     /**
      * 
-     * Checks if a given path and server values are a match for the 
-     * route.
+     * Checks if a given path and server values are a match for this
+     * Route.
      * 
      * @param string $path The path to check against this Route.
      * 
@@ -246,6 +261,10 @@ class Route
      */
     public function isMatch($path, array $server)
     {
+        if (! $this->routable) {
+            return false;
+        }
+        
         $is_match = preg_match("#^{$this->regex}$#", $path, $this->matches)
                  && $this->isMethodMatch($server)
                  && $this->isSecureMatch($server)
@@ -278,15 +297,15 @@ class Route
      * @return string
      * 
      */
-    public function getPath(array $data = null)
+    public function generate(array $data = null)
     {
         // use a closure to modify the path data?
-        if ($this->get_path) {
-            if ($this->get_path instanceof \Closure) {
-                $function = $this->get_path;
+        if ($this->generate) {
+            if ($this->generate instanceof \Closure) {
+                $function = $this->generate;
                 $data = $function($this, (array) $data);
             } else {
-                $data = call_user_func($this->get_path, $this, (array) $data);
+                $data = call_user_func($this->generate, $this, (array) $data);
             }
         }
         
@@ -296,7 +315,7 @@ class Route
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
             $keys[] = "{:$key}";
-            $vals[] = $val;
+            $vals[] = urlencode($val);
         }
         return str_replace($keys, $vals, $this->path);
     }
