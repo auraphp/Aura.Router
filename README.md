@@ -147,6 +147,8 @@ When you add a route, you define it as an array with one or more of the followin
 
 - `secure` -- When `true` the `$server['HTTPS']` value must be on, or the request must be on port 443; when `false`, neither of those must be in place.
 
+- `routable` -- When `false` the route will not be used for matching, only for generating paths.
+
 - `is_match` -- A custom callback or closure with the signature `function(array $server, \ArrayObject $matches)` that returns true on a match, or false if not. This allows developers to build any kind of matching logic for the route, and to change the `$matches` for param values from the path.
 
 - `generate` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
@@ -168,6 +170,7 @@ Here is a complete long-form route specification named `read` with all keys in p
         ),
         'secure' => false,
         'method' => array('GET'),
+        'routable' => true,
         'is_match' => function(array $server, \ArrayObject $matches) {
                 
             // disallow matching if referred from example.com
