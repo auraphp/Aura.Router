@@ -51,7 +51,7 @@ class Map
      * @var RouteFactory
      * 
      */
-    protected $factory;
+    protected $route_factory;
     
     /**
      * 
@@ -73,10 +73,10 @@ class Map
      * 
      */
     public function __construct(
-        RouteFactory $factory,
+        RouteFactory $route_factory,
         array $attach = null
     ) {
-        $this->factory = $factory;
+        $this->route_factory = $route_factory;
         foreach ((array) $attach as $path_prefix => $spec) {
             $this->attach($path_prefix, $spec);
         }
@@ -130,7 +130,7 @@ class Map
     {
         // ... with routes defined for attachment.
         if (! isset($spec['routes'])) {
-            throw new Exception('No routes defined for attachment.');
+            throw new Exception("No routes defined for attached path prefix '$path_prefix'.");
         }
         
         // set the path_prefix in the specification
@@ -263,7 +263,7 @@ class Map
         }
         
         // create a route object from it
-        $route = $this->factory->newInstance($spec);
+        $route = $this->route_factory->newInstance($spec);
         
         // retain the route object ...
         $name = $route->name;
