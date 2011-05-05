@@ -2,15 +2,8 @@
 /**
  * Dependency services.
  */
+$di->params['aura\router\Map']['route_factory'] = $di->lazyNew('aura\router\RouteFactory');
+
 $di->set('router_map', function() use ($di) {
-    $map = new aura\router\Map(new aura\router\RouteFactory);
-    $map->attach(null, array(
-        'routes' => array(
-            '/{:controller}/{:action}/{:id}{:format:(\..+)?}',
-            '/{:controller}/{:action}/{:id}',
-            '/{:controller}/{:action}',
-            '/{:controller}',
-            '/',
-        ),
-    ));
+    return $di->newInstance('aura\router\Map');
 });
