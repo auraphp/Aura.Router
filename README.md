@@ -20,15 +20,15 @@ To create a route for your application, instantiate a `Map` object from the `aur
     // create the map object
     $map = require '/path/to/aura.router/scripts/instance.php';
     
-    // add a short-form named route without params
+    // add a simple named route without params
     $map->add('home', '/');
     
-    // add a short-form unnamed route with params
+    // add a simple unnamed route with params
     $map->add(null, '/{:controller}/{:action}/{:id}');
     
-    // add a long-form named route
-    $map->add('read', array(
-        'path' => '/blog/read/{:id}{:format}',
+    // add a complex named route
+    $map->add('read', '/blog/read/{:id}{:format}', array(
+        'path' => ,
         'params' => array(
             'id'     => '(\d+)',
             'format' => '(\..+)?',
@@ -122,18 +122,18 @@ The example shows that passing an array of data as the second parameter will cau
 Advanced Usage
 ==============
 
-Long-Form Route Specification
------------------------------
+Complex Route Specification
+---------------------------
 
-When you add a route, you define it as an array with one or more of the following recognized keys:
-
-- `path` -- The path this route represents.  The path may contain param tokens in the form of `{:param}`.  To define the regular expression subpattern for a param, you can either place a key for it in the `params` part, or you can define it inline like so: `{:id:(\d+)}`.
+When you add a complex route specification, you describe extra information related to the path as an array with one or more of the following recognized keys:
 
 - `params` -- The regular expression subpatterns for path params; inline params will override these settings. For example:
         
         'params' => array(
             'id' => '(\d+)',
         )
+        
+  Note that the path itself is allowed to contain param tokens with inline regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
 
 - `values` -- The default values for the route. These will be overwritten by matching params from the path.
 
@@ -153,11 +153,10 @@ When you add a route, you define it as an array with one or more of the followin
 
 - `generate` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
 
-Here is a complete long-form route specification named `read` with all keys in place:
+Here is a full route specification named `read` with all keys in place:
 
     <?php
-    $map->add('read', array(
-        'path' => '/blog/read/{:id}{:format}',
+    $map->add('read', '/blog/read/{:id}{:format}', array(
         'params' => array(
             'id' => '(\d+)',
             'format' => '(\..+)?',
@@ -192,10 +191,10 @@ Here is a complete long-form route specification named `read` with all keys in p
 Note that using closures, instead of callbacks, means you will not be able to `serialize()` or `var_export()` the router map for caching.
 
 
-Short-Form Route Specification
-------------------------------
+Simple Routes
+-------------
 
-You don't need to specify a long-form route description array.  If you pass a string for the route instead of an array ...
+You don't need to specify a complex route specification.  If you pass a string for the route instead of an array ...
 
     <?php
     $map->add('archive', '/archive/{:year}/{:month}/{:day}');
@@ -203,8 +202,7 @@ You don't need to specify a long-form route description array.  If you pass a st
 ... then Aura Router will use a default subpattern that matches everything except slashes for the path params, and use the route name as the default value for `'action'`.  Thus, the above short-form route is equivalent to the following long-form route:
 
     <?php
-    $map->add('archive', array(
-        'path' => '/archive/{:year}/{:month}/{:day}',
+    $map->add('archive', '/archive/{:year}/{:month}/{:day}', array(
         'params' => array(
             'year'  => '([^/]+)',
             'month' => '([^/]+)',
