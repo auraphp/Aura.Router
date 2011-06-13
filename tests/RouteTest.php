@@ -1,5 +1,5 @@
 <?php
-namespace aura\router;
+namespace Aura\Router;
 
 /**
  * Test class for Route.
@@ -79,7 +79,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsMethodMatch()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
     
         /**
          * try one method
@@ -141,7 +141,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsSecureMatch()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         /**
          * secure required
@@ -192,7 +192,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsCustomMatchWithClosure()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
@@ -219,7 +219,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsCustomMatchWithCallback()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
@@ -251,7 +251,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @expectedException \aura\router\Exception
+     * @expectedException \Aura\Router\Exception
      */
     public function testBadSubpattern()
     {
@@ -308,7 +308,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/blog/99/edit', $uri);
     }
     
-    public function callbackForGenerate(\aura\router\Route $route, array $data)
+    public function callbackForGenerate(\Aura\Router\Route $route, array $data)
     {
         $data['id'] = 99;
         return $data;

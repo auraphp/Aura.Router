@@ -1,5 +1,5 @@
 <?php
-namespace aura\router;
+namespace Aura\Router;
 
 /**
  * Test class for Map.
@@ -35,7 +35,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->add(null, '/foo/bar/baz');
         $actual = $this->map->match('/foo/bar/baz', $this->server);
-        $this->assertType('aura\router\Route', $actual);
+        $this->assertType('Aura\Router\Route', $actual);
         $this->assertSame('/foo/bar/baz', $actual->path);
     }
     
@@ -43,7 +43,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->add('zim', '/zim/dib/gir');
         $actual = $this->map->match('/zim/dib/gir', $this->server);
-        $this->assertType('aura\router\Route', $actual);
+        $this->assertType('Aura\Router\Route', $actual);
         $this->assertSame('/zim/dib/gir', $actual->path);
         $this->assertSame('zim', $actual->name);
     }
@@ -62,7 +62,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ));
         
         $actual = $this->map->match('/resource/42', $this->server);
-        $this->assertType('aura\router\Route', $actual);
+        $this->assertType('Aura\Router\Route', $actual);
         $this->assertSame('foo', $actual->values['controller']);
         $this->assertSame('bar', $actual->values['action']);
         $this->assertSame('42', $actual->values['id']);
@@ -70,7 +70,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @expectedException \aura\router\Exception
+     * @expectedException \Aura\Router\Exception
      */
     public function testAttachWithoutRoutes()
     {
@@ -78,7 +78,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * @expectedException \aura\router\Exception
+     * @expectedException \Aura\Router\Exception
      */
     public function testAttachWithBadRouteSpec()
     {
@@ -93,7 +93,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachRoutesWithoutPathPrefix()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $this->map->attach(null, array(
             'routes' => array(
@@ -163,7 +163,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachNamedRoutes()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $this->map->attach(null, array(
             'routes' => array(
@@ -253,7 +253,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachUnnamedLongFormRoutes()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $this->map->attach(null, array(
             'routes' => array(
@@ -323,7 +323,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachNamedRoutesWithPrefixes()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $this->map->attach('/page', array(
             'routes' => array(
@@ -418,7 +418,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachNamedRestRoutesWithPrefixes()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $this->map->attach('/resource', array(
             'routes' => array(
@@ -586,7 +586,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachAtConstructionTime()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $attach = array(
             '/page' => array(
@@ -686,7 +686,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     
     public function testRunOutOfAttachedRoutesToMatch()
     {
-        $type = 'aura\router\Route';
+        $type = 'Aura\Router\Route';
         
         $attach = array(
             '/page' => array(
@@ -737,9 +737,9 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = $this->map->getRoutes();
         $this->assertTrue(is_array($actual));
         $this->assertTrue(count($actual) == 2);
-        $this->assertType('aura\router\Route', $actual['page:browse']);
+        $this->assertType('Aura\Router\Route', $actual['page:browse']);
         $this->assertEquals('/page/', $actual['page:browse']->path);
-        $this->assertType('aura\router\Route', $actual['page:read']);
+        $this->assertType('Aura\Router\Route', $actual['page:read']);
         $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
         
         // emulate caching the values
@@ -752,9 +752,9 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = $map->getRoutes();
         $this->assertTrue(is_array($actual));
         $this->assertTrue(count($actual) == 2);
-        $this->assertType('aura\router\Route', $actual['page:browse']);
+        $this->assertType('Aura\Router\Route', $actual['page:browse']);
         $this->assertEquals('/page/', $actual['page:browse']->path);
-        $this->assertType('aura\router\Route', $actual['page:read']);
+        $this->assertType('Aura\Router\Route', $actual['page:read']);
         $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
         
     }
