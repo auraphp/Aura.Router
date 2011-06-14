@@ -1,1 +1,1 @@
-Read Documentation : [http://auraphp.github.com/aura.router](http://auraphp.github.com/aura.router)
+Read Documentation : [http://auraphp.github.com/Aura.Router](http://auraphp.github.com/Aura.Router)

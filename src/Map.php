@@ -12,7 +12,7 @@ namespace Aura\Router;
  * 
  * A collection point for URI routes.
  * 
- * @package aura.router
+ * @package Aura.Router
  * 
  */
 class Map

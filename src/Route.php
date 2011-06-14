@@ -15,7 +15,7 @@ namespace Aura\Router;
  * In general, you should never need to instantiate a Route directly. Use the
  * RouteFactory instead, or the Map.
  * 
- * @package aura.router
+ * @package Aura.Router
  * 
  */
 class Route

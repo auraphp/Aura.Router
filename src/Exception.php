@@ -12,7 +12,7 @@ namespace Aura\Router;
  * 
  * Package-specific exception.
  * 
- * @package aura.router
+ * @package Aura.Router
  * 
  */
 class Exception extends \Exception {}

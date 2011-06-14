@@ -12,7 +12,7 @@ namespace Aura\Router;
  * 
  * A factory to create Route objects.
  * 
- * @package aura.router
+ * @package Aura.Router
  * 
  */
 class RouteFactory
