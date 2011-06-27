@@ -66,7 +66,7 @@ class Map
      * 
      * Constructor.
      * 
-     * @param RouteFactory $factory A factory for creating route objects.
+     * @param RouteFactory $route_factory A factory for creating route objects.
      * 
      * @param array $attach A series of route definitions to be attached to
      * the router.
