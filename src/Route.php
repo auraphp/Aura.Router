@@ -264,7 +264,11 @@ class Route
         if (! $this->routable) {
             return false;
         }
-        
+
+        //  trim the last slash of path
+        $path           = rtrim($path,'/');
+        //  trim the last slash of regex
+        $this->regex    = rtrim($this->regex,'/');
         $is_match = preg_match("#^{$this->regex}$#", $path, $this->matches)
                  && $this->isMethodMatch($server)
                  && $this->isSecureMatch($server)
