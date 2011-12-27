@@ -5,13 +5,9 @@ spl_autoload_register(function($class) {
     $src = $dir . DIRECTORY_SEPARATOR . 'src'. DIRECTORY_SEPARATOR . $file;
     if (file_exists($src)) {
         require $src;
-        return true;
     }
     $tests = $dir . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . $file;
     if (file_exists($tests)) {
         require $tests;
-        return true;
     }
-    
-    return false;
 });
