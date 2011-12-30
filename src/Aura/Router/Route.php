@@ -358,7 +358,7 @@ class Route
                     throw new Exception($message);
                 } else {
                     $keys[] = "{:$name}";
-                    $vals[] = "(?<$name>" . substr($subpattern, 1);
+                    $vals[] = "(?P<$name>" . substr($subpattern, 1);
                 }
             }
             $this->regex = str_replace($keys, $vals, $this->regex);
