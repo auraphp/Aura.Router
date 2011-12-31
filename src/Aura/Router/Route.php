@@ -45,7 +45,7 @@ class Route
      * @var array
      * 
      */
-    protected $params = array();
+    protected $params = [];
     
     /**
      * 
@@ -56,17 +56,17 @@ class Route
      * @var array
      * 
      */
-    protected $values = array();
+    protected $values = [];
     
     /**
      * 
      * The `REQUEST_METHOD` value must match one of the methods in this array;
-     * method; e.g., `'GET'` or `array('POST', 'DELETE')`.
+     * method; e.g., `'GET'` or `['POST', 'DELETE']`.
      * 
      * @var array
      * 
      */
-    protected $method = array();
+    protected $method = [];
      
     /**
      * 
@@ -81,14 +81,14 @@ class Route
     
     /**
      * 
-     * A callback or closure to provide custom matching logic against the 
+     * A callable to provide custom matching logic against the 
      * server values and matched params from this Route. The signature must be 
      * `function(array $server, \ArrayObject $matches)` and must return a 
      * boolean: true to accept this Route match, or false to deny the match. 
      * Note that this allows a wide range of manipulations, and further allows 
      * the developer to modify the matched params as needed.
      * 
-     * @var callback|\Closure
+     * @var callable
      * 
      * @see isMatch()
      * 
@@ -97,13 +97,13 @@ class Route
     
     /**
      * 
-     * A callback or closure to modify path-generation values. The signature 
+     * A callable to modify path-generation values. The signature 
      * must be `function($route, array $data)`; its return value is an array 
      * of data to be used in the path. The `$route` is this Route object, and 
      * `$data` is the set of key-value pairs to be interpolated into the path
      * as provided by the caller.
      * 
-     * @var callback|\Closure
+     * @var callable
      * 
      * @see generate()
      * 
@@ -179,9 +179,9 @@ class Route
      * @param bool $routable If true, this Route can be matched; if not, it
      * can be used only to generate a path.
      * 
-     * @param callback|\Closure $is_match A custom callback or closure to evaluate the route.
+     * @param callable $is_match A custom callable to evaluate the route.
      * 
-     * @param callback|\Closure $generate A custom callback or closure to generate a path.
+     * @param callable $generate A custom callable to generate a path.
      * 
      * @param string $name_prefix A prefix for the name.
      * 
@@ -299,19 +299,15 @@ class Route
      */
     public function generate(array $data = null)
     {
-        // use a closure to modify the path data?
+        // use a callable to modify the path data?
         if ($this->generate) {
-            if ($this->generate instanceof \Closure) {
-                $function = $this->generate;
-                $data = $function($this, (array) $data);
-            } else {
-                $data = call_user_func($this->generate, $this, (array) $data);
-            }
+            $generate = $this->generate;
+            $data = $generate($this, (array) $data);
         }
         
         // interpolate into the path
-        $keys = array();
-        $vals = array();
+        $keys = [];
+        $vals = [];
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
             $keys[] = "{:$key}";
@@ -350,8 +346,8 @@ class Route
         // now create the regular expression from the path and param patterns
         $this->regex = $this->path;
         if ($this->params) {
-            $keys = array();
-            $vals = array();
+            $keys = [];
+            $vals = [];
             foreach ($this->params as $name => $subpattern) {
                 if ($subpattern[0] != '(') {
                     $message = "Subpattern for param '$name' must start with '('.";
@@ -417,7 +413,7 @@ class Route
     
     /**
      * 
-     * Checks that the custom Route `$is_match` closure returns true, given 
+     * Checks that the custom Route `$is_match` callable returns true, given 
      * the server values.
      * 
      * @param array $server A copy of $_SERVER.
@@ -434,12 +430,8 @@ class Route
         // pass the matches as an object, not as an array, so we can avoid
         // tricky hacks for references
         $matches = new \ArrayObject($this->matches);
-        if ($this->is_match instanceof \Closure) {
-            $function = $this->is_match;
-            $result = $function($server, $matches);
-        } else {
-            $result = call_user_func($this->is_match, $server, $matches);
-        }
+        $is_match = $this->is_match;
+        $result = $is_match($server, $matches);
         
         // convert back to array
         $this->matches = $matches->getArrayCopy();

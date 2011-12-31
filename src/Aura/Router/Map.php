@@ -42,7 +42,7 @@ class Map
      * @var array
      * 
      */
-    protected $definitions = array();
+    protected $definitions = [];
     
     /**
      * 
@@ -60,7 +60,7 @@ class Map
      * @var array
      * 
      */
-    protected $routes = array();
+    protected $routes = [];
     
     /**
      * 
@@ -220,9 +220,9 @@ class Map
     public function setRoutes(array $routes)
     {
         $this->routes = $routes;
-        $this->definitions = array();
-        $this->attach_custom = array();
-        $this->attach_routes = array();
+        $this->definitions = [];
+        $this->attach_custom = [];
+        $this->attach_routes = [];
     }
     
     /**
@@ -326,18 +326,18 @@ class Map
         // which definition form are we using?
         if (is_string($key) && is_string($val)) {
             // short form, named in key
-            $spec = array(
+            $spec = [
                 'name' => $key,
                 'path' => $val,
-                'values' => array(
+                'values' => [
                     'action' => $key,
-                ),
-            );
+                ],
+            ];
         } elseif (is_int($key) && is_string($val)) {
             // short form, no name
-            $spec = array(
+            $spec = [
                 'path' => $val,
-            );
+            ];
         } elseif (is_string($key) && is_array($val)) {
             // long form, named in key
             $spec = $val;
