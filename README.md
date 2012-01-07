@@ -34,7 +34,7 @@ To create a route for your application, instantiate a `Map` object from the `Aur
         ],
         'values' => [
             'controller' => 'blog',
-            'action'    => 'read'
+            'action'    => 'read',
             'format'    => 'html',
         ],
     ));
