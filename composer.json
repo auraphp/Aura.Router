@@ -14,7 +14,7 @@
         {
             "name": "Aura Contributors",
             "homepage": "https://github.com/auraphp/Aura.Router/contributors"
-        },
+        }
     ],
     "require": {
         "php": ">=5.4.0"
