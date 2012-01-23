@@ -139,7 +139,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($route->isMatch('/foo/bar/baz', []));
     }
     
-    public function testIsSecureMatch()
+    public function testIsSecureMatch_https()
     {
         $type = 'Aura\Router\Route';
         
@@ -187,6 +187,57 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         // wrong path
         $this->assertFalse($route->isMatch('/zim/dib/gir', [
             'HTTPS' => 'off',
+        ]));
+    }
+    
+    public function testIsSecureMatch_serverPort()
+    {
+        $type = 'Aura\Router\Route';
+        
+        /**
+         * secure required
+         */
+        $route = $this->factory->newInstance([
+            'path' => '/foo/bar/baz',
+            'secure' => true,
+        ]);
+        
+        // correct
+        $this->assertTrue($route->isMatch('/foo/bar/baz', [
+            'SERVER_PORT' => '443',
+        ]));
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', [
+            'SERVER_PORT' => '443',
+        ]));
+        
+        // not secure
+        $this->assertFalse($route->isMatch('/foo/bar/baz', [
+            'SERVER_PORT' => '80',
+        ]));
+        
+        /**
+         * not-secure required
+         */
+        $route = $this->factory->newInstance([
+            'path' => '/foo/bar/baz',
+            'secure' => false,
+        ]);
+        
+        // correct
+        $this->assertTrue($route->isMatch('/foo/bar/baz', [
+            'SERVER_PORT' => '80',
+        ]));
+        
+        // secured when it should not be
+        $this->assertFalse($route->isMatch('/foo/bar/baz', [
+            'SERVER_PORT' => '443',
+        ]));
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', [
+            'SERVER_PORT' => '80',
         ]));
     }
     

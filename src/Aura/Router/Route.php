@@ -161,6 +161,15 @@ class Route
     
     /**
      * 
+     * Retain debugging information about why the route did not match.
+     * 
+     * @var array
+     * 
+     */
+    protected $debug;
+    
+    /**
+     * 
      * Constructor.
      * 
      * @param string $name The name for this Route.
@@ -262,10 +271,11 @@ class Route
     public function isMatch($path, array $server)
     {
         if (! $this->routable) {
+            $this->debug[] = 'Not routable.';
             return false;
         }
         
-        $is_match = preg_match("#^{$this->regex}$#", $path, $this->matches)
+        $is_match = $this->isRegexMatch($path)
                  && $this->isMethodMatch($server)
                  && $this->isSecureMatch($server)
                  && $this->isCustomMatch($server);
@@ -363,6 +373,24 @@ class Route
     
     /**
      * 
+     * Checks that the path matches the Route regex.
+     * 
+     * @param string $path The path to match against.
+     * 
+     * @return bool True on a match, false if not.
+     * 
+     */
+    protected function isRegexMatch($path)
+    {
+        $match = preg_match("#^{$this->regex}$#", $path, $this->matches);
+        if (! $match) {
+            $this->debug[] = 'Not a regex match.';
+        }
+        return $match;
+    }
+    
+    /**
+     * 
      * Checks that the Route `$method` matches the corresponding server value.
      * 
      * @param array $server A copy of $_SERVER.
@@ -374,9 +402,11 @@ class Route
     {
         if (isset($this->method)) {
             if (! isset($server['REQUEST_METHOD'])) {
+                $this->debug[] = 'Method match requested but REQUEST_METHOD not set.';
                 return false;
             }
             if (! in_array($server['REQUEST_METHOD'], $this->method)) {
+                $this->debug[] = 'Not a method match.';
                 return false;
             }
         }
@@ -397,14 +427,15 @@ class Route
         if ($this->secure !== null) {
             
             $is_secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-                      || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] = 443);
-                      
+                      || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
+            
             if ($this->secure == true && ! $is_secure) {
-                // secure required, but not secure
+                $this->debug[] = 'Secure required, but not secure.';
                 return false;
             }
+            
             if ($this->secure == false && $is_secure) {
-                // non-secure required, but is secure
+                $this->debug[] = 'Non-secure required, but is secure.';
                 return false;
             }
         }
@@ -437,6 +468,10 @@ class Route
         $this->matches = $matches->getArrayCopy();
         
         // did it match?
+        if (! $result) {
+            $this->debug[] = 'Not a custom match.';
+        }
+        
         return $result;
     }
 }

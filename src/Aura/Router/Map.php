@@ -64,6 +64,15 @@ class Map
     
     /**
      * 
+     * Logging information about which routes were attempted to match.
+     * 
+     * @var array
+     * 
+     */
+    protected $log = [];
+    
+    /**
+     * 
      * Constructor.
      * 
      * @param RouteFactory $route_factory A factory for creating route objects.
@@ -155,8 +164,12 @@ class Map
      */
     public function match($path, array $server = null)
     {
+        // reset the log
+        $this->log = [];
+        
         // look through existing route objects
         foreach ($this->routes as $route) {
+            $this->logRoute($route);
             if ($route->isMatch($path, $server)) {
                 return $route;
             }
@@ -165,6 +178,7 @@ class Map
         // convert remaining definitions as needed
         while ($this->attach_routes || $this->definitions) {
             $route = $this->createNextRoute();
+            $this->logRoute($route);
             if ($route->isMatch($path, $server)) {
                 return $route;
             }
@@ -240,6 +254,30 @@ class Map
             $this->createNextRoute();
         }
         return $this->routes;
+    }
+    
+    /**
+     * 
+     * Get the log of attempted route matches.
+     * 
+     * @return array
+     * 
+     */
+    public function getLog()
+    {
+        return $this->log;
+    }
+    
+    /**
+     * 
+     * Add a route to the log of attempted matches.
+     * 
+     * @return array
+     * 
+     */
+    protected function logRoute(Route $route)
+    {
+        $this->log[] = $route;
     }
     
     /**
