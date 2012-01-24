@@ -413,4 +413,53 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $expect = "http://google.com/?q=what%27s+up+doc%3F";
         $this->assertSame($expect, $actual);
     }
+
+   public function testGithubIssue7()
+   {
+        $server = [
+            'DOCUMENT_ROOT' => '/media/Linux/auracomponentstest',
+            'REMOTE_ADDR' => '127.0.0.1',
+            'REMOTE_PORT' => 49850,
+            'SERVER_SOFTWARE' => 'PHP 5.4.0RC5-dev Development Server',
+            'SERVER_PROTOCOL' => 'HTTP/1.1',
+            'SERVER_NAME' => 'localhost',
+            'SERVER_PORT' => 8000,
+            'REQUEST_URI' => '/',
+            'REQUEST_METHOD' => 'GET',
+            'SCRIPT_NAME' => '/index.php',
+            'SCRIPT_FILENAME' => '/media/Linux/auracomponentstest/index.php',
+            'PHP_SELF' => '/index.php',
+            'HTTP_HOST' => 'localhost:8000',
+            'HTTP_CONNECTION' => 'keep-alive',
+            'HTTP_USER_AGENT' => 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Ubuntu/11.10 Chromium/14.0.835.202 Chrome/14.0.835.202 Safari/535.1',
+            'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'HTTP_ACCEPT_ENCODING' => 'gzip,deflate,sdch',
+            'HTTP_ACCEPT_LANGUAGE' => 'en-US,en;q=0.8',
+            'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+            'REQUEST_TIME' => '1327369518.2441',
+        ];
+        
+        $route = $this->factory->newInstance([
+            'path' => '/blog/read/{:id}{:format}',
+            'params' => [
+                'id' => '(\d+)',
+                'format' => '(\.json|\.html)?',
+            ],
+            'values' => [
+                'controller' => 'blog',
+                'action' => 'read',
+                'format' => '.html',
+            ],
+        ]);
+         
+        $actual = $route->isMatch('/blog/read/42.json', $server);
+        $this->assertTrue($actual);
+        $expect = [
+            'controller' => 'blog',
+            'action' => 'read',
+            'id' => 42,
+            'format' => '.json'
+        ];
+        $this->assertEquals($expect, $route->values);
+   }
 }
