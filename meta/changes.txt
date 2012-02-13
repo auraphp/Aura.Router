@@ -1,0 +1,25 @@
+- Add metadata files
+
+- Fix a bug in Route::isSecureMatch(), and add logging/debugging tools; thanks, HariKT, for the report that led to this commit.
+    
+    - [ADD] Property Map::$log
+    
+    - [ADD] Method Map::logRoute() to add routes to the log
+    
+    - [ADD] Method Map::getLog() to get the log of routes tried
+    
+    - [CHG] Method Map::match() to log each route tried
+    
+    - [ADD] Property Route::$debug to track why the route did not match
+    
+    - [CHG] Throughout Route methods, add debug information when a route does
+      not match.
+    
+    - [REF] Refactor method Route::isMatch() to extract new method
+      Route::isRegexMatch().
+    
+    - [FIX] Method Route::isSecureMatch() now uses ==, not =, to examine the
+      server port value.
+
+- add a test for issue #7
+
