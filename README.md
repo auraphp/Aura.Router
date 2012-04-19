@@ -77,7 +77,7 @@ Now that you have route, you can dispatch it. The following is what a foundation
         $controller = $route->values['controller'];
     } else {
         // use a default controller
-        $controller = 'Default';
+        $controller = 'Index';
     }
     
     // does the route indicate an action?
