@@ -110,7 +110,7 @@ To generate a URI path from a route so that you can create links, call `generate
         'format' => '.atom',
     ]);
     
-    $href = htmlspecialchars($path, 'UTF-8');
+    $href = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
     echo '<a href="$href">Atom feed for this blog entry</a>';
 
 Aura Router does not do dynamic matching of routes; a route must have a name to be able to generate a path from it.
