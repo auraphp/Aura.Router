@@ -24,7 +24,7 @@ To create a route for your application, instantiate a `Map` object from the `Aur
     $map->add('home', '/');
     
     // add a simple unnamed route with params
-    $map->add(null, '/{:controller}/{:action}/{:id}');
+    $map->add(null, '/{:controller}/{:action}/{:id:(\d+)}');
     
     // add a complex named route
     $map->add('read', '/blog/read/{:id}{:format}', [
@@ -77,7 +77,7 @@ Now that you have route, you can dispatch it. The following is what a foundation
         $controller = $route->values['controller'];
     } else {
         // use a default controller
-        $controller = 'Default';
+        $controller = 'Index';
     }
     
     // does the route indicate an action?
