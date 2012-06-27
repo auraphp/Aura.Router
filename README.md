@@ -34,8 +34,8 @@ To create a route for your application, instantiate a `Map` object from the `Aur
         ],
         'values' => [
             'controller' => 'blog',
-            'action'    => 'read',
-            'format'    => 'html',
+            'action'     => 'read',
+            'format'     => 'html',
         ],
     ));
 
@@ -50,11 +50,11 @@ To match a URI path against your route map, call `match()` with a path string an
     <?php
     // get the incoming request URI path
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    
+
     // get the route based on the path and server
     $route = $map->match($path, $_SERVER);
 
-The `match()` method does not parse the URI or use `$_SERVER` internally. This is becuase different systems may have different ways of representing that information; e.g., through a URI object or a context object.  As long as you can pass the string path and a server array, you can use Aura Router in your application foundation or framework.
+The `match()` method does not parse the URI or use `$_SERVER` internally. This is because different systems may have different ways of representing that information; e.g., through a URI object or a context object.  As long as you can pass the string path and a server array, you can use Aura Router in your application foundation or framework.
 
 The returned `$route` object will contain, among other things, a `$values` array with values for each of the parameters identified by the route path. For example, matching a route with the path `/{:controller}/{:action}/{:id}` will populate the `$route->values` array with `controller`, `action`, and `id` keys.
 
@@ -110,7 +110,7 @@ To generate a URI path from a route so that you can create links, call `generate
         'format' => '.atom',
     ]);
     
-    $href = htmlspecialchars($path, 'UTF-8');
+    $href = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
     echo '<a href="$href">Atom feed for this blog entry</a>';
 
 Aura Router does not do dynamic matching of routes; a route must have a name to be able to generate a path from it.
