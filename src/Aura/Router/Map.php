@@ -3,6 +3,8 @@
  * 
  * This file is part of the Aura Project for PHP.
  * 
+ * @package Aura.Router
+ * 
  * @license http://opensource.org/licenses/bsd-license.php BSD
  * 
  */
@@ -271,6 +273,8 @@ class Map
     /**
      * 
      * Add a route to the log of attempted matches.
+     * 
+     * @param Route $route Route object
      * 
      * @return array
      * 
