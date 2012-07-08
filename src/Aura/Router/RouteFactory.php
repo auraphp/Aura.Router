@@ -39,7 +39,7 @@ class RouteFactory
         'name_prefix' => null,
         'path_prefix' => null,
     ];
-    
+
     /**
      * 
      * Returns a new Route instance.
@@ -68,3 +68,4 @@ class RouteFactory
         );
     }
 }
+ 
