@@ -27,7 +27,7 @@ class Map
      * 
      */
     protected $attach_common = null;
-    
+
     /**
      * 
      * Currently processing these attached routes.
@@ -36,7 +36,7 @@ class Map
      * 
      */
     protected $attach_routes = null;
-    
+
     /**
      * 
      * Route definitions; these will be converted into objects.
@@ -45,7 +45,7 @@ class Map
      * 
      */
     protected $definitions = [];
-    
+
     /**
      * 
      * A RouteFactory for creating route objects.
@@ -54,7 +54,7 @@ class Map
      * 
      */
     protected $route_factory;
-    
+
     /**
      * 
      * Route objects created from the definitons.
@@ -63,7 +63,7 @@ class Map
      * 
      */
     protected $routes = [];
-    
+
     /**
      * 
      * Logging information about which routes were attempted to match.
@@ -72,7 +72,7 @@ class Map
      * 
      */
     protected $log = [];
-    
+
     /**
      * 
      * Constructor.
@@ -92,7 +92,7 @@ class Map
             $this->attach($path_prefix, $spec);
         }
     }
-    
+
     /**
      * 
      * Adds a single route definition to the stack.
@@ -110,20 +110,20 @@ class Map
     public function add($name, $path, array $spec = null)
     {
         $spec = (array) $spec;
-        
+
         // overwrite the name and path
         $spec['name'] = $name;
         $spec['path'] = $path;
-        
+
         // these should be set only by the map
         unset($spec['name_prefix']);
         unset($spec['path_prefix']);
-        
+
         // append to the route definitions
         $spec['__type'] = 'single';
         $this->definitions[] = $spec;
     }
-    
+
     /**
      * 
      * Attaches several routes at once to a specific path prefix.
@@ -143,15 +143,15 @@ class Map
         if (! isset($spec['routes'])) {
             throw new Exception("No routes defined for attached path prefix '$path_prefix'.");
         }
-        
+
         // set the path_prefix in the specification
         $spec['path_prefix'] = $path_prefix;
-        
+
         // append to the route definitions
         $spec['__type'] = 'attach';
         $this->definitions[] = $spec;
     }
-    
+
     /**
      * 
      * Gets a route that matches a given path and other server conditions.
@@ -168,7 +168,7 @@ class Map
     {
         // reset the log
         $this->log = [];
-        
+
         // look through existing route objects
         foreach ($this->routes as $route) {
             $this->logRoute($route);
@@ -176,7 +176,7 @@ class Map
                 return $route;
             }
         }
-        
+
         // convert remaining definitions as needed
         while ($this->attach_routes || $this->definitions) {
             $route = $this->createNextRoute();
@@ -185,11 +185,11 @@ class Map
                 return $route;
             }
         }
-        
+
         // no joy
         return false;
     }
-    
+
     /**
      * 
      * Looks up a route by name, and interpolates data into it to return
@@ -210,7 +210,7 @@ class Map
         if (isset($this->routes[$name])) {
             return $this->routes[$name]->generate($data);
         }
-        
+
         // convert remaining definitions as needed
         while ($this->attach_routes || $this->definitions) {
             $route = $this->createNextRoute();
@@ -218,11 +218,11 @@ class Map
                 return $route->generate($data);
             }
         }
-        
+
         // no joy
         return false;
     }
-    
+
     /**
      * 
      * Reset the map to use an array of Route objects.
@@ -240,7 +240,7 @@ class Map
         $this->attach_custom = [];
         $this->attach_routes = [];
     }
-    
+
     /**
      * 
      * Get the array of Route objects in this map, likely for caching and
@@ -257,7 +257,7 @@ class Map
         }
         return $this->routes;
     }
-    
+
     /**
      * 
      * Get the log of attempted route matches.
@@ -269,7 +269,7 @@ class Map
     {
         return $this->log;
     }
-    
+
     /**
      * 
      * Add a route to the log of attempted matches.
@@ -283,7 +283,7 @@ class Map
     {
         $this->log[] = $route;
     }
-    
+
     /**
      * 
      * Gets the next Route object in the stack, converting definitions to 
@@ -303,10 +303,10 @@ class Map
             // no, get the next unattached definition
             $spec = $this->getNextDefinition();
         }
-        
+
         // create a route object from it
         $route = $this->route_factory->newInstance($spec);
-        
+
         // retain the route object ...
         $name = $route->name;
         if ($name) {
@@ -316,11 +316,11 @@ class Map
             // ... under no name, which means we can't look it up later
             $this->routes[] = $route;
         }
-        
+
         // return whatever route got retained
         return $route;
     }
-    
+
     /**
      * 
      * Gets the next route definition from the stack.
@@ -334,25 +334,25 @@ class Map
         $spec = array_shift($this->definitions);
         $type = $spec['__type'];
         unset($spec['__type']);
-        
+
         // is it a 'single' definition type?
         if ($type == 'single') {
             // done!
             return $spec;
         }
-        
+
         // it's an 'attach' definition; set up for attach processing.
         // retain the routes ...
         $this->attach_routes = $spec['routes'];
         unset($spec['routes']);
-        
+
         // ... and the remaining common information
         $this->attach_common = $spec;
-        
+
         // now get the next attached route
         return $this->getNextAttach();
     }
-    
+
     /**
      * 
      * Gets the next attached route definition.
@@ -364,7 +364,7 @@ class Map
     {
         $key = key($this->attach_routes);
         $val = array_shift($this->attach_routes);
-        
+
         // which definition form are we using?
         if (is_string($key) && is_string($val)) {
             // short form, named in key
@@ -394,15 +394,16 @@ class Map
         } else {
             throw new Exception("Route spec for '$key' should be a string or array.");
         }
-        
+
         // unset any path or name prefix on the spec itself
         unset($spec['name_prefix']);
         unset($spec['path_prefix']);
-        
+
         // now merge with the attach info
         $spec = array_merge_recursive($this->attach_common, $spec);
-        
+
         // done!
         return $spec;
     }
 }
+ 

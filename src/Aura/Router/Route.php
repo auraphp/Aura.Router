@@ -30,7 +30,7 @@ class Route
      * 
      */
     protected $name;
-    
+
     /**
      * 
      * The path for this Route with param tokens.
@@ -39,7 +39,7 @@ class Route
      * 
      */
     protected $path;
-    
+
     /**
      * 
      * A map of param tokens to their regex subpatterns.
@@ -48,7 +48,7 @@ class Route
      * 
      */
     protected $params = [];
-    
+
     /**
      * 
      * A map of param tokens to their default values; if this Route is
@@ -59,7 +59,7 @@ class Route
      * 
      */
     protected $values = [];
-    
+
     /**
      * 
      * The `REQUEST_METHOD` value must match one of the methods in this array;
@@ -69,7 +69,7 @@ class Route
      * 
      */
     protected $method = [];
-     
+
     /**
      * 
      * When true, the `HTTPS` value must be `on`, or the `SERVER_PORT` must be
@@ -80,7 +80,7 @@ class Route
      * 
      */
     protected $secure = null;
-    
+
     /**
      * 
      * A callable to provide custom matching logic against the 
@@ -96,7 +96,7 @@ class Route
      * 
      */
     protected $is_match;
-    
+
     /**
      * 
      * A callable to modify path-generation values. The signature 
@@ -111,7 +111,7 @@ class Route
      * 
      */
     protected $generate;
-    
+
     /**
      * 
      * If routable, this route should be used in matching.  If not, it should
@@ -121,7 +121,7 @@ class Route
      * 
      */
     protected $routable;
-    
+
     /**
      * 
      * A prefix for the Route name, generally from attached route groups.
@@ -130,7 +130,7 @@ class Route
      * 
      */
     protected $name_prefix;
-    
+
     /**
      * 
      * A prefix for the Route path, generally from attached route groups.
@@ -139,7 +139,7 @@ class Route
      * 
      */
     protected $path_prefix;
-    
+
     /**
      * 
      * The $path property converted to a regular expression, using the $params
@@ -149,7 +149,7 @@ class Route
      * 
      */
     protected $regex;
-    
+
     /**
      * 
      * All param matches found in the path during the `isMatch()` process.
@@ -160,7 +160,7 @@ class Route
      * 
      */
     protected $matches;
-    
+
     /**
      * 
      * Retain debugging information about why the route did not match.
@@ -169,7 +169,7 @@ class Route
      * 
      */
     protected $debug;
-    
+
     /**
      * 
      * Constructor.
@@ -221,7 +221,7 @@ class Route
         } else {
             $this->name = (string) $name;
         }
-        
+
         // set the path, with prefix if needed
         $this->path_prefix = (string) $path_prefix;
         if ($path_prefix && $path && strpos($path, '://') === false) {
@@ -229,7 +229,7 @@ class Route
         } else {
             $this->path = (string) $path;
         }
-        
+
         // other properties
         $this->params      = (array) $params;
         $this->values      = (array) $values;
@@ -238,11 +238,11 @@ class Route
         $this->routable    = (bool) $routable;
         $this->is_match    = $is_match;
         $this->generate    = $generate;
-        
+
         // convert path and params to a regular expression
         $this->setRegex();
     }
-    
+
     /**
      * 
      * Magic read-only for all properties.
@@ -256,7 +256,7 @@ class Route
     {
         return $this->$key;
     }
-    
+
     /**
      * 
      * Checks if a given path and server values are a match for this
@@ -276,27 +276,27 @@ class Route
             $this->debug[] = 'Not routable.';
             return false;
         }
-        
+
         $is_match = $this->isRegexMatch($path)
                  && $this->isMethodMatch($server)
                  && $this->isSecureMatch($server)
                  && $this->isCustomMatch($server);
-        
+
         if (! $is_match) {
             return false;
         }
-        
+
         // populate the path matches into the route values
         foreach ($this->matches as $key => $val) {
             if (is_string($key)) {
                 $this->values[$key] = $val;
             }
         }
-        
+
         // done!
         return true;
     }
-    
+
     /**
      * 
      * Gets the path for this Route with data replacements for param tokens.
@@ -316,7 +316,7 @@ class Route
             $generate = $this->generate;
             $data = $generate($this, (array) $data);
         }
-        
+
         // interpolate into the path
         $keys = [];
         $vals = [];
@@ -327,7 +327,7 @@ class Route
         }
         return str_replace($keys, $vals, $this->path);
     }
-    
+
     /**
      * 
      * Sets the regular expression for this Route based on its params.
@@ -354,7 +354,7 @@ class Route
                 $this->params[$name] = "([^/]+)";
             }
         }
-        
+
         // now create the regular expression from the path and param patterns
         $this->regex = $this->path;
         if ($this->params) {
@@ -372,7 +372,7 @@ class Route
             $this->regex = str_replace($keys, $vals, $this->regex);
         }
     }
-    
+
     /**
      * 
      * Checks that the path matches the Route regex.
@@ -390,7 +390,7 @@ class Route
         }
         return $match;
     }
-    
+
     /**
      * 
      * Checks that the Route `$method` matches the corresponding server value.
@@ -414,7 +414,7 @@ class Route
         }
         return true;
     }
-    
+
     /**
      * 
      * Checks that the Route `$secure` matches the corresponding server values.
@@ -427,15 +427,15 @@ class Route
     protected function isSecureMatch($server)
     {
         if ($this->secure !== null) {
-            
+
             $is_secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
                       || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
-            
+
             if ($this->secure == true && ! $is_secure) {
                 $this->debug[] = 'Secure required, but not secure.';
                 return false;
             }
-            
+
             if ($this->secure == false && $is_secure) {
                 $this->debug[] = 'Non-secure required, but is secure.';
                 return false;
@@ -443,7 +443,7 @@ class Route
         }
         return true;
     }
-    
+
     /**
      * 
      * Checks that the custom Route `$is_match` callable returns true, given 
@@ -459,21 +459,22 @@ class Route
         if (! $this->is_match) {
             return true;
         }
-        
+
         // pass the matches as an object, not as an array, so we can avoid
         // tricky hacks for references
         $matches = new \ArrayObject($this->matches);
         $is_match = $this->is_match;
         $result = $is_match($server, $matches);
-        
+
         // convert back to array
         $this->matches = $matches->getArrayCopy();
-        
+
         // did it match?
         if (! $result) {
             $this->debug[] = 'Not a custom match.';
         }
-        
+
         return $result;
     }
 }
+ 

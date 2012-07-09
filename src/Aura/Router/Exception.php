@@ -17,4 +17,7 @@ namespace Aura\Router;
  * @package Aura.Router
  * 
  */
-class Exception extends \Exception {}
+class Exception extends \Exception
+{
+}
+ 
