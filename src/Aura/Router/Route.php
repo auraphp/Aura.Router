@@ -301,7 +301,7 @@ class Route
      * 
      * Gets the path for this Route with data replacements for param tokens.
      * 
-     * @param mixed $data An array of key-value pairs to interpolate into the
+     * @param array $data An array of key-value pairs to interpolate into the
      * param tokens in the path for this Route. Keys that do not map to
      * params are discarded; param tokens that have no mapped key are left in
      * place.
