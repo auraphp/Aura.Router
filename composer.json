@@ -16,6 +16,7 @@
             "homepage": "https://github.com/auraphp/Aura.Router/contributors"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0"
     }
