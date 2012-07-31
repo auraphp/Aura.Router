@@ -1,12 +1,25 @@
 Aura Router
 ===========
 
-Aura Router is a PHP package that implements web routing. Given a URI path and a copy of `$_SERVER`, it will extract controller, action, and parameter values for a specific application route.
+Aura Router is a PHP package that implements web routing. Given a URI path and
+a copy of `$_SERVER`, it will extract controller, action, and parameter values
+for a specific application route.
 
-Your application foundation or framework is expected to take the information provided by the matching route and dispatch to a controller on its own. As long as your system can provide a URI path string and a representative copy of `$_SERVER`, you can use Aura Router.
+Your application foundation or framework is expected to take the information
+provided by the matching route and dispatch to a controller on its own. As
+long as your system can provide a URI path string and a representative copy of
+`$_SERVER`, you can use Aura Router.
 
-Aura Router is inspired by [Solar rewrite rules](http://solarphp.com/manual/dispatch-cycle.rewrite-rules) and <http://routes.groovie.org>.
+Aura Router is inspired by [Solar rewrite
+rules](http://solarphp.com/manual/dispatch-cycle.rewrite-rules) and
+<http://routes.groovie.org>.
 
+This package is compliant with [PSR-0][], [PSR-1][], and [PSR-2][]. If you
+notice compliance oversights, please send a patch via pull request.
+
+[PSR-0]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
+[PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
+[PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
 
 Basic Usage
 ===========
@@ -14,7 +27,8 @@ Basic Usage
 Mapping A Route
 ---------------
 
-To create a route for your application, instantiate a `Map` object from the `Aura\Router` package and call `add()`.
+To create a route for your application, instantiate a `Map` object from the
+`Aura\Router` package and call `add()`.
 
     <?php
     // create the map object
@@ -39,13 +53,16 @@ To create a route for your application, instantiate a `Map` object from the `Aur
         ],
     ));
 
-You will need to place the `Map` object where you can get to it from your application; e.g., in a registry, a service locator, or a dependency injection container.  Describing such placement is beyond the scope of this document.
+You will need to place the `Map` object where you can get to it from your
+application; e.g., in a registry, a service locator, or a dependency injection
+container. Describing such placement is beyond the scope of this document.
 
 
 Matching A Route
 ----------------
 
-To match a URI path against your route map, call `match()` with a path string and the `$_SERVER` values.
+To match a URI path against your route map, call `match()` with a path string
+and the `$_SERVER` values.
 
     <?php
     // get the incoming request URI path
@@ -54,15 +71,25 @@ To match a URI path against your route map, call `match()` with a path string an
     // get the route based on the path and server
     $route = $map->match($path, $_SERVER);
 
-The `match()` method does not parse the URI or use `$_SERVER` internally. This is because different systems may have different ways of representing that information; e.g., through a URI object or a context object.  As long as you can pass the string path and a server array, you can use Aura Router in your application foundation or framework.
+The `match()` method does not parse the URI or use `$_SERVER` internally. This
+is because different systems may have different ways of representing that
+information; e.g., through a URI object or a context object. As long as you
+can pass the string path and a server array, you can use Aura Router in your
+application foundation or framework.
 
-The returned `$route` object will contain, among other things, a `$values` array with values for each of the parameters identified by the route path. For example, matching a route with the path `/{:controller}/{:action}/{:id}` will populate the `$route->values` array with `controller`, `action`, and `id` keys.
+The returned `$route` object will contain, among other things, a `$values`
+array with values for each of the parameters identified by the route path. For
+example, matching a route with the path `/{:controller}/{:action}/{:id}` will
+populate the `$route->values` array with `controller`, `action`, and `id`
+keys.
 
 
 Dispatching A Route
 -------------------
 
-Now that you have route, you can dispatch it. The following is what a foundation or framework system might do with a route to invoke a page controller. 
+Now that you have route, you can dispatch it. The following is what a
+foundation or framework system might do with a route to invoke a page
+controller.
 
     <?php
     if (! $route) {
@@ -95,13 +122,15 @@ Now that you have route, you can dispatch it. The following is what a foundation
     // invoke the action method with the route values
     echo $page->$action($route->values);
 
-Again, note that Aura Router will not dispatch for you; the above is provided as a naive example only to show how to use route values.
+Again, note that Aura Router will not dispatch for you; the above is provided
+as a naive example only to show how to use route values.
 
 
 Generating A Route Path
 -----------------------
 
-To generate a URI path from a route so that you can create links, call `generate()` on the `Map` object and provide the route name.
+To generate a URI path from a route so that you can create links, call
+`generate()` on the `Map` object and provide the route name.
 
     <?php
     // $path => "/blog/read/42.atom"
@@ -113,9 +142,14 @@ To generate a URI path from a route so that you can create links, call `generate
     $href = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
     echo '<a href="$href">Atom feed for this blog entry</a>';
 
-Aura Router does not do dynamic matching of routes; a route must have a name to be able to generate a path from it.
+Aura Router does not do dynamic matching of routes; a route must have a name
+to be able to generate a path from it.
 
-The example shows that passing an array of data as the second parameter will cause that data to be interpolated into the route path. This data array is optional. If there are path params without matching data keys, those params will *not* be replaced, leaving the `{:param}` token in the path. If there are data keys without matching params, those values will not be added to the path.
+The example shows that passing an array of data as the second parameter will
+cause that data to be interpolated into the route path. This data array is
+optional. If there are path params without matching data keys, those params
+will *not* be replaced, leaving the `{:param}` token in the path. If there are
+data keys without matching params, those values will not be added to the path.
 
 
 Advanced Usage
@@ -124,7 +158,9 @@ Advanced Usage
 Complex Route Specification
 ---------------------------
 
-When you add a complex route specification, you describe extra information related to the path as an array with one or more of the following recognized keys:
+When you add a complex route specification, you describe extra information
+related to the path as an array with one or more of the following recognized
+keys:
 
 - `params` -- The regular expression subpatterns for path params; inline params will override these settings. For example:
         
@@ -187,13 +223,15 @@ Here is a full route specification named `read` with all keys in place:
         }
     ]);
 
-Note that using closures, instead of callbacks, means you will not be able to `serialize()` or `var_export()` the router map for caching.
+Note that using closures, instead of callbacks, means you will not be able to
+`serialize()` or `var_export()` the router map for caching.
 
 
 Simple Routes
 -------------
 
-You don't need to specify a complex route specification.  If you pass a string for the route instead of an array ...
+You don't need to specify a complex route specification. If you pass a string
+for the route instead of an array ...
 
     <?php
     $map->add('archive', '/archive/{:year}/{:month}/{:day}');
@@ -216,7 +254,9 @@ You don't need to specify a complex route specification.  If you pass a string f
 Attaching Route Groups
 ----------------------
 
-You can add a series of routes all at once under a single "mount point" in your application.  For example, if you want all your blog-related routes to be mounted at `'/blog'` in your application, you can do this:
+You can add a series of routes all at once under a single "mount point" in
+your application. For example, if you want all your blog-related routes to be
+mounted at `'/blog'` in your application, you can do this:
 
     <?php
     $map->attach('/blog', [
@@ -244,13 +284,16 @@ You can add a series of routes all at once under a single "mount point" in your 
         ],
     ));
     
-Each of the route paths will be prefixed with `/blog`, so the effective paths become:
+Each of the route paths will be prefixed with `/blog`, so the effective paths
+become:
 
 - `browse: /blog/`
 - `read:   /blog/{:id}{:format}`
 - `edit:   /blog/{:id}/edit`
 
-You can set other route specification keys as part of the attachment specification; these will be used as the defaults for each attached route, so you don't need to repeat common information:
+You can set other route specification keys as part of the attachment
+specification; these will be used as the defaults for each attached route, so
+you don't need to repeat common information:
 
     <?php
     $map->attach('/blog', [
@@ -279,9 +322,14 @@ You can set other route specification keys as part of the attachment specificati
 Constructor-Time Attachment
 ---------------------------
 
-You can configure your routes in a single array of attachment groups, and then pass them to the `Map` constructor all at once. This allows you to separate configuration and construction of routes.
+You can configure your routes in a single array of attachment groups, and then
+pass them to the `Map` constructor all at once. This allows you to separate
+configuration and construction of routes.
 
-Note that you can specify a `name_prefix` as part of the common route information for each attached route group; the route names in that group will be prefixed with that value. This helps with deconfliction of routes with the same names in different groups.
+Note that you can specify a `name_prefix` as part of the common route
+information for each attached route group; the route names in that group will
+be prefixed with that value. This helps with deconfliction of routes with the
+same names in different groups.
 
     <?php
     $attach = [
@@ -332,7 +380,10 @@ Note that you can specify a `name_prefix` as part of the common route informatio
     // create a Map with attached route groups
     $map = new \Aura\Router\Map($route_factory, $attach);
 
-This technique can be very effective with modular application packages. Each package can return an array for its own route group specification, and a system-specific configuration mechanism can collect each spec into a common array for the `Map`.  For example:
+This technique can be very effective with modular application packages. Each
+package can return an array for its own route group specification, and a
+system-specific configuration mechanism can collect each spec into a common
+array for the `Map`. For example:
 
     <?php
     // get a routes array from each application packages
@@ -352,9 +403,13 @@ This technique can be very effective with modular application packages. Each pac
 Caching
 -------
 
-You may wish to cache the route map for production deployments so that the `Map` does not have to build the route objects from definitions on each page load. The methods `getRoutes()` and `setRoutes()` may be used for that purpose.
+You may wish to cache the route map for production deployments so that the
+`Map` does not have to build the route objects from definitions on each page
+load. The methods `getRoutes()` and `setRoutes()` may be used for that
+purpose.
 
-The following is a naive example for file-based caching and restoring of `Map` routes:
+The following is a naive example for file-based caching and restoring of `Map`
+routes:
 
     <?php
     // create a Map object
@@ -380,4 +435,7 @@ The following is a naive example for file-based caching and restoring of `Map` r
         
     }
 
-Note that if there are closures in the route definitions, you will not be able to cache the `Map` routes; this is because closures cannot be represented properly for caching.  Use traditional callbacks instead of closures if you wish to pursue a cache strategy.
+Note that if there are closures in the route definitions, you will not be able
+to cache the `Map` routes; this is because closures cannot be represented
+properly for caching. Use traditional callbacks instead of closures if you
+wish to pursue a cache strategy.

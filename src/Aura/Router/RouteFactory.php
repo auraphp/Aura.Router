@@ -3,6 +3,8 @@
  * 
  * This file is part of the Aura Project for PHP.
  * 
+ * @package Aura.Router
+ * 
  * @license http://opensource.org/licenses/bsd-license.php BSD
  * 
  */
@@ -37,7 +39,7 @@ class RouteFactory
         'name_prefix' => null,
         'path_prefix' => null,
     ];
-    
+
     /**
      * 
      * Returns a new Route instance.
@@ -66,3 +68,4 @@ class RouteFactory
         );
     }
 }
+ 
