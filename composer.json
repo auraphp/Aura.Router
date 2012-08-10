@@ -1,6 +1,6 @@
 {
     "name": "Aura/Router",
-    "type": "library",
+    "type": "aura-package",
     "description": "The Aura Router package implements web routing; given a URI path and a copy of $_SERVER, it will extract controller, action, and parameter values for a specific route.",
     "keywords": [
         "route",
