@@ -5,10 +5,11 @@
 $loader->add('Aura\Router\\', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src');
 
 /**
- * Dependency services.
+ * Instance params and setter values.
  */
 $di->params['Aura\Router\Map']['route_factory'] = $di->lazyNew('Aura\Router\RouteFactory');
 
-$di->set('router_map', function() use ($di) {
-    return $di->newInstance('Aura\Router\Map');
-});
+/**
+ * Dependency services.
+ */
+$di->set('router_map', $di->lazyNew('Aura\Router\Map'));
