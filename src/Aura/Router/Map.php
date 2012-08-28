@@ -406,4 +406,3 @@ class Map
         return $spec;
     }
 }
- 
