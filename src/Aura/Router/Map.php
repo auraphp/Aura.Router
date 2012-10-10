@@ -346,6 +346,9 @@ class Map
         $this->attach_routes = $spec['routes'];
         unset($spec['routes']);
 
+        // reset the internal pointer of the array to avoid misnamed routes
+        reset($this->attach_routes);
+
         // ... and the remaining common information
         $this->attach_common = $spec;
 
