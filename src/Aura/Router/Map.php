@@ -349,6 +349,9 @@ class Map
         // ... and the remaining common information
         $this->attach_common = $spec;
 
+        // reset the internal pointer of the array to avoid misnamed routes
+        reset($this->attach_routes);
+        
         // now get the next attached route
         return $this->getNextAttach();
     }
