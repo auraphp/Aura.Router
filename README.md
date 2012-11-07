@@ -270,7 +270,10 @@ for the route instead of an array ...
 $router_map->add('archive', '/archive/{:year}/{:month}/{:day}');
 ```
 
-... then Aura Router will use a default subpattern that matches everything except slashes for the path params, and use the route name as the default value for `'action'`.  Thus, the above short-form route is equivalent to the following long-form route:
+... then Aura Router will use a default subpattern that matches everything
+except slashes for the path params, and use the route name as the default
+value for `'action'`. Thus, the above short-form route is equivalent to the
+following long-form route:
 
 ```php
 <?php
@@ -285,6 +288,27 @@ $router_map->add('archive', '/archive/{:year}/{:month}/{:day}', [
     ],
 ]);
 ```
+
+Wildcard Routes
+---------------
+
+Sometimes it is useful to allow the trailing part of the path be anything at
+all, with no named parameters. You can set up a "wildcard" route of this type
+by adding `/*` to the end of the route. This will allow the route to match
+anything at all after that point; on a match, it will retain the wildcard
+values in a sequential array keyed on `'*'`.
+
+
+```php
+<?php
+$router_map->add('wild_post', '/post/{:id}/*');
+$route = $router_map->match('/post/88/foo/bar/baz');
+
+// $route->values['id'] = 88;
+// $route->values['*'] = ['foo', 'bar', 'baz'];
+```
+
+Wildcard routing of this sort works only at the end of the path.
 
 
 Attaching Route Groups
