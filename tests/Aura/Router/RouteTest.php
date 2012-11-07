@@ -475,6 +475,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('bar', $route->values['zim']);
         $this->assertSame(['baz', 'dib'], $route->values['*']);
         
+        // right path, but no wildcard values. note the trailing slash.
+        $actual = $route->isMatch('/foo/bar/', $this->server);
+        $this->assertTrue($actual);
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame([], $route->values['*']);
+        
         // wrong path
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
    }

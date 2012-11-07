@@ -297,7 +297,11 @@ class Route
         if (isset($this->params['__wildcard__'])) {
             $values = $this->values['__wildcard__'];
             unset($this->values['__wildcard__']);
-            $this->values['*'] = explode('/', $values);
+            if ($values) {
+                $this->values['*'] = explode('/', $values);
+            } else {
+                $this->values['*'] = [];
+            }
         }
         
         // done!
