@@ -758,4 +758,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
         
     }
+    
+    public function testGetLog()
+    {
+        // this is weak. we should actually see if the log contains anything.
+        $this->assertSame([], $this->map->getLog());
+    }
 }
