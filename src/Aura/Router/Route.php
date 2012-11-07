@@ -293,6 +293,13 @@ class Route
             }
         }
 
+        // populate wildcard matches
+        if (isset($this->params['__wildcard__'])) {
+            $values = $this->values['__wildcard__'];
+            unset($this->values['__wildcard__']);
+            $this->values['*'] = explode('/', $values);
+        }
+        
         // done!
         return true;
     }
@@ -337,7 +344,14 @@ class Route
      */
     protected function setRegex()
     {
-        // first, extract inline token params from the path
+        // is a wildcard indicated at the end of the path?
+        if (substr($this->path, -2) == '/*') {
+            // yes, replace it with a special token and regex
+            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
+        }
+        
+        // now extract inline token params from the path. converts
+        // {:token:regex} to {:token} and retains the regex in params.
         $find = "/\{:(.*?)(:(.*?))?\}/";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
@@ -384,7 +398,8 @@ class Route
      */
     protected function isRegexMatch($path)
     {
-        $match = preg_match("#^{$this->regex}$#", $path, $this->matches);
+        $regex = "#^{$this->regex}$#";
+        $match = preg_match($regex, $path, $this->matches);
         if (! $match) {
             $this->debug[] = 'Not a regex match.';
         }

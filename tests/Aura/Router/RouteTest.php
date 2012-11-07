@@ -462,4 +462,20 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ];
         $this->assertEquals($expect, $route->values);
    }
+   
+   public function testIsMatchOnWildcard()
+   {
+        $route = $this->factory->newInstance([
+            'path' => '/foo/{:zim}/*',
+        ]);
+        
+        // right path
+        $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
+        $this->assertTrue($actual);
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame(['baz', 'dib'], $route->values['*']);
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+   }
 }
