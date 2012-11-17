@@ -84,9 +84,11 @@ class Map
      * 
      */
     public function __construct(
+        DefinitionFactory $definition_factory,
         RouteFactory $route_factory,
         array $attach = null
     ) {
+        $this->definition_factory = $definition_factory;
         $this->route_factory = $route_factory;
         foreach ((array) $attach as $path_prefix => $spec) {
             $this->attach($path_prefix, $spec);
@@ -120,8 +122,10 @@ class Map
         unset($spec['path_prefix']);
 
         // append to the route definitions
-        $spec['__type'] = 'single';
-        $this->definitions[] = $spec;
+        $this->definitions[] = $this->definition_factory->newInstance(
+            'single',
+            $spec
+        );
     }
 
     /**
@@ -137,19 +141,13 @@ class Map
      * @return void
      * 
      */
-    public function attach($path_prefix, array $spec)
+    public function attach($path_prefix, $spec)
     {
-        // ... with routes defined for attachment.
-        if (! isset($spec['routes'])) {
-            throw new Exception("No routes defined for attached path prefix '$path_prefix'.");
-        }
-
-        // set the path_prefix in the specification
-        $spec['path_prefix'] = $path_prefix;
-
-        // append to the route definitions
-        $spec['__type'] = 'attach';
-        $this->definitions[] = $spec;
+        $this->definitions[] = $this->definition_factory->newInstance(
+            'attach',
+            $spec,
+            $path_prefix
+        );
     }
 
     /**
@@ -331,9 +329,9 @@ class Map
     protected function getNextDefinition()
     {
         // get the next definition and extract the definition type
-        $spec = array_shift($this->definitions);
-        $type = $spec['__type'];
-        unset($spec['__type']);
+        $def =  array_shift($this->definitions);
+        $spec = $def->getSpec();
+        $type = $def->getType();
 
         // is it a 'single' definition type?
         if ($type == 'single') {
@@ -342,13 +340,13 @@ class Map
         }
 
         // it's an 'attach' definition; set up for attach processing.
-        // retain the routes ...
+        // retain the routes from the array ...
         $this->attach_routes = $spec['routes'];
         unset($spec['routes']);
 
         // ... and the remaining common information
         $this->attach_common = $spec;
-
+        
         // reset the internal pointer of the array to avoid misnamed routes
         reset($this->attach_routes);
         
