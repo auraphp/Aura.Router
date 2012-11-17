@@ -41,9 +41,10 @@ manually:
 ```php
 <?php
 use Aura\Router\Map;
+use Aura\Router\DefinitionFactory;
 use Aura\Router\RouteFactory;
 
-$router_map = new Map(new RouteFactory);
+$router_map = new Map(new DefinitionFactory, new RouteFactory);
 ```
 
 Adding A Route
