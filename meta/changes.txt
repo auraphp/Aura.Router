@@ -1,4 +1,14 @@
-- Documentation fixes
+- [FIX] #14, misnamed routes. thanks kevinard.
+  https://github.com/auraphp/Aura.Router/issues/14
 
-- PSR-1/2 compliance
+- [ADD] Wildcard support per #15.
+  https://github.com/auraphp/Aura.Router/issues/15
 
+- [FIX] Allow for a trailing slash with no values.
+
+- [FIX] Make it so path_prefix ending with / and path beginning with / does
+  not result in double-slashes
+
+- [CHG] Start using a Definition object
+
+- [CHG] Allow 'attach' definitions to be callables
