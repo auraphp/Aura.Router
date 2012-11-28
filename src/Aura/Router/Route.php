@@ -225,8 +225,13 @@ class Route
         // set the path, with prefix if needed
         $this->path_prefix = (string) $path_prefix;
         if ($path_prefix && $path && strpos($path, '://') === false) {
+            // concat the prefix and path
             $this->path = (string) $path_prefix . $path;
+            // convert all // to /, so that prefixes ending with / do not mess
+            // with paths starting with /
+            $this->path = str_replace('//', '/', $this->path);
         } else {
+            // no path prefix, or no path, or path has :// in it
             $this->path = (string) $path;
         }
 
@@ -293,6 +298,17 @@ class Route
             }
         }
 
+        // populate wildcard matches
+        if (isset($this->params['__wildcard__'])) {
+            $values = $this->values['__wildcard__'];
+            unset($this->values['__wildcard__']);
+            if ($values) {
+                $this->values['*'] = explode('/', $values);
+            } else {
+                $this->values['*'] = [];
+            }
+        }
+        
         // done!
         return true;
     }
@@ -337,7 +353,14 @@ class Route
      */
     protected function setRegex()
     {
-        // first, extract inline token params from the path
+        // is a wildcard indicated at the end of the path?
+        if (substr($this->path, -2) == '/*') {
+            // yes, replace it with a special token and regex
+            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
+        }
+        
+        // now extract inline token params from the path. converts
+        // {:token:regex} to {:token} and retains the regex in params.
         $find = "/\{:(.*?)(:(.*?))?\}/";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
@@ -384,7 +407,8 @@ class Route
      */
     protected function isRegexMatch($path)
     {
-        $match = preg_match("#^{$this->regex}$#", $path, $this->matches);
+        $regex = "#^{$this->regex}$#";
+        $match = preg_match($regex, $path, $this->matches);
         if (! $match) {
             $this->debug[] = 'Not a regex match.';
         }
@@ -477,4 +501,3 @@ class Route
         return $result;
     }
 }
- 

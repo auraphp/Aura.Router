@@ -20,4 +20,3 @@ namespace Aura\Router;
 class Exception extends \Exception
 {
 }
- 

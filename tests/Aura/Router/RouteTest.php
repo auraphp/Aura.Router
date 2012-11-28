@@ -462,4 +462,29 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ];
         $this->assertEquals($expect, $route->values);
    }
+   
+   public function testIsMatchOnWildcard()
+   {
+        $route = $this->factory->newInstance([
+            'path' => '/foo/{:zim}/*',
+        ]);
+        
+        // right path
+        $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
+        $this->assertTrue($actual);
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame(['baz', 'dib'], $route->values['*']);
+        
+        // right path, but no wildcard values. note the trailing slash.
+        $actual = $route->isMatch('/foo/bar/', $this->server);
+        $this->assertTrue($actual);
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame([], $route->values['*']);
+        
+        // right path, *but* no trailing slash. doesn't match.
+        $this->assertFalse($route->isMatch('/foo/bar', $this->server));
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+   }
 }
