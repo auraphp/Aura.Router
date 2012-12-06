@@ -182,6 +182,42 @@ optional. If there are path params without matching data keys, those params
 will *not* be replaced, leaving the `{:param}` token in the path. If there are
 data keys without matching params, those values will not be added to the path.
 
+As a Microframework
+-------------------
+Sometimes you may wish to use Aura.Router as a micro-framework. It’s also possible by  assigning anonymous function to controller.
+
+```php
+<?php
+$map->add("read", "/blog/read/{:id}{:format}", [
+	"params" => [
+		"id" => "(\d+)",
+		"format" => "(\..+)?",
+	],
+	"values" => [
+		"controller" => function ($args) {
+		    if ($args['format'] == '.json') {
+		        echo header('Content-Type:application/json');
+		        echo json_encode($args);
+		    } else {
+    			$id = (int) $args["id"];
+    			echo "Reading blog ID {$id}";
+		    }
+		},
+		"format" => ".html",
+	],
+));
+```
+
+When you are using Aura.Router as a micro-framework, the dispatcher will look like
+
+```
+<?php
+$params = $route->values;
+$controller = $params["controller"];
+unset($params["controller"]);
+$controller($params);
+```
+So when you request for the url `/blog/read/1.json`, you will get json and for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
 Advanced Usage
 ==============
