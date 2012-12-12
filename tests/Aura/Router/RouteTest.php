@@ -410,8 +410,44 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ]);
         
         $actual = $route->generate(['q' => "what's up doc?"]);
-        $expect = "http://google.com/?q=what%27s+up+doc%3F";
+        $expect = "http://google.com/?q=what%27s%20up%20doc%3F";
         $this->assertSame($expect, $actual);
+    }
+
+    public function testGenerateRFC3986()
+    {
+        $route = $this->factory->newInstance([
+            'name' => 'rfc3986',
+            'path' => '/path/{:string}',
+            'routable' => false,
+        ]);
+
+        // examples taken from http://php.net/manual/en/function.rawurlencode.php
+        $actual = $route->generate(['string' => 'foo @+%/']);
+        $expect = '/path/foo%20%40%2B%25%2F';
+        $this->assertSame($actual, $expect);
+
+        $actual = $route->generate(['string' => 'sales and marketing/Miami']);
+        $expect = '/path/sales%20and%20marketing%2FMiami';
+        $this->assertSame($actual, $expect);        
+    }
+
+    public function testIsMatchOnRFC3986Paths()
+    {
+        $route = $this->factory->newInstance([
+            'path' => '/{:controller}/{:action}/{:param1}/{:param2}',
+        ]);
+        
+        // examples taken from http://php.net/manual/en/function.rawurlencode.php
+        $actual = $route->isMatch('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami', $this->server);
+        $this->assertTrue($actual);
+        $expect = [
+            'controller' => 'some-controller',
+            'action' => 'some action',
+            'param1' => 'foo @+%/',
+            'param2' => 'sales and marketing/Miami',
+        ];
+        $this->assertEquals($expect, $route->values);
     }
 
    public function testGithubIssue7()
