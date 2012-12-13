@@ -74,7 +74,7 @@ $router_map->add('read', '/blog/read/{:id}{:format}', [
         'action'     => 'read',
         'format'     => 'html',
     ],
-));
+]);
 ```
 
 You will need to place the router object where you can get to it from your
