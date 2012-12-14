@@ -2,33 +2,19 @@
     "name": "aura/router",
     "type": "aura-package",
     "description": "The Aura Router package implements web routing; given a URI path and a copy of $_SERVER, it will extract controller, action, and parameter values for a specific route.",
-    "keywords": [
-        "route",
-        "router",
-        "routing"
-    ],
+    "keywords": [ "route", "router", "routing" ],
     "homepage": "http://auraphp.github.com/Aura.Router",
-    "version": "1.0.0",
-    "time": "2012-11-28",
+    "version": "1.0.0-dev",
     "license": "BSD",
     "authors": [
         {
-            "name": "Aura.Router Contributors",
+            "name": "Aura Contributors",
             "homepage": "https://github.com/auraphp/Aura.Router/contributors"
-        },
-        {
-            "name": "Paul M. Jones",
-            "email": "pmjones88@gmail.com",
-            "homepage": "http://paul-m-jones.com"
-        },
-        {
-            "name": "Hari KT",
-            "email": "kthari85@gmail.com",
-            "homepage": "http://harikt.com"
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "aura/installer-default": "*"
     },
     "autoload": {
         "psr-0": {
