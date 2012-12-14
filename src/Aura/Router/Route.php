@@ -294,7 +294,7 @@ class Route
         // populate the path matches into the route values
         foreach ($this->matches as $key => $val) {
             if (is_string($key)) {
-                $this->values[$key] = $val;
+                $this->values[$key] = rawurldecode($val);
             }
         }
 
@@ -303,6 +303,7 @@ class Route
             $values = $this->values['__wildcard__'];
             unset($this->values['__wildcard__']);
             if ($values) {
+                // @todo: should we issue a rawurldecode on each member?
                 $this->values['*'] = explode('/', $values);
             } else {
                 $this->values['*'] = [];
@@ -339,7 +340,7 @@ class Route
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
             $keys[] = "{:$key}";
-            $vals[] = urlencode($val);
+            $vals[] = rawurlencode($val);
         }
         return str_replace($keys, $vals, $this->path);
     }
