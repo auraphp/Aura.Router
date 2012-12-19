@@ -337,17 +337,15 @@ class Route
         }
 
         // interpolate into the path
-        $keys = [];
-        $vals = [];
+        $replace = [];
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
-            // Closures can't be converted
+            // Closures can't be cast to string
             if (! ($val instanceof Closure)) {
-                $keys[] = "{:$key}";
-                $vals[] = rawurlencode($val);
+                $replace["{:$key}"] = rawurlencode($val);
             }
         }
-        return str_replace($keys, $vals, $this->path);
+        return strtr($this->path, $replace);
     }
 
     /**
