@@ -315,6 +315,35 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ]);
     }
     
+    /**
+     * This test should not get exception for the urlencode on closure
+     */
+    public function testGenerateControllerAsClosureIssue19()
+    {
+        $route = $this->factory->newInstance([
+            'path' => '/blog/{:id}/edit',
+            'params' => [
+                'id' => '([0-9]+)',
+            ],
+            'values' => [
+                "controller" => function ($args) {
+                   if ($args['format'] == '.json') {
+                      echo header('Content-Type:application/json');
+                      echo json_encode($args);
+                   } else {
+                      $id = (int) $args["id"];
+                      echo "Reading blog ID {$id}";
+                   }
+                },
+                'action' => 'read',
+                'format' => '.html',
+            ]
+        ]);
+        
+        $uri = $route->generate(['id' => 42, 'foo' => 'bar']);
+        $this->assertEquals('/blog/42/edit', $uri);
+    }
+
     public function testGenerate()
     {
         $route = $this->factory->newInstance([
