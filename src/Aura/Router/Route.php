@@ -338,8 +338,10 @@ class Route
         $vals = [];
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
-            $keys[] = "{:$key}";
-            $vals[] = urlencode($val);
+            if (! is_callable($val)) {
+                $keys[] = "{:$key}";
+                $vals[] = urlencode($val);
+            }
         }
         return str_replace($keys, $vals, $this->path);
     }
