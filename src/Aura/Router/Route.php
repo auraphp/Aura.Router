@@ -10,6 +10,8 @@
  */
 namespace Aura\Router;
 
+use Closure;
+
 /**
  * 
  * Represents an individual route with a name, path, params, values, etc.
@@ -339,8 +341,11 @@ class Route
         $vals = [];
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
-            $keys[] = "{:$key}";
-            $vals[] = rawurlencode($val);
+            // Closures can't be converted
+            if (! ($val instanceof Closure)) {
+                $keys[] = "{:$key}";
+                $vals[] = rawurlencode($val);
+            }
         }
         return str_replace($keys, $vals, $this->path);
     }
