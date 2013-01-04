@@ -10,6 +10,8 @@
  */
 namespace Aura\Router;
 
+use Aura\Router\Exception;
+
 /**
  * 
  * A collection point for URI routes.
@@ -222,7 +224,7 @@ class Map
         }
 
         // no joy
-        return false;
+        throw new Exception\RouteNotFound($name);
     }
 
     /**
@@ -397,7 +399,7 @@ class Map
             // long form, no name
             $spec = $val;
         } else {
-            throw new Exception("Route spec for '$key' should be a string or array.");
+            throw new Exception\UnexpectedType("Route spec for '$key' should be a string or array.");
         }
 
         // unset any path or name prefix on the spec itself

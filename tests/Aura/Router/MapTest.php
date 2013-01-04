@@ -74,9 +74,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('gir', $actual->values['zim']);
     }
     
-    /**
-     * @expectedException \Aura\Router\Exception
-     */
     public function testAttachWithBadRouteSpec()
     {
         $this->map->attach(null, [
@@ -85,6 +82,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             ],
         ]);
         
+        $this->setExpectedException('Aura\Router\Exception\UnexpectedType');
         $this->map->match('/', $this->server);
     }
     
@@ -647,8 +645,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
         
         // fail to match again, for code coverage of the portion that checks
         // if there are definitions left to convert
+        $this->setExpectedException('Aura\Router\Exception\RouteNotFound');
         $actual = $this->map->generate('no-route-again');
-        $this->assertFalse($actual);
     }
     
     
@@ -674,8 +672,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
         ]);
         
         // fail to match
+        $this->setExpectedException('Aura\Router\Exception\RouteNotFound');
         $actual = $this->map->generate('no-route');
-        $this->assertFalse($actual);
     }
     
     public function testAttachAtConstructionTime()
