@@ -156,7 +156,7 @@ class Route
      * 
      * All param matches found in the path during the `isMatch()` process.
      * 
-     * @var string
+     * @var array
      * 
      * @see isMatch()
      * 
