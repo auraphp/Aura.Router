@@ -241,7 +241,7 @@ class Map
     {
         $this->routes = $routes;
         $this->definitions = [];
-        $this->attach_custom = [];
+        $this->attach_common = [];
         $this->attach_routes = [];
     }
 
