@@ -184,7 +184,8 @@ data keys without matching params, those values will not be added to the path.
 
 As a Microframework
 -------------------
-Sometimes you may wish to use Aura.Router as a micro-framework. It’s also possible by  assigning anonymous function to controller.
+Sometimes you may wish to use Aura.Router as a micro-framework. It’s also 
+possible by  assigning anonymous function to controller.
 
 ```php
 <?php
@@ -217,7 +218,8 @@ $controller = $params["controller"];
 unset($params["controller"]);
 $controller($params);
 ```
-So when you request for the url `/blog/read/1.json`, you will get json and for `/blog/read/1` you will get `Reading blog ID 1` as output.
+So when you request for the url `/blog/read/1.json`, you will get json and 
+for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
 Advanced Usage
 ==============
@@ -229,15 +231,18 @@ When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
 keys:
 
-- `params` -- The regular expression subpatterns for path params; inline params will override these settings. For example:
+- `params` -- The regular expression subpatterns for path params; inline 
+params will override these settings. For example:
         
         'params' => [
             'id' => '(\d+)',
         ]
         
-  Note that the path itself is allowed to contain param tokens with inline regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
+  Note that the path itself is allowed to contain param tokens with inline 
+  regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
 
-- `values` -- The default values for the route. These will be overwritten by matching params from the path.
+- `values` -- The default values for the route. These will be overwritten 
+by matching params from the path.
 
         'values' => [
             'controller' => 'blog',
@@ -247,13 +252,20 @@ keys:
         
 - `method` -- The `$server['REQUEST_METHOD']` must match one of these values.
 
-- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the request must be on port 443; when `false`, neither of those must be in place.
+- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the 
+request must be on port 443; when `false`, neither of those must be in place.
 
-- `routable` -- When `false` the route will not be used for matching, only for generating paths.
+- `routable` -- When `false` the route will not be used for matching, 
+only for generating paths.
 
-- `is_match` -- A custom callback or closure with the signature `function(array $server, \ArrayObject $matches)` that returns true on a match, or false if not. This allows developers to build any kind of matching logic for the route, and to change the `$matches` for param values from the path.
+- `is_match` -- A custom callback or closure with the signature 
+`function(array $server, \ArrayObject $matches)` that returns true on a 
+match, or false if not. This allows developers to build any kind of matching 
+logic for the route, and to change the `$matches` for param values from the path.
 
-- `generate` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
+- `generate` -- A custom callback or closure with the signature 
+`function(\aura\router\Route $route, array $data)` that returns a modified 
+`$data` array to be used when generating the path.
 
 Here is a full route specification named `read` with all keys in place:
 
@@ -456,7 +468,7 @@ $attach = [
         // the routes to attach
         'routes' => [
             'browse' => '/',
-            'read' => 'path' => '/{:id}{:format}',
+            'read'   => '/read/{:id}{:format}',
             'edit' => '/{:id}/edit',
         ],
     ],
@@ -479,8 +491,11 @@ $attach = [
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
 
+// create the definition factory
+$definition_factory = new \Aura\Router\DefinitionFactory;
+
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Map($route_factory, $attach);
+$router_map = new \Aura\Router\Map($definition_factory, $route_factory, $attach);
 ```
 
 This technique can be very effective with modular application packages. Each
@@ -500,8 +515,11 @@ $attach = [
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
 
+// create the definition factory
+$definition_factory = new \Aura\Router\DefinitionFactory;
+
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Map($route_factory, $attach);
+$router_map = new \Aura\Router\Map($definition_factory, $route_factory, $attach);
 ```
 
 
@@ -519,7 +537,7 @@ routes:
 ```php
 <?php
 // create a router map object
-$router_map = require '/path/to/Aura.Router/instance.php';
+$router_map = require '/path/to/Aura.Router/scripts/instance.php';
 
 // the cache file location
 $cache = '/path/to/routes.cache';
