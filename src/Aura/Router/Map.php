@@ -201,7 +201,7 @@ class Map
      * 
      * @param string $name The route name to look up.
      * 
-     * @param array $data The data to inpterolate into the URI; data keys
+     * @param array $data The data to interpolate into the URI; data keys
      * map to param tokens in the path.
      * 
      * @return string|false A URI path string if the route name is found, or
@@ -241,7 +241,7 @@ class Map
     {
         $this->routes = $routes;
         $this->definitions = [];
-        $this->attach_custom = [];
+        $this->attach_common = [];
         $this->attach_routes = [];
     }
 
