@@ -392,7 +392,7 @@ $router_map->attach('/blog', [
         // a short-form route named 'edit'
         'edit' => '/{:id:(\d+)}/edit',
     ],
-));
+]);
 ```
     
 Each of the route paths will be prefixed with `/blog`, so the effective paths
