@@ -351,7 +351,7 @@ values in a sequential array keyed on `'*'`.
 ```php
 <?php
 $router_map->add('wild_post', '/post/{:id}/*');
-$route = $router_map->match('/post/88/foo/bar/baz');
+$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 
 // $route->values['id'] = 88;
 // $route->values['*'] = ['foo', 'bar', 'baz'];
