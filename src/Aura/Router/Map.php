@@ -168,7 +168,7 @@ class Map
      * boolean false if there is no match.
      * 
      */
-    public function match($path, array $server = null)
+    public function match($path, array $server)
     {
         // reset the log
         $this->log = [];
