@@ -342,22 +342,51 @@ Wildcard Routes
 ---------------
 
 Sometimes it is useful to allow the trailing part of the path be anything at
-all, with no named parameters. You can set up a "wildcard" route of this type
-by adding `/*` to the end of the route. This will allow the route to match
-anything at all after that point; on a match, it will retain the wildcard
-values in a sequential array keyed on `'*'`.
+all, with no named parameters. There are two types of such "wildcard" routes. (Wildcard routing of this sort works only when specified at the end of the path.)
 
+The first is a "values optional" wildcard, represented by adding `/*` to the
+end of the route. This will allow the route to match anything at all after
+that point, including nothing at all. On a match, it will retain the wildcard
+values in a sequential array keyed on `'*'`. Notably, the matched path with no wildcard values may have a slash at the end or not.
 
 ```php
 <?php
 $router_map->add('wild_post', '/post/{:id}/*');
-$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 
+// this matches, with the following values
+$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
 // $route->values['*'] = ['foo', 'bar', 'baz'];
+
+// this also matches, with the following values; note the trailing slash
+$route = $router_map->match('/post/88/', $_SERVER);
+// $route->values['id'] = 88;
+// $route->values['*'] = [];
+
+// this also matches, with the following values' note the missing slash
+$route = $router_map->match('/post/88', $_SERVER);
+// $route->values['id'] = 88;
+// $route->values['*'] = [];
 ```
 
-Wildcard routing of this sort works only at the end of the path.
+The second is a "values required" wildcard, represented by adding `/+` to the
+end of the route. This will allow the route to match anything at all after
+that point, but there must be at least one slash and an additional value. On a
+match, it will retain the wildcard values in a sequential array also keyed on
+`'*'` (not '`+`').
+
+```php
+<?php
+$router_map->add('wild_post', '/post/{:id}/+');
+
+// this matches, with the following values
+$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
+// $route->values['id'] = 88;
+// $route->values['*'] = ['foo', 'bar', 'baz'];
+
+// this does not match
+$route = $router_map->match('/post/88/', $_SERVER);
+```
 
 
 Attaching Route Groups

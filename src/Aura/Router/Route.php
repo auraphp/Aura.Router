@@ -300,16 +300,25 @@ class Route
             }
         }
 
-        // populate wildcard matches
+        // is a wildcard param specified?
         if (isset($this->params['__wildcard__'])) {
-            $values = $this->values['__wildcard__'];
-            unset($this->values['__wildcard__']);
+            
+            // yes; set an array for it since there may be no values
+            $this->values['*'] = [];
+            
+            // are there are actual wildcard values?
+            $values = isset($this->values['__wildcard__'])
+                   && $this->values['__wildcard__'];
             if ($values) {
-                // @todo: should we issue a rawurldecode on each member?
-                $this->values['*'] = explode('/', $values);
-            } else {
-                $this->values['*'] = [];
+                // yes, retain and rawurldecode them
+                $this->values['*'] = array_map(
+                    'rawurldecode',
+                    explode('/', $this->values['__wildcard__'])
+                );
             }
+            
+            // remove any remaining __wildcard__ key
+            unset($this->values['__wildcard__']);
         }
         
         // done!
@@ -357,10 +366,16 @@ class Route
      */
     protected function setRegex()
     {
-        // is a wildcard indicated at the end of the path?
+        // is a "required" wildcard indicated at the end of the path?
+        if (substr($this->path, -2) == '/+') {
+            // yes, replace it with a special token and regex
+            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.+)}";
+        }
+        
+        // is an "optional" wildcard indicated at the end of the path?
         if (substr($this->path, -2) == '/*') {
             // yes, replace it with a special token and regex
-            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
+            $this->path = substr($this->path, 0, -2) . "(/{:__wildcard__:(.*)})?";
         }
         
         // now extract inline token params from the path. converts
