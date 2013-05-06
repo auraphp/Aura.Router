@@ -307,9 +307,7 @@ class Route
             $this->values['*'] = [];
             
             // are there are actual wildcard values?
-            $values = isset($this->values['__wildcard__'])
-                   && $this->values['__wildcard__'];
-            if ($values) {
+            if (! empty($this->values['__wildcard__'])) {
                 // yes, retain and rawurldecode them
                 $this->values['*'] = array_map(
                     'rawurldecode',
