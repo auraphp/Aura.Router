@@ -342,51 +342,59 @@ Wildcard Routes
 ---------------
 
 Sometimes it is useful to allow the trailing part of the path be anything at
-all, with no named parameters. There are two types of such "wildcard" routes. (Wildcard routing of this sort works only when specified at the end of the path.)
+all. There are two types of such "wildcard" routes. (Wildcard routing of this
+sort works only when specified at the end of the path.)
 
-The first is a "values optional" wildcard, represented by adding `/*` to the
-end of the route. This will allow the route to match anything at all after
-that point, including nothing at all. On a match, it will retain the wildcard
-values in a sequential array keyed on `'*'`. Notably, the matched path with no wildcard values may have a slash at the end or not.
+The first is a "values optional" named wildcard, represented by adding
+`/{:foo*}` to the end of the path. This will allow the route to match
+anything after that point, including nothing at all. On a match, it will
+collect the remaining slash-separated values into a sequential array named
+`'foo'`. Notably, the matched path with no wildcard values may have a slash at
+the end or not.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{:id}/*');
+$router_map->add('wild_post', '/post/{:id}/{:other*}');
 
 // this matches, with the following values
 $route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['*'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = ['foo', 'bar', 'baz'];
 
 // this also matches, with the following values; note the trailing slash
 $route = $router_map->match('/post/88/', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['*'] = [];
+// $route->values['other'] = [];
 
-// this also matches, with the following values' note the missing slash
+// this also matches, with the following values; note the missing slash
 $route = $router_map->match('/post/88', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['*'] = [];
+// $route->values['other'] = [];
 ```
 
-The second is a "values required" wildcard, represented by adding `/+` to the
-end of the route. This will allow the route to match anything at all after
-that point, but there must be at least one slash and an additional value. On a
-match, it will retain the wildcard values in a sequential array also keyed on
-`'*'` (not '`+`').
+The second is a "values required" wildcard, represented by adding `/{:foo+}`
+to the end of the path. This will allow the route to match anything at all
+after that point, but there must be at least one slash and an additional
+value. On a match, it will collect the remaining slash-separated values into a
+sequential array named `'foo'`.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{:id}/+');
+$router_map->add('wild_post', '/post/{:id}/{:other+}');
 
 // this matches, with the following values
 $route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['*'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = ['foo', 'bar', 'baz'];
 
-// this does not match
+// these do not match
 $route = $router_map->match('/post/88/', $_SERVER);
+$route = $router_map->match('/post/88', $_SERVER);
 ```
+
+> N.b.: In previous releases of the router, `'/*'` was the wildcard
+> indicator, with wildcard values collected in an array named `'*'`. This
+> behavior remains available but is deprecated.
 
 
 Attaching Route Groups

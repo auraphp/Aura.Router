@@ -174,6 +174,15 @@ class Route
 
     /**
      * 
+     * The name of the wildcard param, if any.
+     * 
+     * @var array
+     * 
+     */
+    protected $wildcard;
+    
+    /**
+     * 
      * Constructor.
      * 
      * @param string $name The name for this Route.
@@ -301,22 +310,25 @@ class Route
         }
 
         // is a wildcard param specified?
-        if (isset($this->params['__wildcard__'])) {
-            
-            // yes; set an array for it since there may be no values
-            $this->values['*'] = [];
+        if ($this->wildcard) {
             
             // are there are actual wildcard values?
-            if (! empty($this->values['__wildcard__'])) {
+            if (empty($this->values[$this->wildcard])) {
+                // no, set a blank array
+                $this->values[$this->wildcard] = [];
+            } else {
                 // yes, retain and rawurldecode them
-                $this->values['*'] = array_map(
+                $this->values[$this->wildcard] = array_map(
                     'rawurldecode',
-                    explode('/', $this->values['__wildcard__'])
+                    explode('/', $this->values[$this->wildcard])
                 );
             }
             
-            // remove any remaining __wildcard__ key
-            unset($this->values['__wildcard__']);
+            // backwards compat: rename "__wildcard__" to "*"
+            if ($this->wildcard == '__wildcard__') {
+                $this->values['*'] = $this->values['__wildcard__'];
+                unset($this->values['__wildcard__']);
+            }
         }
         
         // done!
@@ -364,16 +376,27 @@ class Route
      */
     protected function setRegex()
     {
-        // is a "required" wildcard indicated at the end of the path?
-        if (substr($this->path, -2) == '/+') {
-            // yes, replace it with a special token and regex
-            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.+)}";
-        }
-        
-        // is an "optional" wildcard indicated at the end of the path?
+        // is a deprecated wildcard indicated at the end of the path?
         if (substr($this->path, -2) == '/*') {
             // yes, replace it with a special token and regex
-            $this->path = substr($this->path, 0, -2) . "(/{:__wildcard__:(.*)})?";
+            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
+            $this->wildcard = '__wildcard__';
+        }
+        
+        // is a required wildcard indicated at the end of the path?
+        $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
+        if ($match) {
+            $this->wildcard = $matches[1];
+            $pos = strrpos($this->path, $matches[0]);
+            $this->path = substr($this->path, 0, $pos) . "/{:{$this->wildcard}:(.+)}";
+        }
+
+        // is an optional wildcard indicated at the end of the path?
+        $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\*\}$/i", $this->path, $matches);
+        if ($match) {
+            $this->wildcard = $matches[1];
+            $pos = strrpos($this->path, $matches[0]);
+            $this->path = substr($this->path, 0, $pos) . "(/{:{$this->wildcard}:(.*)})?";
         }
         
         // now extract inline token params from the path. converts
