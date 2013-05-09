@@ -1,14 +1,24 @@
-- [FIX] #14, misnamed routes. thanks kevinard.
-  https://github.com/auraphp/Aura.Router/issues/14
+- [CHG] Altered implementation of Route::generate() to encode param tokens
+  using rawurlencode() instead of urlencode().
+    
+- [CHG] Altered the implementation of Route::isMatch() to decode matching
+  parameters using rawurlencode().
 
-- [ADD] Wildcard support per #15.
-  https://github.com/auraphp/Aura.Router/issues/15
+- [CHG] In Route::generate(), use strtr() instead of str_replace() as a more
+  secure mechanism
 
-- [FIX] Allow for a trailing slash with no values.
+- [NEW] Specific exceptions: RouteNotFound and UnexpectedType
 
-- [FIX] Make it so path_prefix ending with / and path beginning with / does
-  not result in double-slashes
+- [CHG] Map now throws UnexpectedType when attach route spec is bad
 
-- [CHG] Start using a Definition object
+- [BRK] Map now throws RouteNotFound when generate() cannot find the named
+  route
 
-- [CHG] Allow 'attach' definitions to be callables
+- [CHG] Docblock and README changes from Akihito Koriyama, Hari KT, and Stan
+  Lemon
+
+- [CHG] Map::match() now requires the $server param to be passed
+
+- [ADD] New notation for wildcard matching; in addition to /*, we now have
+  {:foo*} for optional wildcard params, and {:foo+} for required wildcard
+  params. Thanks, Chris Doherty, for the report that led to this feature.

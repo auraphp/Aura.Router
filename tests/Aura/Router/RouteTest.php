@@ -315,6 +315,30 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ]);
     }
     
+    /**
+     * This test should not get exception for the urlencode on closure
+     */
+    public function testGenerateControllerAsClosureIssue19()
+    {
+        $route = $this->factory->newInstance([
+            'path' => '/blog/{:id}/edit',
+            'params' => [
+                'id' => '([0-9]+)',
+            ],
+            'values' => [
+                "controller" => function ($args) {
+                    $id = (int) $args["id"];
+                    echo "Hello World";
+                },
+                'action' => 'read',
+                'format' => '.html',
+            ]
+        ]);
+        
+        $uri = $route->generate(['id' => 42, 'foo' => 'bar']);
+        $this->assertEquals('/blog/42/edit', $uri);
+    }
+
     public function testGenerate()
     {
         $route = $this->factory->newInstance([
@@ -410,8 +434,44 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ]);
         
         $actual = $route->generate(['q' => "what's up doc?"]);
-        $expect = "http://google.com/?q=what%27s+up+doc%3F";
+        $expect = "http://google.com/?q=what%27s%20up%20doc%3F";
         $this->assertSame($expect, $actual);
+    }
+
+    public function testGenerateRFC3986()
+    {
+        $route = $this->factory->newInstance([
+            'name' => 'rfc3986',
+            'path' => '/path/{:string}',
+            'routable' => false,
+        ]);
+
+        // examples taken from http://php.net/manual/en/function.rawurlencode.php
+        $actual = $route->generate(['string' => 'foo @+%/']);
+        $expect = '/path/foo%20%40%2B%25%2F';
+        $this->assertSame($actual, $expect);
+
+        $actual = $route->generate(['string' => 'sales and marketing/Miami']);
+        $expect = '/path/sales%20and%20marketing%2FMiami';
+        $this->assertSame($actual, $expect);        
+    }
+
+    public function testIsMatchOnRFC3986Paths()
+    {
+        $route = $this->factory->newInstance([
+            'path' => '/{:controller}/{:action}/{:param1}/{:param2}',
+        ]);
+        
+        // examples taken from http://php.net/manual/en/function.rawurlencode.php
+        $actual = $route->isMatch('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami', $this->server);
+        $this->assertTrue($actual);
+        $expect = [
+            'controller' => 'some-controller',
+            'action' => 'some action',
+            'param1' => 'foo @+%/',
+            'param2' => 'sales and marketing/Miami',
+        ];
+        $this->assertEquals($expect, $route->values);
     }
 
    public function testGithubIssue7()
@@ -463,25 +523,69 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $route->values);
    }
    
-   public function testIsMatchOnWildcard()
+   public function testIsMatchOnDeprecatedWildcard()
    {
         $route = $this->factory->newInstance([
             'path' => '/foo/{:zim}/*',
         ]);
         
-        // right path
+        // right path with wildcard values
         $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
         $this->assertTrue($actual);
         $this->assertSame('bar', $route->values['zim']);
         $this->assertSame(['baz', 'dib'], $route->values['*']);
         
-        // right path, but no wildcard values. note the trailing slash.
-        $actual = $route->isMatch('/foo/bar/', $this->server);
-        $this->assertTrue($actual);
+        // right path with trailing slash but no wildcard values
+        $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
         $this->assertSame('bar', $route->values['zim']);
         $this->assertSame([], $route->values['*']);
         
-        // right path, *but* no trailing slash. doesn't match.
+        // right path without trailing slash
+        $this->assertFalse($route->isMatch('/foo/bar', $this->server));
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+   }
+   
+   public function testIsMatchOnOptionalWildcard()
+   {
+        $route = $this->factory->newInstance([
+            'path' => '/foo/{:zim}/{:wild*}',
+        ]);
+        
+        // right path with wildcard values
+        $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame(['baz', 'dib'], $route->values['wild']);
+        
+        // right path with trailing slash but no wildcard values
+        $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame([], $route->values['wild']);
+        
+        // right path without trailing slash
+        $this->assertTrue($route->isMatch('/foo/bar', $this->server));
+        $this->assertSame([], $route->values['wild']);
+        
+        // wrong path
+        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+   }
+   
+   public function testIsMatchOnRequiredWildcard()
+   {
+        $route = $this->factory->newInstance([
+            'path' => '/foo/{:zim}/{:wild+}',
+        ]);
+        
+        // right path with wildcard values
+        $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
+        $this->assertSame('bar', $route->values['zim']);
+        $this->assertSame(['baz', 'dib'], $route->values['wild']);
+        
+        // right path with trailing slash but no wildcard values
+        $this->assertFalse($route->isMatch('/foo/bar/', $this->server));
+        
+        // right path without trailing slash
         $this->assertFalse($route->isMatch('/foo/bar', $this->server));
         
         // wrong path

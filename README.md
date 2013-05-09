@@ -74,7 +74,7 @@ $router_map->add('read', '/blog/read/{:id}{:format}', [
         'action'     => 'read',
         'format'     => 'html',
     ],
-));
+]);
 ```
 
 You will need to place the router object where you can get to it from your
@@ -182,6 +182,44 @@ optional. If there are path params without matching data keys, those params
 will *not* be replaced, leaving the `{:param}` token in the path. If there are
 data keys without matching params, those values will not be added to the path.
 
+As a Microframework
+-------------------
+Sometimes you may wish to use Aura.Router as a micro-framework. It’s also 
+possible by  assigning anonymous function to controller.
+
+```php
+<?php
+$map->add("read", "/blog/read/{:id}{:format}", [
+	"params" => [
+		"id" => "(\d+)",
+		"format" => "(\..+)?",
+	],
+	"values" => [
+		"controller" => function ($args) {
+		    if ($args['format'] == '.json') {
+		        echo header('Content-Type:application/json');
+		        echo json_encode($args);
+		    } else {
+    			$id = (int) $args["id"];
+    			echo "Reading blog ID {$id}";
+		    }
+		},
+		"format" => ".html",
+	],
+));
+```
+
+When you are using Aura.Router as a micro-framework, the dispatcher will look like
+
+```
+<?php
+$params = $route->values;
+$controller = $params["controller"];
+unset($params["controller"]);
+$controller($params);
+```
+So when you request for the url `/blog/read/1.json`, you will get json and 
+for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
 Advanced Usage
 ==============
@@ -193,15 +231,18 @@ When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
 keys:
 
-- `params` -- The regular expression subpatterns for path params; inline params will override these settings. For example:
+- `params` -- The regular expression subpatterns for path params; inline 
+params will override these settings. For example:
         
         'params' => [
             'id' => '(\d+)',
         ]
         
-  Note that the path itself is allowed to contain param tokens with inline regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
+  Note that the path itself is allowed to contain param tokens with inline 
+  regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
 
-- `values` -- The default values for the route. These will be overwritten by matching params from the path.
+- `values` -- The default values for the route. These will be overwritten 
+by matching params from the path.
 
         'values' => [
             'controller' => 'blog',
@@ -211,13 +252,20 @@ keys:
         
 - `method` -- The `$server['REQUEST_METHOD']` must match one of these values.
 
-- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the request must be on port 443; when `false`, neither of those must be in place.
+- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the 
+request must be on port 443; when `false`, neither of those must be in place.
 
-- `routable` -- When `false` the route will not be used for matching, only for generating paths.
+- `routable` -- When `false` the route will not be used for matching, 
+only for generating paths.
 
-- `is_match` -- A custom callback or closure with the signature `function(array $server, \ArrayObject $matches)` that returns true on a match, or false if not. This allows developers to build any kind of matching logic for the route, and to change the `$matches` for param values from the path.
+- `is_match` -- A custom callback or closure with the signature 
+`function(array $server, \ArrayObject $matches)` that returns true on a 
+match, or false if not. This allows developers to build any kind of matching 
+logic for the route, and to change the `$matches` for param values from the path.
 
-- `generate` -- A custom callback or closure with the signature `function(\aura\router\Route $route, array $data)` that returns a modified `$data` array to be used when generating the path.
+- `generate` -- A custom callback or closure with the signature 
+`function(\aura\router\Route $route, array $data)` that returns a modified 
+`$data` array to be used when generating the path.
 
 Here is a full route specification named `read` with all keys in place:
 
@@ -294,22 +342,59 @@ Wildcard Routes
 ---------------
 
 Sometimes it is useful to allow the trailing part of the path be anything at
-all, with no named parameters. You can set up a "wildcard" route of this type
-by adding `/*` to the end of the route. This will allow the route to match
-anything at all after that point; on a match, it will retain the wildcard
-values in a sequential array keyed on `'*'`.
+all. There are two types of such "wildcard" routes. (Wildcard routing of this
+sort works only when specified at the end of the path.)
 
+The first is a "values optional" named wildcard, represented by adding
+`/{:foo*}` to the end of the path. This will allow the route to match
+anything after that point, including nothing at all. On a match, it will
+collect the remaining slash-separated values into a sequential array named
+`'foo'`. Notably, the matched path with no wildcard values may have a slash at
+the end or not.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{:id}/*');
-$route = $router_map->match('/post/88/foo/bar/baz');
+$router_map->add('wild_post', '/post/{:id}/{:other*}');
 
+// this matches, with the following values
+$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['*'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = ['foo', 'bar', 'baz'];
+
+// this also matches, with the following values; note the trailing slash
+$route = $router_map->match('/post/88/', $_SERVER);
+// $route->values['id'] = 88;
+// $route->values['other'] = [];
+
+// this also matches, with the following values; note the missing slash
+$route = $router_map->match('/post/88', $_SERVER);
+// $route->values['id'] = 88;
+// $route->values['other'] = [];
 ```
 
-Wildcard routing of this sort works only at the end of the path.
+The second is a "values required" wildcard, represented by adding `/{:foo+}`
+to the end of the path. This will allow the route to match anything at all
+after that point, but there must be at least one slash and an additional
+value. On a match, it will collect the remaining slash-separated values into a
+sequential array named `'foo'`.
+
+```php
+<?php
+$router_map->add('wild_post', '/post/{:id}/{:other+}');
+
+// this matches, with the following values
+$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
+// $route->values['id'] = 88;
+// $route->values['other'] = ['foo', 'bar', 'baz'];
+
+// these do not match
+$route = $router_map->match('/post/88/', $_SERVER);
+$route = $router_map->match('/post/88', $_SERVER);
+```
+
+> N.b.: In previous releases of the router, `'/*'` was the wildcard
+> indicator, with wildcard values collected in an array named `'*'`. This
+> behavior remains available but is deprecated.
 
 
 Attaching Route Groups
@@ -344,7 +429,7 @@ $router_map->attach('/blog', [
         // a short-form route named 'edit'
         'edit' => '/{:id:(\d+)}/edit',
     ],
-));
+]);
 ```
     
 Each of the route paths will be prefixed with `/blog`, so the effective paths
@@ -420,7 +505,7 @@ $attach = [
         // the routes to attach
         'routes' => [
             'browse' => '/',
-            'read' => 'path' => '/{:id}{:format}',
+            'read'   => '/read/{:id}{:format}',
             'edit' => '/{:id}/edit',
         ],
     ],
@@ -443,8 +528,11 @@ $attach = [
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
 
+// create the definition factory
+$definition_factory = new \Aura\Router\DefinitionFactory;
+
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Map($route_factory, $attach);
+$router_map = new \Aura\Router\Map($definition_factory, $route_factory, $attach);
 ```
 
 This technique can be very effective with modular application packages. Each
@@ -464,8 +552,11 @@ $attach = [
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
 
+// create the definition factory
+$definition_factory = new \Aura\Router\DefinitionFactory;
+
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Map($route_factory, $attach);
+$router_map = new \Aura\Router\Map($definition_factory, $route_factory, $attach);
 ```
 
 
@@ -483,7 +574,7 @@ routes:
 ```php
 <?php
 // create a router map object
-$router_map = require '/path/to/Aura.Router/instance.php';
+$router_map = require '/path/to/Aura.Router/scripts/instance.php';
 
 // the cache file location
 $cache = '/path/to/routes.cache';

@@ -15,7 +15,7 @@ namespace Aura\Router;
  * Represents a route definition, either a single route or a set of attached
  * routes.
  *
- * In general, you should never need to instantiate a Defintion directly. Use
+ * In general, you should never need to instantiate a Definition directly. Use
  * the DefinitionFactory instead, or the Map.
  * 
  * @package Aura.Router

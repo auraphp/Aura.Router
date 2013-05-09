@@ -10,6 +10,8 @@
  */
 namespace Aura\Router;
 
+use Aura\Router\Exception;
+
 /**
  * 
  * A collection point for URI routes.
@@ -166,7 +168,7 @@ class Map
      * boolean false if there is no match.
      * 
      */
-    public function match($path, array $server = null)
+    public function match($path, array $server)
     {
         // reset the log
         $this->log = [];
@@ -199,7 +201,7 @@ class Map
      * 
      * @param string $name The route name to look up.
      * 
-     * @param array $data The data to inpterolate into the URI; data keys
+     * @param array $data The data to interpolate into the URI; data keys
      * map to param tokens in the path.
      * 
      * @return string|false A URI path string if the route name is found, or
@@ -222,7 +224,7 @@ class Map
         }
 
         // no joy
-        return false;
+        throw new Exception\RouteNotFound($name);
     }
 
     /**
@@ -239,7 +241,7 @@ class Map
     {
         $this->routes = $routes;
         $this->definitions = [];
-        $this->attach_custom = [];
+        $this->attach_common = [];
         $this->attach_routes = [];
     }
 
@@ -397,7 +399,7 @@ class Map
             // long form, no name
             $spec = $val;
         } else {
-            throw new Exception("Route spec for '$key' should be a string or array.");
+            throw new Exception\UnexpectedType("Route spec for '$key' should be a string or array.");
         }
 
         // unset any path or name prefix on the spec itself

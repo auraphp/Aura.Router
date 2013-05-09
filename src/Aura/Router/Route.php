@@ -10,6 +10,8 @@
  */
 namespace Aura\Router;
 
+use Closure;
+
 /**
  * 
  * Represents an individual route with a name, path, params, values, etc.
@@ -154,7 +156,7 @@ class Route
      * 
      * All param matches found in the path during the `isMatch()` process.
      * 
-     * @var string
+     * @var array
      * 
      * @see isMatch()
      * 
@@ -170,6 +172,15 @@ class Route
      */
     protected $debug;
 
+    /**
+     * 
+     * The name of the wildcard param, if any.
+     * 
+     * @var array
+     * 
+     */
+    protected $wildcard;
+    
     /**
      * 
      * Constructor.
@@ -294,18 +305,29 @@ class Route
         // populate the path matches into the route values
         foreach ($this->matches as $key => $val) {
             if (is_string($key)) {
-                $this->values[$key] = $val;
+                $this->values[$key] = rawurldecode($val);
             }
         }
 
-        // populate wildcard matches
-        if (isset($this->params['__wildcard__'])) {
-            $values = $this->values['__wildcard__'];
-            unset($this->values['__wildcard__']);
-            if ($values) {
-                $this->values['*'] = explode('/', $values);
+        // is a wildcard param specified?
+        if ($this->wildcard) {
+            
+            // are there are actual wildcard values?
+            if (empty($this->values[$this->wildcard])) {
+                // no, set a blank array
+                $this->values[$this->wildcard] = [];
             } else {
-                $this->values['*'] = [];
+                // yes, retain and rawurldecode them
+                $this->values[$this->wildcard] = array_map(
+                    'rawurldecode',
+                    explode('/', $this->values[$this->wildcard])
+                );
+            }
+            
+            // backwards compat: rename "__wildcard__" to "*"
+            if ($this->wildcard == '__wildcard__') {
+                $this->values['*'] = $this->values['__wildcard__'];
+                unset($this->values['__wildcard__']);
             }
         }
         
@@ -334,14 +356,15 @@ class Route
         }
 
         // interpolate into the path
-        $keys = [];
-        $vals = [];
+        $replace = [];
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
-            $keys[] = "{:$key}";
-            $vals[] = urlencode($val);
+            // Closures can't be cast to string
+            if (! ($val instanceof Closure)) {
+                $replace["{:$key}"] = rawurlencode($val);
+            }
         }
-        return str_replace($keys, $vals, $this->path);
+        return strtr($this->path, $replace);
     }
 
     /**
@@ -353,10 +376,27 @@ class Route
      */
     protected function setRegex()
     {
-        // is a wildcard indicated at the end of the path?
+        // is a deprecated wildcard indicated at the end of the path?
         if (substr($this->path, -2) == '/*') {
             // yes, replace it with a special token and regex
             $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
+            $this->wildcard = '__wildcard__';
+        }
+        
+        // is a required wildcard indicated at the end of the path?
+        $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
+        if ($match) {
+            $this->wildcard = $matches[1];
+            $pos = strrpos($this->path, $matches[0]);
+            $this->path = substr($this->path, 0, $pos) . "/{:{$this->wildcard}:(.+)}";
+        }
+
+        // is an optional wildcard indicated at the end of the path?
+        $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\*\}$/i", $this->path, $matches);
+        if ($match) {
+            $this->wildcard = $matches[1];
+            $pos = strrpos($this->path, $matches[0]);
+            $this->path = substr($this->path, 0, $pos) . "(/{:{$this->wildcard}:(.*)})?";
         }
         
         // now extract inline token params from the path. converts
