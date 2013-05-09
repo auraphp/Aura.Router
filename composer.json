@@ -1,5 +1,6 @@
 {
     "name": "aura/router",
+    "version": "1.1.0",
     "type": "aura-package",
     "description": "The Aura Router package implements web routing; given a URI path and a copy of $_SERVER, it will extract controller, action, and parameter values for a specific route.",
     "keywords": [
@@ -8,9 +9,8 @@
         "routing"
     ],
     "homepage": "http://auraphp.github.com/Aura.Router",
-    "version": "1.0.0",
-    "time": "2012-11-28",
-    "license": "BSD",
+    "time": "2013-05-09",
+    "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "Aura.Router Contributors",
@@ -25,6 +25,16 @@
             "name": "Hari KT",
             "email": "kthari85@gmail.com",
             "homepage": "http://harikt.com"
+        },
+        {
+            "name": "George Papadopoulos",
+            "email": "g.papadopg@gmail.com",
+            "homepage": ""
+        },
+        {
+            "name": "Jon Elofson",
+            "email": "jon.elofson@gmail.com",
+            "homepage": ""
         }
     ],
     "require": {
