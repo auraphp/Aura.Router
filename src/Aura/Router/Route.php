@@ -1,216 +1,216 @@
 <?php
 /**
- * 
+ *
  * This file is part of the Aura Project for PHP.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  * @license http://opensource.org/licenses/bsd-license.php BSD
- * 
+ *
  */
 namespace Aura\Router;
 
 use Closure;
 
 /**
- * 
+ *
  * Represents an individual route with a name, path, params, values, etc.
  *
  * In general, you should never need to instantiate a Route directly. Use the
  * RouteFactory instead, or the Map.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  */
 class Route
 {
     /**
-     * 
+     *
      * The name for this Route.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $name;
 
     /**
-     * 
+     *
      * The path for this Route with param tokens.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $path;
 
     /**
-     * 
+     *
      * A map of param tokens to their regex subpatterns.
-     * 
+     *
      * @var array
-     * 
+     *
      */
-    protected $params = [];
+    protected $params = array();
 
     /**
-     * 
+     *
      * A map of param tokens to their default values; if this Route is
-     * matched, these will retain the corresponding values from the param 
+     * matched, these will retain the corresponding values from the param
      * tokens in the matching path.
-     * 
+     *
      * @var array
-     * 
+     *
      */
-    protected $values = [];
+    protected $values = array();
 
     /**
-     * 
+     *
      * The `REQUEST_METHOD` value must match one of the methods in this array;
      * method; e.g., `'GET'` or `['POST', 'DELETE']`.
-     * 
+     *
      * @var array
-     * 
+     *
      */
-    protected $method = [];
+    protected $method = array();
 
     /**
-     * 
+     *
      * When true, the `HTTPS` value must be `on`, or the `SERVER_PORT` must be
-     * 443.  When false, neither of those values may be present.  When null, 
+     * 443.  When false, neither of those values may be present.  When null,
      * it is ignored.
-     * 
+     *
      * @var bool
-     * 
+     *
      */
     protected $secure = null;
 
     /**
-     * 
-     * A callable to provide custom matching logic against the 
-     * server values and matched params from this Route. The signature must be 
-     * `function(array $server, \ArrayObject $matches)` and must return a 
-     * boolean: true to accept this Route match, or false to deny the match. 
-     * Note that this allows a wide range of manipulations, and further allows 
+     *
+     * A callable to provide custom matching logic against the
+     * server values and matched params from this Route. The signature must be
+     * `function(array $server, \ArrayObject $matches)` and must return a
+     * boolean: true to accept this Route match, or false to deny the match.
+     * Note that this allows a wide range of manipulations, and further allows
      * the developer to modify the matched params as needed.
-     * 
+     *
      * @var callable
-     * 
+     *
      * @see isMatch()
-     * 
+     *
      */
     protected $is_match;
 
     /**
-     * 
-     * A callable to modify path-generation values. The signature 
-     * must be `function($route, array $data)`; its return value is an array 
-     * of data to be used in the path. The `$route` is this Route object, and 
+     *
+     * A callable to modify path-generation values. The signature
+     * must be `function($route, array $data)`; its return value is an array
+     * of data to be used in the path. The `$route` is this Route object, and
      * `$data` is the set of key-value pairs to be interpolated into the path
      * as provided by the caller.
-     * 
+     *
      * @var callable
-     * 
+     *
      * @see generate()
-     * 
+     *
      */
     protected $generate;
 
     /**
-     * 
+     *
      * If routable, this route should be used in matching.  If not, it should
      * be used only to generate a path.
-     * 
+     *
      * @var bool
-     * 
+     *
      */
     protected $routable;
 
     /**
-     * 
+     *
      * A prefix for the Route name, generally from attached route groups.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $name_prefix;
 
     /**
-     * 
+     *
      * A prefix for the Route path, generally from attached route groups.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $path_prefix;
 
     /**
-     * 
+     *
      * The $path property converted to a regular expression, using the $params
      * subpatterns.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $regex;
 
     /**
-     * 
+     *
      * All param matches found in the path during the `isMatch()` process.
-     * 
+     *
      * @var array
-     * 
+     *
      * @see isMatch()
-     * 
+     *
      */
     protected $matches;
 
     /**
-     * 
+     *
      * Retain debugging information about why the route did not match.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $debug;
 
     /**
-     * 
+     *
      * The name of the wildcard param, if any.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $wildcard;
-    
+
     /**
-     * 
+     *
      * Constructor.
-     * 
+     *
      * @param string $name The name for this Route.
-     * 
+     *
      * @param string $path The path for this Route with param token placeholders.
-     * 
+     *
      * @param array $params Map of param tokens to regex subpatterns.
-     * 
+     *
      * @param array $values Default values for params.
-     * 
+     *
      * @param string|array $method The server REQUUEST_METHOD must be one of
      * these values.
-     * 
+     *
      * @param bool $secure If true, the server must indicate an HTTPS request.
-     * 
+     *
      * @param bool $routable If true, this Route can be matched; if not, it
      * can be used only to generate a path.
-     * 
+     *
      * @param callable $is_match A custom callable to evaluate the route.
-     * 
+     *
      * @param callable $generate A custom callable to generate a path.
-     * 
+     *
      * @param string $name_prefix A prefix for the name.
-     * 
+     *
      * @param string $path_prefix A prefix for the path.
-     * 
+     *
      * @return Route
-     * 
+     *
      */
     public function __construct(
         $name        = null,
@@ -260,13 +260,13 @@ class Route
     }
 
     /**
-     * 
+     *
      * Magic read-only for all properties.
-     * 
+     *
      * @param string $key The property to read from.
-     * 
+     *
      * @return mixed
-     * 
+     *
      */
     public function __get($key)
     {
@@ -274,17 +274,17 @@ class Route
     }
 
     /**
-     * 
+     *
      * Checks if a given path and server values are a match for this
      * Route.
-     * 
+     *
      * @param string $path The path to check against this Route.
-     * 
-     * @param array $server A copy of $_SERVER so that this Route can check 
+     *
+     * @param array $server A copy of $_SERVER so that this Route can check
      * against the server values.
-     * 
+     *
      * @return bool
-     * 
+     *
      */
     public function isMatch($path, array $server)
     {
@@ -311,11 +311,11 @@ class Route
 
         // is a wildcard param specified?
         if ($this->wildcard) {
-            
+
             // are there are actual wildcard values?
             if (empty($this->values[$this->wildcard])) {
                 // no, set a blank array
-                $this->values[$this->wildcard] = [];
+                $this->values[$this->wildcard] = array();
             } else {
                 // yes, retain and rawurldecode them
                 $this->values[$this->wildcard] = array_map(
@@ -323,40 +323,44 @@ class Route
                     explode('/', $this->values[$this->wildcard])
                 );
             }
-            
+
             // backwards compat: rename "__wildcard__" to "*"
             if ($this->wildcard == '__wildcard__') {
                 $this->values['*'] = $this->values['__wildcard__'];
                 unset($this->values['__wildcard__']);
             }
         }
-        
+
         // done!
         return true;
     }
 
     /**
-     * 
+     *
      * Gets the path for this Route with data replacements for param tokens.
-     * 
+     *
      * @param array $data An array of key-value pairs to interpolate into the
      * param tokens in the path for this Route. Keys that do not map to
      * params are discarded; param tokens that have no mapped key are left in
      * place.
-     * 
+     *
      * @return string
-     * 
+     *
      */
     public function generate(array $data = null)
     {
         // use a callable to modify the path data?
         if ($this->generate) {
             $generate = $this->generate;
-            $data = $generate($this, (array) $data);
+            if (is_object($generate) && $generate instanceof Closure) {
+                $data = $generate($this, (array) $data);
+            } else {
+                $data = call_user_func($generate, $this, (array) $data);
+            }
         }
 
         // interpolate into the path
-        $replace = [];
+        $replace = array();
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
             // Closures can't be cast to string
@@ -368,11 +372,11 @@ class Route
     }
 
     /**
-     * 
+     *
      * Sets the regular expression for this Route based on its params.
-     * 
+     *
      * @return void
-     * 
+     *
      */
     protected function setRegex()
     {
@@ -382,7 +386,7 @@ class Route
             $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
             $this->wildcard = '__wildcard__';
         }
-        
+
         // is a required wildcard indicated at the end of the path?
         $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
         if ($match) {
@@ -398,7 +402,7 @@ class Route
             $pos = strrpos($this->path, $matches[0]);
             $this->path = substr($this->path, 0, $pos) . "(/{:{$this->wildcard}:(.*)})?";
         }
-        
+
         // now extract inline token params from the path. converts
         // {:token:regex} to {:token} and retains the regex in params.
         $find = "/\{:(.*?)(:(.*?))?\}/";
@@ -421,8 +425,8 @@ class Route
         // now create the regular expression from the path and param patterns
         $this->regex = $this->path;
         if ($this->params) {
-            $keys = [];
-            $vals = [];
+            $keys = array();
+            $vals = array();
             foreach ($this->params as $name => $subpattern) {
                 if ($subpattern[0] != '(') {
                     $message = "Subpattern for param '$name' must start with '('.";
@@ -437,13 +441,13 @@ class Route
     }
 
     /**
-     * 
+     *
      * Checks that the path matches the Route regex.
-     * 
+     *
      * @param string $path The path to match against.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isRegexMatch($path)
     {
@@ -456,13 +460,13 @@ class Route
     }
 
     /**
-     * 
+     *
      * Checks that the Route `$method` matches the corresponding server value.
-     * 
+     *
      * @param array $server A copy of $_SERVER.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isMethodMatch($server)
     {
@@ -480,13 +484,13 @@ class Route
     }
 
     /**
-     * 
+     *
      * Checks that the Route `$secure` matches the corresponding server values.
-     * 
+     *
      * @param array $server A copy of $_SERVER.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isSecureMatch($server)
     {
@@ -509,14 +513,14 @@ class Route
     }
 
     /**
-     * 
-     * Checks that the custom Route `$is_match` callable returns true, given 
+     *
+     * Checks that the custom Route `$is_match` callable returns true, given
      * the server values.
-     * 
+     *
      * @param array $server A copy of $_SERVER.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isCustomMatch($server)
     {
@@ -528,8 +532,11 @@ class Route
         // tricky hacks for references
         $matches = new \ArrayObject($this->matches);
         $is_match = $this->is_match;
-        $result = $is_match($server, $matches);
-
+        if (is_object($is_match) && $is_match instanceof Closure) {
+            $result = $is_match($server, $matches);
+        } else {
+            $result = call_user_func($is_match, $server, $matches);
+        }
         // convert back to array
         $this->matches = $matches->getArrayCopy();
 
