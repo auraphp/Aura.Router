@@ -64,17 +64,17 @@ $router_map->add('home', '/');
 $router_map->add(null, '/{:controller}/{:action}/{:id:(\d+)}');
 
 // add a complex named route
-$router_map->add('read', '/blog/read/{:id}{:format}', [
-    'params' => [
+$router_map->add('read', '/blog/read/{:id}{:format}', array(
+    'params' => array(
         'id'     => '(\d+)',
         'format' => '(\..+)?',
-    ],
-    'values' => [
+    ),
+    'values' => array(
         'controller' => 'blog',
         'action'     => 'read',
         'format'     => 'html',
-    ],
-]);
+    ),
+));
 ```
 
 You will need to place the router object where you can get to it from your
@@ -164,10 +164,10 @@ To generate a URI path from a route so that you can create links, call
 ```php
 <?php
 // $path => "/blog/read/42.atom"
-$path = $router_map->generate('read', [
+$path = $router_map->generate('read', array(
     'id' => 42,
     'format' => '.atom',
-]);
+));
 
 $href = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
 echo '<a href="$href">Atom feed for this blog entry</a>';
@@ -184,28 +184,28 @@ data keys without matching params, those values will not be added to the path.
 
 As a Microframework
 -------------------
-Sometimes you may wish to use Aura.Router as a micro-framework. It’s also 
+Sometimes you may wish to use Aura.Router as a micro-framework. It’s also
 possible by  assigning anonymous function to controller.
 
 ```php
 <?php
-$map->add("read", "/blog/read/{:id}{:format}", [
-	"params" => [
-		"id" => "(\d+)",
-		"format" => "(\..+)?",
-	],
-	"values" => [
-		"controller" => function ($args) {
-		    if ($args['format'] == '.json') {
-		        echo header('Content-Type:application/json');
-		        echo json_encode($args);
-		    } else {
-    			$id = (int) $args["id"];
-    			echo "Reading blog ID {$id}";
-		    }
-		},
-		"format" => ".html",
-	],
+$map->add("read", "/blog/read/{:id}{:format}", array(
+    "params" => array(
+        "id" => "(\d+)",
+        "format" => "(\..+)?",
+    ),
+    "values" => array(
+        "controller" => function ($args) {
+            if ($args['format'] == '.json') {
+                echo header('Content-Type:application/json');
+                echo json_encode($args);
+            } else {
+                $id = (int) $args["id"];
+                echo "Reading blog ID {$id}";
+            }
+        },
+        "format" => ".html",
+    ),
 ));
 ```
 
@@ -218,7 +218,7 @@ $controller = $params["controller"];
 unset($params["controller"]);
 $controller($params);
 ```
-So when you request for the url `/blog/read/1.json`, you will get json and 
+So when you request for the url `/blog/read/1.json`, you will get json and
 for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
 Advanced Usage
@@ -231,77 +231,77 @@ When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
 keys:
 
-- `params` -- The regular expression subpatterns for path params; inline 
+- `params` -- The regular expression subpatterns for path params; inline
 params will override these settings. For example:
-        
-        'params' => [
+
+        'params' => array(
             'id' => '(\d+)',
-        ]
-        
-  Note that the path itself is allowed to contain param tokens with inline 
+        )
+
+  Note that the path itself is allowed to contain param tokens with inline
   regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
 
-- `values` -- The default values for the route. These will be overwritten 
+- `values` -- The default values for the route. These will be overwritten
 by matching params from the path.
 
-        'values' => [
+        'values' => array(
             'controller' => 'blog',
             'action' => 'read',
             'id' => 1,
-        ]
-        
+        )
+
 - `method` -- The `$server['REQUEST_METHOD']` must match one of these values.
 
-- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the 
+- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the
 request must be on port 443; when `false`, neither of those must be in place.
 
-- `routable` -- When `false` the route will not be used for matching, 
+- `routable` -- When `false` the route will not be used for matching,
 only for generating paths.
 
-- `is_match` -- A custom callback or closure with the signature 
-`function(array $server, \ArrayObject $matches)` that returns true on a 
-match, or false if not. This allows developers to build any kind of matching 
+- `is_match` -- A custom callback or closure with the signature
+`function(array $server, \ArrayObject $matches)` that returns true on a
+match, or false if not. This allows developers to build any kind of matching
 logic for the route, and to change the `$matches` for param values from the path.
 
-- `generate` -- A custom callback or closure with the signature 
-`function(\aura\router\Route $route, array $data)` that returns a modified 
+- `generate` -- A custom callback or closure with the signature
+`function(\aura\router\Route $route, array $data)` that returns a modified
 `$data` array to be used when generating the path.
 
 Here is a full route specification named `read` with all keys in place:
 
 ```php
 <?php
-$router_map->add('read', '/blog/read/{:id}{:format}', [
-    'params' => [
+$router_map->add('read', '/blog/read/{:id}{:format}', array(
+    'params' => array(
         'id' => '(\d+)',
         'format' => '(\..+)?',
-    ],
-    'values' => [
+    ),
+    'values' => array(
         'controller' => 'blog',
         'action' => 'read',
         'id' => 1,
         'format' => '.html',
-    ],
+    ),
     'secure' => false,
     'method' => ['GET'],
     'routable' => true,
     'is_match' => function(array $server, \ArrayObject $matches) {
-            
+
         // disallow matching if referred from example.com
         if ($server['HTTP_REFERER'] == 'http://example.com') {
             return false;
         }
-        
+
         // add the referer from $server to the match values
         $matches['referer'] = $server['HTTP_REFERER'];
         return true;
-        
+
     },
     'generate' => function(\Aura\Router\Route $route, array $data) {
         $data['foo'] = 'bar';
         return $data;
     }
-]);
+));
 ```
 
 Note that using closures, instead of callbacks, means you will not be able to
@@ -326,16 +326,16 @@ following long-form route:
 
 ```php
 <?php
-$router_map->add('archive', '/archive/{:year}/{:month}/{:day}', [
-    'params' => [
+$router_map->add('archive', '/archive/{:year}/{:month}/{:day}', array(
+    'params' => array(
         'year'  => '([^/]+)',
         'month' => '([^/]+)',
         'day'   => '([^/]+)',
-    ],
-    'values' => [
+    ),
+    'values' => array(
         'action' => 'archive',
-    ],
-]);
+    ),
+));
 ```
 
 Wildcard Routes
@@ -359,17 +359,17 @@ $router_map->add('wild_post', '/post/{:id}/{:other*}');
 // this matches, with the following values
 $route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = array('foo', 'bar', 'baz');
 
 // this also matches, with the following values; note the trailing slash
 $route = $router_map->match('/post/88/', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = [];
+// $route->values['other'] = array();
 
 // this also matches, with the following values; note the missing slash
 $route = $router_map->match('/post/88', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = [];
+// $route->values['other'] = array();
 ```
 
 The second is a "values required" wildcard, represented by adding `/{:foo+}`
@@ -385,7 +385,7 @@ $router_map->add('wild_post', '/post/{:id}/{:other+}');
 // this matches, with the following values
 $route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = array('foo', 'bar', 'baz');
 
 // these do not match
 $route = $router_map->match('/post/88/', $_SERVER);
@@ -406,32 +406,32 @@ mounted at `'/blog'` in your application, you can do this:
 
 ```php
 <?php
-$router_map->attach('/blog', [
-    
+$router_map->attach('/blog', array(
+
     // the routes to attach
-    'routes' => [
-        
+    'routes' => array(
+
         // a short-form route named 'browse'
         'browse' => '/',
-        
+
         // a long-form route named 'read'
-        'read' => [
+        'read' => array(
             'path' => '/{:id}{:format}',
-            'params' => [
+            'params' => array(
                 'id'     => '(\d+)',
                 'format' => '(\.json|\.atom)?'
-            ],
-            'values' => [
+            ),
+            'values' => array(
                 'format' => '.html',
-            ],
-        ],
-        
+            ),
+        ),
+
         // a short-form route named 'edit'
         'edit' => '/{:id:(\d+)}/edit',
-    ],
-]);
+    ),
+));
 ```
-    
+
 Each of the route paths will be prefixed with `/blog`, so the effective paths
 become:
 
@@ -445,26 +445,26 @@ you don't need to repeat common information:
 
 ```php
 <?php
-$router_map->attach('/blog', [
-    
+$router_map->attach('/blog', array(
+
     // common params for the routes
-    'params' => [
+    'params' => array(
         'id'     => '(\d+)',
         'format' => '(\.json|\.atom)?',
-    ],
-    
+    ),
+
     // common values for the routes
-    'values' => [
+    'values' => array(
         'controller' => 'blog',
         'format'     => '.html',
-    ],
-    
+    ),
+
     // the routes to attach
-    'routes' => [
+    'routes' => array(
         'browse' => '/',
         'read'   => '/{:id}{:format}',
         'edit'   => '/{:id}/edit',
-    ],
+    ),
 ));
 ```
 
@@ -483,47 +483,47 @@ same names in different groups.
 
 ```php
 <?php
-$attach = [
+$attach = array(
     // attach to /blog
-    '/blog' => [
-        
+    '/blog' => array(
+
         // prefix for route names
         'name_prefix' => 'projectname.blog.',
-        
+
         // common params for the routes
-        'params' => [
+        'params' => array(
             'id' => '(\d+)',
             'format' => '(\.json|\.atom)?',
-        ],
-    
+        ),
+
         // common values for the routes
-        'values' => [
+        'values' => array(
             'controller' => 'blog',
             'format' => '.html',
-        ],
-    
+        ),
+
         // the routes to attach
-        'routes' => [
+        'routes' => array(
             'browse' => '/',
             'read'   => '/read/{:id}{:format}',
             'edit' => '/{:id}/edit',
-        ],
-    ],
-    
+        ),
+    ),
+
     // attach to '/forum'
-    '/forum' => [
+    '/forum' => array(
         // prefix for route names
         'name_prefix' => 'projectname.forum.',
         // ...
-    ],
+    ),
 
     // attach to '/wiki'
-    '/wiki' => [
+    '/wiki' => array(
         // prefix for route names
         'name_prefix' => 'projectname.wiki.',
         // ...
-    ],
-];
+    ),
+);
 
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
@@ -543,11 +543,11 @@ array for the router. For example:
 ```php
 <?php
 // get a routes array from each application packages
-$attach = [
+$attach = array(
     '/blog'  => require 'projectname/blog/routes.php',
     '/forum' => require 'projectname/forum/routes.php',
     '/wiki'  => require 'projectname/wiki/routes.php',
-];
+);
 
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
@@ -581,19 +581,19 @@ $cache = '/path/to/routes.cache';
 
 // does the cache exist?
 if (file_exists($cache)) {
-    
+
     // restore from the cache
     $routes = unserialize(file_get_contents($cache));
     $router_map->setRoutes($routes);
-    
+
 } else {
-    
+
     // build the routes using add() and attach() ...
     // ... ... ...
     // ... then save to the cache for the next page load
     $routes = $router_map->getRoutes();
     file_put_contents($cache, serialize($routes));
-    
+
 }
 ```
 
