@@ -1,93 +1,93 @@
 <?php
 /**
- * 
+ *
  * This file is part of the Aura Project for PHP.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  * @license http://opensource.org/licenses/bsd-license.php BSD
- * 
+ *
  */
 namespace Aura\Router;
 
 use Aura\Router\Exception;
 
 /**
- * 
+ *
  * A collection point for URI routes.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  */
 class Map
 {
     /**
-     * 
+     *
      * Currently processing this attached common route information.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $attach_common = null;
 
     /**
-     * 
+     *
      * Currently processing these attached routes.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $attach_routes = null;
 
     /**
-     * 
+     *
      * Route definitions; these will be converted into objects.
-     * 
+     *
      * @var array
-     * 
+     *
      */
-    protected $definitions = [];
+    protected $definitions = array();
 
     /**
-     * 
+     *
      * A RouteFactory for creating route objects.
-     * 
+     *
      * @var RouteFactory
-     * 
+     *
      */
     protected $route_factory;
 
     /**
-     * 
+     *
      * Route objects created from the definitons.
-     * 
+     *
      * @var array
-     * 
+     *
      */
-    protected $routes = [];
+    protected $routes = array();
 
     /**
-     * 
+     *
      * Logging information about which routes were attempted to match.
-     * 
+     *
      * @var array
-     * 
+     *
      */
-    protected $log = [];
+    protected $log = array();
 
     /**
-     * 
+     *
      * Constructor.
-     * 
-     * @param DefinitionFactory $definition_factory A factory for creating 
+     *
+     * @param DefinitionFactory $definition_factory A factory for creating
      * definition objects.
-     * 
-     * @param RouteFactory $route_factory A factory for creating route 
+     *
+     * @param RouteFactory $route_factory A factory for creating route
      * objects.
-     * 
+     *
      * @param array $attach A series of route definitions to be attached to
      * the router.
-     * 
+     *
      */
     public function __construct(
         DefinitionFactory $definition_factory,
@@ -102,18 +102,18 @@ class Map
     }
 
     /**
-     * 
+     *
      * Adds a single route definition to the stack.
-     * 
+     *
      * @param string $name The route name for `generate()` lookups.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @param array $spec The rest of the route definition, with keys for
      * `params`, `values`, etc.
-     * 
+     *
      * @return void
-     * 
+     *
      */
     public function add($name, $path, array $spec = null)
     {
@@ -135,17 +135,17 @@ class Map
     }
 
     /**
-     * 
+     *
      * Attaches several routes at once to a specific path prefix.
-     * 
+     *
      * @param string $path_prefix The path that the routes should be attached
      * to.
-     * 
+     *
      * @param array $spec An array of common route information, with an
      * additional `routes` key to define the routes themselves.
-     * 
+     *
      * @return void
-     * 
+     *
      */
     public function attach($path_prefix, $spec)
     {
@@ -157,21 +157,21 @@ class Map
     }
 
     /**
-     * 
+     *
      * Gets a route that matches a given path and other server conditions.
-     * 
+     *
      * @param string $path The path to match against.
-     * 
+     *
      * @param array $server An array copy of $_SERVER.
-     * 
-     * @return Route|false Returns a Route object when it finds a match, or 
+     *
+     * @return Route|false Returns a Route object when it finds a match, or
      * boolean false if there is no match.
-     * 
+     *
      */
     public function match($path, array $server)
     {
         // reset the log
-        $this->log = [];
+        $this->log = array();
 
         // look through existing route objects
         foreach ($this->routes as $route) {
@@ -195,18 +195,18 @@ class Map
     }
 
     /**
-     * 
+     *
      * Looks up a route by name, and interpolates data into it to return
      * a URI path.
-     * 
+     *
      * @param string $name The route name to look up.
-     * 
+     *
      * @param array $data The data to interpolate into the URI; data keys
      * map to param tokens in the path.
-     * 
+     *
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
-     * 
+     *
      */
     public function generate($name, $data = null)
     {
@@ -228,30 +228,30 @@ class Map
     }
 
     /**
-     * 
+     *
      * Reset the map to use an array of Route objects.
-     * 
+     *
      * @param array $routes Use this array of route objects, likely generated
      * from `getRoutes()`.
-     * 
+     *
      * @return void
-     * 
+     *
      */
     public function setRoutes(array $routes)
     {
         $this->routes = $routes;
-        $this->definitions = [];
-        $this->attach_common = [];
-        $this->attach_routes = [];
+        $this->definitions = array();
+        $this->attach_common = array();
+        $this->attach_routes = array();
     }
 
     /**
-     * 
+     *
      * Get the array of Route objects in this map, likely for caching and
      * re-setting via `setRoutes()`.
-     * 
+     *
      * @return array
-     * 
+     *
      */
     public function getRoutes()
     {
@@ -263,11 +263,11 @@ class Map
     }
 
     /**
-     * 
+     *
      * Get the log of attempted route matches.
-     * 
+     *
      * @return array
-     * 
+     *
      */
     public function getLog()
     {
@@ -275,13 +275,13 @@ class Map
     }
 
     /**
-     * 
+     *
      * Add a route to the log of attempted matches.
-     * 
+     *
      * @param Route $route Route object
-     * 
+     *
      * @return array
-     * 
+     *
      */
     protected function logRoute(Route $route)
     {
@@ -289,13 +289,13 @@ class Map
     }
 
     /**
-     * 
-     * Gets the next Route object in the stack, converting definitions to 
+     *
+     * Gets the next Route object in the stack, converting definitions to
      * Route objects as needed.
-     * 
-     * @return Route|false A Route object, or boolean false at the end of the 
+     *
+     * @return Route|false A Route object, or boolean false at the end of the
      * stack.
-     * 
+     *
      */
     protected function createNextRoute()
     {
@@ -326,11 +326,11 @@ class Map
     }
 
     /**
-     * 
+     *
      * Gets the next route definition from the stack.
-     * 
+     *
      * @return array A route definition.
-     * 
+     *
      */
     protected function getNextDefinition()
     {
@@ -352,20 +352,20 @@ class Map
 
         // ... and the remaining common information
         $this->attach_common = $spec;
-        
+
         // reset the internal pointer of the array to avoid misnamed routes
         reset($this->attach_routes);
-        
+
         // now get the next attached route
         return $this->getNextAttach();
     }
 
     /**
-     * 
+     *
      * Gets the next attached route definition.
-     * 
+     *
      * @return array A route definition.
-     * 
+     *
      */
     protected function getNextAttach()
     {
@@ -375,18 +375,18 @@ class Map
         // which definition form are we using?
         if (is_string($key) && is_string($val)) {
             // short form, named in key
-            $spec = [
+            $spec = array(
                 'name' => $key,
                 'path' => $val,
-                'values' => [
+                'values' => array(
                     'action' => $key,
-                ],
-            ];
+                ),
+            );
         } elseif (is_int($key) && is_string($val)) {
             // short form, no name
-            $spec = [
+            $spec = array(
                 'path' => $val,
-            ];
+            );
         } elseif (is_string($key) && is_array($val)) {
             // long form, named in key
             $spec = $val;
