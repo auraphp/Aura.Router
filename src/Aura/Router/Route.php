@@ -275,6 +275,20 @@ class Route
 
     /**
      * 
+     * Magic isset() for all properties.
+     * 
+     * @param string $key The property to check if isset().
+     * 
+     * @return bool
+     * 
+     */
+    public function __isset($key)
+    {
+        return isset($this->$key);
+    }
+
+    /**
+     * 
      * Checks if a given path and server values are a match for this
      * Route.
      * 
