@@ -235,14 +235,14 @@ class Route
 
         // set the path, with prefix if needed
         $this->path_prefix = (string) $path_prefix;
-        if ($path_prefix && $path && strpos($path, '://') === false) {
+        if ($path_prefix && strpos($path, '://') === false) {
             // concat the prefix and path
             $this->path = (string) $path_prefix . $path;
             // convert all // to /, so that prefixes ending with / do not mess
             // with paths starting with /
             $this->path = str_replace('//', '/', $this->path);
         } else {
-            // no path prefix, or no path, or path has :// in it
+            // no path prefix, or path has :// in it
             $this->path = (string) $path;
         }
 
