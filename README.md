@@ -206,18 +206,19 @@ $map->add("read", "/blog/read/{:id}{:format}", [
 		},
 		"format" => ".html",
 	],
-));
+]);
 ```
 
 When you are using Aura.Router as a micro-framework, the dispatcher will look like
 
-```
+```php
 <?php
 $params = $route->values;
 $controller = $params["controller"];
 unset($params["controller"]);
 $controller($params);
 ```
+
 So when you request for the url `/blog/read/1.json`, you will get json and 
 for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
@@ -465,7 +466,7 @@ $router_map->attach('/blog', [
         'read'   => '/{:id}{:format}',
         'edit'   => '/{:id}/edit',
     ],
-));
+]);
 ```
 
 
