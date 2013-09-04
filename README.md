@@ -1,6 +1,8 @@
 Aura Router
 ===========
 
+[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png)](https://travis-ci.org/auraphp/Aura.Router)
+
 Aura Router is a PHP package that implements web routing. Given a URI path and
 a copy of `$_SERVER`, it will extract controller, action, and parameter values
 for a specific application route.
