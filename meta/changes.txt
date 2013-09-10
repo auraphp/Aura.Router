@@ -1,24 +1,5 @@
-- [CHG] Altered implementation of Route::generate() to encode param tokens
-  using rawurlencode() instead of urlencode().
-    
-- [CHG] Altered the implementation of Route::isMatch() to decode matching
-  parameters using rawurlencode().
+- [DOC] Add PHP 5.5 to Travis build, update README and LICENSE.
 
-- [CHG] In Route::generate(), use strtr() instead of str_replace() as a more
-  secure mechanism
+- [ADD] Route::__isset()
 
-- [NEW] Specific exceptions: RouteNotFound and UnexpectedType
-
-- [CHG] Map now throws UnexpectedType when attach route spec is bad
-
-- [BRK] Map now throws RouteNotFound when generate() cannot find the named
-  route
-
-- [CHG] Docblock and README changes from Akihito Koriyama, Hari KT, and Stan
-  Lemon
-
-- [CHG] Map::match() now requires the $server param to be passed
-
-- [ADD] New notation for wildcard matching; in addition to /*, we now have
-  {:foo*} for optional wildcard params, and {:foo+} for required wildcard
-  params. Thanks, Chris Doherty, for the report that led to this feature.
+- [CHG] Route::attach() now works with an empty path
