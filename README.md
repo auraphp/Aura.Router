@@ -1,6 +1,8 @@
 Aura Router
 ===========
 
+[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png)](https://travis-ci.org/auraphp/Aura.Router)
+
 Aura Router is a PHP package that implements web routing. Given a URI path and
 a copy of `$_SERVER`, it will extract controller, action, and parameter values
 for a specific application route.
@@ -206,18 +208,19 @@ $map->add("read", "/blog/read/{:id}{:format}", [
 		},
 		"format" => ".html",
 	],
-));
+]);
 ```
 
 When you are using Aura.Router as a micro-framework, the dispatcher will look like
 
-```
+```php
 <?php
 $params = $route->values;
 $controller = $params["controller"];
 unset($params["controller"]);
 $controller($params);
 ```
+
 So when you request for the url `/blog/read/1.json`, you will get json and 
 for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
@@ -465,7 +468,7 @@ $router_map->attach('/blog', [
         'read'   => '/{:id}{:format}',
         'edit'   => '/{:id}/edit',
     ],
-));
+]);
 ```
 
 
