@@ -28,7 +28,7 @@ class Map
      * @var array
      * 
      */
-    protected $attach_common = null;
+    protected $attach_common = [];
 
     /**
      * 
@@ -37,7 +37,7 @@ class Map
      * @var array
      * 
      */
-    protected $attach_routes = null;
+    protected $attach_routes = [];
 
     /**
      * 
@@ -167,16 +167,14 @@ class Map
      */
     public function appendMap(Map $map)
     {
-        // append the map
+        if ($this->routes) {
+            throw new Exception("Cannot append a map after attempting match().");
+        }
+        
         $this->definitions = array_merge(
             $this->definitions,
             $map->definitions
         );
-        
-        // reset existing routes and tracking properties
-        $this->attach_common = null;
-        $this->attach_routes = null;
-        $this->routes = [];
     }
     
     /**
@@ -190,16 +188,26 @@ class Map
      */
     public function prependMap(Map $map)
     {
-        // prepend the map
+        if ($this->routes) {
+            throw new Exception("Cannot prepend a map after attempting match().");
+        }
+        
         $this->definitions = array_merge(
             $map->definitions,
             $this->definitions
         );
-        
-        // reset existing routes and tracking properties
-        $this->attach_common = null;
-        $this->attach_routes = null;
-        $this->routes = [];
+    }
+    
+    /**
+     * 
+     * Clears out all existing definitions.
+     * 
+     * @return void
+     * 
+     */
+    public function reset()
+    {
+        return $this->setRoutes([]);
     }
     
     /**

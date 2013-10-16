@@ -868,6 +868,11 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = array_keys($this->map->getRoutes());
         $expect = ['foo', 'bar'];
         $this->assertSame($expect, $actual);
+        
+        // append after matching
+        $route = $this->map->match('/', $this->server);
+        $this->setExpectedException('Aura\Router\Exception');
+        $this->map->appendMap($append_map);
     }
     
     public function testPrependMap()
@@ -881,5 +886,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = array_keys($this->map->getRoutes());
         $expect = ['bar', 'foo'];
         $this->assertSame($expect, $actual);
+        
+        // prepend after matching
+        $route = $this->map->match('/', $this->server);
+        $this->setExpectedException('Aura\Router\Exception');
+        $this->map->prependMap($prepend_map);
     }
 }
