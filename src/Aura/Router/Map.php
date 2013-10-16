@@ -158,6 +158,52 @@ class Map
 
     /**
      * 
+     * Appends the definitions of another map to this map.
+     * 
+     * @param Map $map The map to append.
+     * 
+     * @return void
+     * 
+     */
+    public function appendMap(Map $map)
+    {
+        // append the map
+        $this->definitions = array_merge(
+            $this->definitions,
+            $map->definitions
+        );
+        
+        // reset existing routes and tracking properties
+        $this->attach_common = null;
+        $this->attach_routes = null;
+        $this->routes = [];
+    }
+    
+    /**
+     * 
+     * Prepends the definitions of another map to this map.
+     * 
+     * @param Map $map The map to prepend.
+     * 
+     * @return void
+     * 
+     */
+    public function prependMap(Map $map)
+    {
+        // prepend the map
+        $this->definitions = array_merge(
+            $map->definitions,
+            $this->definitions
+        );
+        
+        // reset existing routes and tracking properties
+        $this->attach_common = null;
+        $this->attach_routes = null;
+        $this->routes = [];
+    }
+    
+    /**
+     * 
      * Gets a route that matches a given path and other server conditions.
      * 
      * @param string $path The path to match against.

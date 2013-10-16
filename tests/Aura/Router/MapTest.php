@@ -856,4 +856,30 @@ class MapTest extends \PHPUnit_Framework_TestCase
         // this is weak. we should actually see if the log contains anything.
         $this->assertSame([], $this->map->getLog());
     }
+    
+    public function testAppendMap()
+    {
+        $append_map = $this->newMap();
+        $append_map->add('bar', '/path/to/bar');
+        
+        $this->map->add('foo', '/path/to/foo');
+        $this->map->appendMap($append_map);
+        
+        $actual = array_keys($this->map->getRoutes());
+        $expect = ['foo', 'bar'];
+        $this->assertSame($expect, $actual);
+    }
+    
+    public function testPrependMap()
+    {
+        $prepend_map = $this->newMap();
+        $prepend_map->add('bar', '/path/to/bar');
+        
+        $this->map->add('foo', '/path/to/foo');
+        $this->map->prependMap($prepend_map);
+        
+        $actual = array_keys($this->map->getRoutes());
+        $expect = ['bar', 'foo'];
+        $this->assertSame($expect, $actual);
+    }
 }
