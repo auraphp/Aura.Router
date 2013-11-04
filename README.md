@@ -42,11 +42,11 @@ manually:
 
 ```php
 <?php
-use Aura\Router\Map;
+use Aura\Router\Router;
 use Aura\Router\DefinitionFactory;
 use Aura\Router\RouteFactory;
 
-$router_map = new Map(new DefinitionFactory, new RouteFactory);
+$router_map = new Router(new DefinitionFactory, new RouteFactory);
 ```
 
 Adding A Route
@@ -535,7 +535,7 @@ $route_factory = new \Aura\Router\RouteFactory;
 $definition_factory = new \Aura\Router\DefinitionFactory;
 
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Map($definition_factory, $route_factory, $attach);
+$router_map = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
 This technique can be very effective with modular application packages. Each
@@ -559,7 +559,7 @@ $route_factory = new \Aura\Router\RouteFactory;
 $definition_factory = new \Aura\Router\DefinitionFactory;
 
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Map($definition_factory, $route_factory, $attach);
+$router_map = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
 

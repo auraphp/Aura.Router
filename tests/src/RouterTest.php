@@ -2,12 +2,12 @@
 namespace Aura\Router;
 
 /**
- * Test class for Map.
+ * Test class for Router.
  */
-class MapTest extends \PHPUnit_Framework_TestCase
+class RouterTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Map
+     * @var Router
      */
     protected $map;
 
@@ -18,13 +18,13 @@ class MapTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->map = $this->newMap();
+        $this->map = $this->newRouter();
         $this->server = $_SERVER;
     }
 
-    protected function newMap($attach = null)
+    protected function newRouter($attach = null)
     {
-        return new Map(new DefinitionFactory, new RouteFactory, $attach);
+        return new Router(new DefinitionFactory, new RouteFactory, $attach);
     }
     
     /**
@@ -701,7 +701,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         
-        $this->map = $this->newMap($attach);
+        $this->map = $this->newRouter($attach);
         
         /** SAME AS namedRoutesWithPrefixes */
         // fail to match
@@ -801,7 +801,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         
-        $this->map = $this->newMap($attach);
+        $this->map = $this->newRouter($attach);
         $this->map->add('home', '/');
         
         $actual = $this->map->match('/no/such/path', $this->server);
@@ -839,7 +839,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $restored = unserialize($saved);
         
         // set routes from the restored values
-        $map = $this->newMap();
+        $map = $this->newRouter();
         $map->setRoutes($restored);
         $actual = $map->getRoutes();
         $this->assertTrue(is_array($actual));
@@ -857,13 +857,13 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([], $this->map->getLog());
     }
     
-    public function testAppendMap()
+    public function testAppendRouter()
     {
-        $append_map = $this->newMap();
+        $append_map = $this->newRouter();
         $append_map->add('bar', '/path/to/bar');
         
         $this->map->add('foo', '/path/to/foo');
-        $this->map->appendMap($append_map);
+        $this->map->appendRouter($append_map);
         
         $actual = array_keys($this->map->getRoutes());
         $expect = ['foo', 'bar'];
@@ -872,16 +872,16 @@ class MapTest extends \PHPUnit_Framework_TestCase
         // append after matching
         $route = $this->map->match('/', $this->server);
         $this->setExpectedException('Aura\Router\Exception');
-        $this->map->appendMap($append_map);
+        $this->map->appendRouter($append_map);
     }
     
-    public function testPrependMap()
+    public function testPrependRouter()
     {
-        $prepend_map = $this->newMap();
+        $prepend_map = $this->newRouter();
         $prepend_map->add('bar', '/path/to/bar');
         
         $this->map->add('foo', '/path/to/foo');
-        $this->map->prependMap($prepend_map);
+        $this->map->prependRouter($prepend_map);
         
         $actual = array_keys($this->map->getRoutes());
         $expect = ['bar', 'foo'];
@@ -890,6 +890,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
         // prepend after matching
         $route = $this->map->match('/', $this->server);
         $this->setExpectedException('Aura\Router\Exception');
-        $this->map->prependMap($prepend_map);
+        $this->map->prependRouter($prepend_map);
     }
 }

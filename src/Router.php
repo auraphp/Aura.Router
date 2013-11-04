@@ -19,7 +19,7 @@ use Aura\Router\Exception;
  * @package Aura.Router
  * 
  */
-class Map
+class Router
 {
     /**
      * 
@@ -160,12 +160,12 @@ class Map
      * 
      * Appends the definitions of another map to this map.
      * 
-     * @param Map $map The map to append.
+     * @param Router $map The map to append.
      * 
      * @return void
      * 
      */
-    public function appendMap(Map $map)
+    public function appendRouter(Router $map)
     {
         if ($this->routes) {
             throw new Exception("Cannot append a map after attempting match().");
@@ -181,12 +181,12 @@ class Map
      * 
      * Prepends the definitions of another map to this map.
      * 
-     * @param Map $map The map to prepend.
+     * @param Router $map The map to prepend.
      * 
      * @return void
      * 
      */
-    public function prependMap(Map $map)
+    public function prependRouter(Router $map)
     {
         if ($this->routes) {
             throw new Exception("Cannot prepend a map after attempting match().");

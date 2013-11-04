@@ -17,7 +17,7 @@ use Closure;
  * Represents an individual route with a name, path, params, values, etc.
  *
  * In general, you should never need to instantiate a Route directly. Use the
- * RouteFactory instead, or the Map.
+ * RouteFactory instead, or the Router.
  * 
  * @package Aura.Router
  * 
@@ -189,7 +189,7 @@ class Route
      * 
      * @param string $path The path for this Route with param token placeholders.
      * 
-     * @param array $params Map of param tokens to regex subpatterns.
+     * @param array $params Router of param tokens to regex subpatterns.
      * 
      * @param array $values Default values for params.
      * 

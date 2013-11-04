@@ -16,7 +16,7 @@ namespace Aura\Router;
  * routes.
  *
  * In general, you should never need to instantiate a Definition directly. Use
- * the DefinitionFactory instead, or the Map.
+ * the DefinitionFactory instead, or the Router.
  * 
  * @package Aura.Router
  * 
