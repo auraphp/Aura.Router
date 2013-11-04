@@ -537,30 +537,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $route->values);
    }
    
-   public function testIsMatchOnDeprecatedWildcard()
-   {
-        $route = $this->factory->newInstance([
-            'path' => '/foo/{zim}/*',
-        ]);
-        
-        // right path with wildcard values
-        $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
-        $this->assertTrue($actual);
-        $this->assertSame('bar', $route->values['zim']);
-        $this->assertSame(['baz', 'dib'], $route->values['*']);
-        
-        // right path with trailing slash but no wildcard values
-        $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
-        $this->assertSame('bar', $route->values['zim']);
-        $this->assertSame([], $route->values['*']);
-        
-        // right path without trailing slash
-        $this->assertFalse($route->isMatch('/foo/bar', $this->server));
-        
-        // wrong path
-        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
-   }
-   
    public function testIsMatchOnOptionalWildcard()
    {
         $route = $this->factory->newInstance([

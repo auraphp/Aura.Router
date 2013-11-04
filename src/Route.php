@@ -390,13 +390,6 @@ class Route
      */
     protected function setRegex()
     {
-        // is a deprecated wildcard indicated at the end of the path?
-        if (substr($this->path, -2) == '/*') {
-            // yes, replace it with a special token and regex
-            $this->path = substr($this->path, 0, -2) . "/{__wildcard__:(.*)}";
-            $this->wildcard = '__wildcard__';
-        }
-        
         // is a required wildcard indicated at the end of the path?
         $match = preg_match("/\/\{([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
         if ($match) {

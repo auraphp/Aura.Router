@@ -395,10 +395,6 @@ $route = $router_map->match('/post/88/', $_SERVER);
 $route = $router_map->match('/post/88', $_SERVER);
 ```
 
-> N.b.: In previous releases of the router, `'/*'` was the wildcard
-> indicator, with wildcard values collected in an array named `'*'`. This
-> behavior remains available but is deprecated.
-
 
 Attaching Route Groups
 ----------------------
