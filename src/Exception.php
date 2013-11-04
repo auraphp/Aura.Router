@@ -1,7 +1,7 @@
 <?php
 /**
  * 
- * This file is part of the Aura Project for PHP.
+ * This file is part of the Aura for PHP.
  * 
  * @package Aura.Router
  * 

@@ -1,9 +1,9 @@
 <?php
-namespace Aura\Router;
+namespace Aura\Router\Config;
 
 use Aura\Framework\Test\WiringAssertionsTrait;
 
-class WiringTest extends \PHPUnit_Framework_TestCase
+class DefaultTest extends \PHPUnit_Framework_TestCase
 {
     use WiringAssertionsTrait;
 

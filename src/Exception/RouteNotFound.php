@@ -1,7 +1,7 @@
 <?php
 /**
  * 
- * This file is part of the Aura Project for PHP.
+ * This file is part of the Aura for PHP.
  * 
  * @package Aura.Router
  * 
@@ -14,11 +14,11 @@ use Aura\Router\Exception;
 
 /**
  * 
- * A different variable type was expected.
+ * A route name was not found.
  * 
  * @package Aura.Router
  * 
  */
-class UnexpectedType extends Exception
+class RouteNotFound extends Exception
 {
 }
