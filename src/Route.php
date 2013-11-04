@@ -375,7 +375,7 @@ class Route
         foreach ($data as $key => $val) {
             // Closures can't be cast to string
             if (! ($val instanceof Closure)) {
-                $replace["{:$key}"] = rawurlencode($val);
+                $replace['{' . $key . '}'] = rawurlencode($val);
             }
         }
         return strtr($this->path, $replace);
@@ -393,29 +393,29 @@ class Route
         // is a deprecated wildcard indicated at the end of the path?
         if (substr($this->path, -2) == '/*') {
             // yes, replace it with a special token and regex
-            $this->path = substr($this->path, 0, -2) . "/{:__wildcard__:(.*)}";
+            $this->path = substr($this->path, 0, -2) . "/{__wildcard__:(.*)}";
             $this->wildcard = '__wildcard__';
         }
         
         // is a required wildcard indicated at the end of the path?
-        $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
+        $match = preg_match("/\/\{([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
         if ($match) {
             $this->wildcard = $matches[1];
             $pos = strrpos($this->path, $matches[0]);
-            $this->path = substr($this->path, 0, $pos) . "/{:{$this->wildcard}:(.+)}";
+            $this->path = substr($this->path, 0, $pos) . "/{{$this->wildcard}:(.+)}";
         }
 
         // is an optional wildcard indicated at the end of the path?
-        $match = preg_match("/\/\{:([a-z_][a-z0-9_]+)\*\}$/i", $this->path, $matches);
+        $match = preg_match("/\/\{([a-z_][a-z0-9_]+)\*\}$/i", $this->path, $matches);
         if ($match) {
             $this->wildcard = $matches[1];
             $pos = strrpos($this->path, $matches[0]);
-            $this->path = substr($this->path, 0, $pos) . "(/{:{$this->wildcard}:(.*)})?";
+            $this->path = substr($this->path, 0, $pos) . "(/{{$this->wildcard}:(.*)})?";
         }
         
         // now extract inline token params from the path. converts
-        // {:token:regex} to {:token} and retains the regex in params.
-        $find = "/\{:(.*?)(:(.*?))?\}/";
+        // {token:regex} to {token} and retains the regex in params.
+        $find = "/\{(.*?)(:(.*?))?\}/";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $whole = $match[0];
@@ -425,7 +425,7 @@ class Route
                 // the existing param ...
                 $this->params[$name] = $match[3];
                 // ... and replace in the path without the pattern.
-                $this->path = str_replace($whole, "{:$name}", $this->path);
+                $this->path = str_replace($whole, '{' . $name . '}', $this->path);
             } elseif (! isset($this->params[$name])) {
                 // use a default pattern when none exists
                 $this->params[$name] = "([^/]+)";
@@ -442,7 +442,7 @@ class Route
                     $message = "Subpattern for param '$name' must start with '('.";
                     throw new Exception($message);
                 } else {
-                    $keys[] = "{:$name}";
+                    $keys[] = '{' . $name . '}';
                     $vals[] = "(?P<$name>" . substr($subpattern, 1);
                 }
             }

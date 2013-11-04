@@ -68,7 +68,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnDynamicPath()
     {
         $route = $this->factory->newInstance([
-            'path' => '/{:controller}/{:action}/{:id}{:format}',
+            'path' => '/{controller}/{action}/{id}{format}',
             'params' => [
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
@@ -321,7 +321,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testBadSubpattern()
     {
         $route = $this->factory->newInstance([
-            'path' => '/{:controller}',
+            'path' => '/{controller}',
             'params' => [
                 // should open with a paren
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]+',
@@ -335,7 +335,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateControllerAsClosureIssue19()
     {
         $route = $this->factory->newInstance([
-            'path' => '/blog/{:id}/edit',
+            'path' => '/blog/{id}/edit',
             'params' => [
                 'id' => '([0-9]+)',
             ],
@@ -356,7 +356,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerate()
     {
         $route = $this->factory->newInstance([
-          'path' => '/blog/{:id}/edit',
+          'path' => '/blog/{id}/edit',
           'params' => [
               'id' => '([0-9]+)',
           ],
@@ -369,7 +369,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithClosure()
     {
         $route = $this->factory->newInstance([
-          'path' => '/blog/{:id}/edit',
+          'path' => '/blog/{id}/edit',
           'params' => [
               'id' => '([0-9]+)',
           ],
@@ -386,7 +386,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithCallback()
     {
         $route = $this->factory->newInstance([
-          'path' => '/blog/{:id}/edit',
+          'path' => '/blog/{id}/edit',
           'params' => [
               'id' => '([0-9]+)',
           ],
@@ -406,7 +406,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnDefaultAndInlineSubpatterns()
     {
         $route = $this->factory->newInstance([
-            'path' => '/{:controller}/{:action:(browse|read|edit|add|delete)}/{:id:(\d+)}{:format:(\..*)?}',
+            'path' => '/{controller}/{action:(browse|read|edit|add|delete)}/{id:(\d+)}{format:(\..*)?}',
         ]);
         
         $actual = $route->isMatch('/any-value/read/42', $this->server);
@@ -442,7 +442,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newInstance([
             'name' => 'google-search',
-            'path' => 'http://google.com/?q={:q}',
+            'path' => 'http://google.com/?q={q}',
             'routable' => false,
             'path_prefix' => '/foo/bar', // SHOULD NOT show up
         ]);
@@ -456,7 +456,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newInstance([
             'name' => 'rfc3986',
-            'path' => '/path/{:string}',
+            'path' => '/path/{string}',
             'routable' => false,
         ]);
 
@@ -473,7 +473,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnRFC3986Paths()
     {
         $route = $this->factory->newInstance([
-            'path' => '/{:controller}/{:action}/{:param1}/{:param2}',
+            'path' => '/{controller}/{action}/{param1}/{param2}',
         ]);
         
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
@@ -514,7 +514,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ];
         
         $route = $this->factory->newInstance([
-            'path' => '/blog/read/{:id}{:format}',
+            'path' => '/blog/read/{id}{format}',
             'params' => [
                 'id' => '(\d+)',
                 'format' => '(\.json|\.html)?',
@@ -540,7 +540,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    public function testIsMatchOnDeprecatedWildcard()
    {
         $route = $this->factory->newInstance([
-            'path' => '/foo/{:zim}/*',
+            'path' => '/foo/{zim}/*',
         ]);
         
         // right path with wildcard values
@@ -564,7 +564,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    public function testIsMatchOnOptionalWildcard()
    {
         $route = $this->factory->newInstance([
-            'path' => '/foo/{:zim}/{:wild*}',
+            'path' => '/foo/{zim}/{wild*}',
         ]);
         
         // right path with wildcard values
@@ -588,7 +588,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    public function testIsMatchOnRequiredWildcard()
    {
         $route = $this->factory->newInstance([
-            'path' => '/foo/{:zim}/{:wild+}',
+            'path' => '/foo/{zim}/{wild+}',
         ]);
         
         // right path with wildcard values

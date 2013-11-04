@@ -55,7 +55,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     
     public function testAddComplexRoute()
     {
-        $this->map->add('read', '/resource/{:id}', [
+        $this->map->add('read', '/resource/{id}', [
             'params' => [
                 'id' => '(\d+)',
             ],
@@ -92,10 +92,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $this->map->attach(null, [
             'routes' => [
-                '/{:controller}/{:action}/{:id}{:format}',
-                '/{:controller}/{:action}/{:id}',
-                '/{:controller}/{:action}',
-                '/{:controller}',
+                '/{controller}/{action}/{id}{format}',
+                '/{controller}/{action}/{id}',
+                '/{controller}/{action}',
+                '/{controller}',
                 '/',
             ],
             'params' => [
@@ -163,10 +163,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->map->attach(null, [
             'routes' => [
                 'browse' => '/',
-                'read' => '/{:id}{:format}',
-                'edit' => '/{:id}/edit',
+                'read' => '/{id}{format}',
+                'edit' => '/{id}/edit',
                 'add' => '/add',
-                'delete' => '/{:id}/delete',
+                'delete' => '/{id}/delete',
             ],
             'params' => [
                 'action'        => '([a-zA-Z][a-zA-Z0-9_-]*)',
@@ -252,10 +252,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $this->map->attach(null, [
             'routes' => [
-                ['path' => '/{:controller}/{:action}/{:id}{:format}'],
-                ['path' => '/{:controller}/{:action}/{:id}'],
-                ['path' => '/{:controller}/{:action}'],
-                ['path' => '/{:controller}'],
+                ['path' => '/{controller}/{action}/{id}{format}'],
+                ['path' => '/{controller}/{action}/{id}'],
+                ['path' => '/{controller}/{action}'],
+                ['path' => '/{controller}'],
                 ['path' => '/'],
             ],
             'params' => [
@@ -323,10 +323,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->map->attach('/page', [
             'routes' => [
                 'browse' => '/',
-                'read' => '/{:id}{:format}',
-                'edit' => '/{:id}/edit',
+                'read' => '/{id}{format}',
+                'edit' => '/{id}/edit',
                 'add' => '/add',
-                'delete' => '/{:id}/delete',
+                'delete' => '/{id}/delete',
             ],
             'params' => [
                 'id'            => '([0-9]+)',
@@ -422,11 +422,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'method' => 'GET',
                 ],
                 'read' => [
-                    'path' => '/{:id}',
+                    'path' => '/{id}',
                     'method' => 'GET',
                 ],
                 'edit' => [
-                    'path' => '/{:id}',
+                    'path' => '/{id}',
                     'method' => 'PUT',
                 ],
                 'add' => [
@@ -434,7 +434,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'method' => 'POST',
                 ],
                 'delete' => [
-                    'path' => '/{:id}',
+                    'path' => '/{id}',
                     'method' => 'DELETE',
                 ],
             ],
@@ -515,10 +515,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             return [
                 'routes' => [
                     'browse' => '/',
-                    'read' => '/{:id}{:format}',
-                    'edit' => '/{:id}/edit',
+                    'read' => '/{id}{format}',
+                    'edit' => '/{id}/edit',
                     'add' => '/add',
-                    'delete' => '/{:id}/delete',
+                    'delete' => '/{id}/delete',
                 ],
                 'params' => [
                     'id'            => '([0-9]+)',
@@ -612,10 +612,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->map->attach('/page', [
             'routes' => [
                 'browse' => '/',
-                'read' => '/{:id}{:format}',
-                'edit' => '/{:id}/edit',
+                'read' => '/{id}{format}',
+                'edit' => '/{id}/edit',
                 'add' => '/add',
-                'delete' => '/{:id}/delete',
+                'delete' => '/{id}/delete',
             ],
             'params' => [
                 'id'            => '([0-9]+)',
@@ -655,10 +655,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->map->attach('/page', [
             'routes' => [
                 'browse' => '/',
-                'read' => '/{:id}{:format}',
-                'edit' => '/{:id}/edit',
+                'read' => '/{id}{format}',
+                'edit' => '/{id}/edit',
                 'add' => '/add',
-                'delete' => '/{:id}/delete',
+                'delete' => '/{id}/delete',
             ],
             'params' => [
                 'id'            => '([0-9]+)',
@@ -684,10 +684,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             '/page' => [
                 'routes' => [
                     'browse' => '/',
-                    'read' => '/{:id}{:format}',
-                    'edit' => '/{:id}/edit',
+                    'read' => '/{id}{format}',
+                    'edit' => '/{id}/edit',
                     'add' => '/add',
-                    'delete' => '/{:id}/delete',
+                    'delete' => '/{id}/delete',
                 ],
                 'params' => [
                     'id'            => '([0-9]+)',
@@ -784,10 +784,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             '/page' => [
                 'routes' => [
                     'browse' => '/',
-                    'read' => '/{:id}{:format}',
-                    'edit' => '/{:id}/edit',
+                    'read' => '/{id}{format}',
+                    'edit' => '/{id}/edit',
                     'add' => '/add',
-                    'delete' => '/{:id}/delete',
+                    'delete' => '/{id}/delete',
                 ],
                 'params' => [
                     'id'            => '([0-9]+)',
@@ -813,7 +813,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->map->attach('/page', [
             'routes' => [
                 'browse' => '/',
-                'read' => '/{:id}{:format}',
+                'read' => '/{id}{format}',
             ],
             'params' => [
                 'id'            => '([0-9]+)',
@@ -832,7 +832,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Aura\Router\Route', $actual['page:browse']);
         $this->assertEquals('/page/', $actual['page:browse']->path);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page:read']);
-        $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
+        $this->assertEquals('/page/{id}{format}', $actual['page:read']->path);
         
         // emulate caching the values
         $saved = serialize($actual);
@@ -847,7 +847,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Aura\Router\Route', $actual['page:browse']);
         $this->assertEquals('/page/', $actual['page:browse']->path);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page:read']);
-        $this->assertEquals('/page/{:id}{:format}', $actual['page:read']->path);
+        $this->assertEquals('/page/{id}{format}', $actual['page:read']->path);
         
     }
     
