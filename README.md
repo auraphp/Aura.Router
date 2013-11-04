@@ -56,7 +56,7 @@ To create a route, call the `add()` method.
 
 ```php
 <?php
-// create the router map object
+// create the router object
 $router = require '/path/to/Aura.Router/scripts/instance.php';
 
 // add a simple named route without params
@@ -191,7 +191,7 @@ possible by  assigning anonymous function to controller.
 
 ```php
 <?php
-$map->add("read", "/blog/read/{id}{format}", [
+$router->add("read", "/blog/read/{id}{format}", [
 	"params" => [
 		"id" => "(\d+)",
 		"format" => "(\..+)?",
@@ -530,7 +530,7 @@ $route_factory = new \Aura\Router\RouteFactory;
 // create the definition factory
 $definition_factory = new \Aura\Router\DefinitionFactory;
 
-// create a router map with attached route groups
+// create a router with attached route groups
 $router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
@@ -554,7 +554,7 @@ $route_factory = new \Aura\Router\RouteFactory;
 // create the definition factory
 $definition_factory = new \Aura\Router\DefinitionFactory;
 
-// create a router map with attached route groups
+// create a router with attached route groups
 $router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
@@ -562,7 +562,7 @@ $router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 Caching
 -------
 
-You may wish to cache the router map for production deployments so that the
+You may wish to cache the router for production deployments so that the
 router does not have to build the route objects from definitions on each page
 load. The methods `getRoutes()` and `setRoutes()` may be used for that
 purpose.
@@ -572,7 +572,7 @@ routes:
 
 ```php
 <?php
-// create a router map object
+// create a router object
 $router = require '/path/to/Aura.Router/scripts/instance.php';
 
 // the cache file location

@@ -136,7 +136,7 @@ class Router
         $spec['name'] = $name;
         $spec['path'] = $path;
 
-        // these should be set only by the map
+        // these should be set only by the router
         unset($spec['name_prefix']);
         unset($spec['path_prefix']);
 
@@ -252,7 +252,7 @@ class Router
 
     /**
      * 
-     * Reset the map to use an array of Route objects.
+     * Reset the Router to use an array of Route objects.
      * 
      * @param array $routes Use this array of route objects, likely generated
      * from `getRoutes()`.
@@ -270,7 +270,7 @@ class Router
 
     /**
      * 
-     * Get the array of Route objects in this map, likely for caching and
+     * Get the array of Route objects in this Router, likely for caching and
      * re-setting via `setRoutes()`.
      * 
      * @return array

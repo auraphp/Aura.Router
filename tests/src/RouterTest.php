@@ -830,9 +830,9 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $restored = unserialize($saved);
         
         // set routes from the restored values
-        $map = $this->newRouter();
-        $map->setRoutes($restored);
-        $actual = $map->getRoutes();
+        $router = $this->newRouter();
+        $router->setRoutes($restored);
+        $actual = $router->getRoutes();
         $this->assertTrue(is_array($actual));
         $this->assertTrue(count($actual) == 2);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page:browse']);
