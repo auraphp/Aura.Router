@@ -68,6 +68,15 @@ class Router
 
     /**
      * 
+     * A copy of the $_SERVER array.
+     * 
+     * @var array
+     * 
+     */
+    protected $server;
+    
+    /**
+     * 
      * Logging information about which routes were attempted to match.
      * 
      * @var array
@@ -85,6 +94,8 @@ class Router
      * @param RouteFactory $route_factory A factory for creating route 
      * objects.
      * 
+     * @param array $server A copy of the $_SERVER superglobal.
+     * 
      * @param array $attach A series of route definitions to be attached to
      * the router.
      * 
@@ -92,10 +103,12 @@ class Router
     public function __construct(
         DefinitionFactory $definition_factory,
         RouteFactory $route_factory,
+        array $server,
         array $attach = null
     ) {
         $this->definition_factory = $definition_factory;
         $this->route_factory = $route_factory;
+        $this->server = $server;
         foreach ((array) $attach as $path_prefix => $spec) {
             $this->attach($path_prefix, $spec);
         }
@@ -174,13 +187,11 @@ class Router
      * 
      * @param string $path The path to match against.
      * 
-     * @param array $server An array copy of $_SERVER.
-     * 
      * @return Route|false Returns a Route object when it finds a match, or 
      * boolean false if there is no match.
      * 
      */
-    public function match($path, array $server)
+    public function match($path)
     {
         // reset the log
         $this->log = [];
@@ -188,7 +199,7 @@ class Router
         // look through existing route objects
         foreach ($this->routes as $route) {
             $this->logRoute($route);
-            if ($route->isMatch($path, $server)) {
+            if ($route->isMatch($path, $this->server)) {
                 return $route;
             }
         }
@@ -197,7 +208,7 @@ class Router
         while ($this->attach_routes || $this->definitions) {
             $route = $this->createNextRoute();
             $this->logRoute($route);
-            if ($route->isMatch($path, $server)) {
+            if ($route->isMatch($path, $this->server)) {
                 return $route;
             }
         }
