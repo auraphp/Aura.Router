@@ -14,7 +14,7 @@ class DefaultTest extends \PHPUnit_Framework_TestCase
 
     public function testServices()
     {
-        $this->assertGet('router_map', 'Aura\Router\Router');
+        $this->assertGet('router', 'Aura\Router\Router');
     }
 
     public function testInstances()

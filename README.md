@@ -34,7 +34,7 @@ The easiest way to instantiate a router is to include the
 
 ```php
 <?php
-$router_map = include '/path/to/Aura.Router/scripts/instance.php';
+$router = include '/path/to/Aura.Router/scripts/instance.php';
 ```
 
 Alternatively, you can add Aura Router to your autoloader and instantiate it
@@ -46,7 +46,7 @@ use Aura\Router\Router;
 use Aura\Router\DefinitionFactory;
 use Aura\Router\RouteFactory;
 
-$router_map = new Router(new DefinitionFactory, new RouteFactory);
+$router = new Router(new DefinitionFactory, new RouteFactory);
 ```
 
 Adding A Route
@@ -57,16 +57,16 @@ To create a route, call the `add()` method.
 ```php
 <?php
 // create the router map object
-$router_map = require '/path/to/Aura.Router/scripts/instance.php';
+$router = require '/path/to/Aura.Router/scripts/instance.php';
 
 // add a simple named route without params
-$router_map->add('home', '/');
+$router->add('home', '/');
 
 // add a simple unnamed route with params
-$router_map->add(null, '/{controller}/{action}/{id:(\d+)}');
+$router->add(null, '/{controller}/{action}/{id:(\d+)}');
 
 // add a complex named route
-$router_map->add('read', '/blog/read/{id}{format}', [
+$router->add('read', '/blog/read/{id}{format}', [
     'params' => [
         'id'     => '(\d+)',
         'format' => '(\..+)?',
@@ -97,7 +97,7 @@ and the `$_SERVER` values.
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // get the route based on the path and server
-$route = $router_map->match($path, $_SERVER);
+$route = $router->match($path, $_SERVER);
 ```
 
 The `match()` method does not parse the URI or use `$_SERVER` internally. This
@@ -166,7 +166,7 @@ To generate a URI path from a route so that you can create links, call
 ```php
 <?php
 // $path => "/blog/read/42.atom"
-$path = $router_map->generate('read', [
+$path = $router->generate('read', [
     'id' => 42,
     'format' => '.atom',
 ]);
@@ -274,7 +274,7 @@ Here is a full route specification named `read` with all keys in place:
 
 ```php
 <?php
-$router_map->add('read', '/blog/read/{id}{format}', [
+$router->add('read', '/blog/read/{id}{format}', [
     'params' => [
         'id' => '(\d+)',
         'format' => '(\..+)?',
@@ -319,7 +319,7 @@ for the route instead of an array ...
 
 ```php
 <?php
-$router_map->add('archive', '/archive/{year}/{month}/{day}');
+$router->add('archive', '/archive/{year}/{month}/{day}');
 ```
 
 ... then Aura Router will use a default subpattern that matches everything
@@ -329,7 +329,7 @@ following long-form route:
 
 ```php
 <?php
-$router_map->add('archive', '/archive/{year}/{month}/{day}', [
+$router->add('archive', '/archive/{year}/{month}/{day}', [
     'params' => [
         'year'  => '([^/]+)',
         'month' => '([^/]+)',
@@ -357,20 +357,20 @@ the end or not.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{id}/{other*}');
+$router->add('wild_post', '/post/{id}/{other*}');
 
 // this matches, with the following values
-$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
+$route = $router->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
 // $route->values['other'] = ['foo', 'bar', 'baz'];
 
 // this also matches, with the following values; note the trailing slash
-$route = $router_map->match('/post/88/', $_SERVER);
+$route = $router->match('/post/88/', $_SERVER);
 // $route->values['id'] = 88;
 // $route->values['other'] = [];
 
 // this also matches, with the following values; note the missing slash
-$route = $router_map->match('/post/88', $_SERVER);
+$route = $router->match('/post/88', $_SERVER);
 // $route->values['id'] = 88;
 // $route->values['other'] = [];
 ```
@@ -383,16 +383,16 @@ sequential array named `'foo'`.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{id}/{other+}');
+$router->add('wild_post', '/post/{id}/{other+}');
 
 // this matches, with the following values
-$route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
+$route = $router->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
 // $route->values['other'] = ['foo', 'bar', 'baz'];
 
 // these do not match
-$route = $router_map->match('/post/88/', $_SERVER);
-$route = $router_map->match('/post/88', $_SERVER);
+$route = $router->match('/post/88/', $_SERVER);
+$route = $router->match('/post/88', $_SERVER);
 ```
 
 
@@ -405,7 +405,7 @@ mounted at `'/blog'` in your application, you can do this:
 
 ```php
 <?php
-$router_map->attach('/blog', [
+$router->attach('/blog', [
     
     // the routes to attach
     'routes' => [
@@ -444,7 +444,7 @@ you don't need to repeat common information:
 
 ```php
 <?php
-$router_map->attach('/blog', [
+$router->attach('/blog', [
     
     // common params for the routes
     'params' => [
@@ -531,7 +531,7 @@ $route_factory = new \Aura\Router\RouteFactory;
 $definition_factory = new \Aura\Router\DefinitionFactory;
 
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
+$router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
 This technique can be very effective with modular application packages. Each
@@ -555,7 +555,7 @@ $route_factory = new \Aura\Router\RouteFactory;
 $definition_factory = new \Aura\Router\DefinitionFactory;
 
 // create a router map with attached route groups
-$router_map = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
+$router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
 
@@ -573,7 +573,7 @@ routes:
 ```php
 <?php
 // create a router map object
-$router_map = require '/path/to/Aura.Router/scripts/instance.php';
+$router = require '/path/to/Aura.Router/scripts/instance.php';
 
 // the cache file location
 $cache = '/path/to/routes.cache';
@@ -583,14 +583,14 @@ if (file_exists($cache)) {
     
     // restore from the cache
     $routes = unserialize(file_get_contents($cache));
-    $router_map->setRoutes($routes);
+    $router->setRoutes($routes);
     
 } else {
     
     // build the routes using add() and attach() ...
     // ... ... ...
     // ... then save to the cache for the next page load
-    $routes = $router_map->getRoutes();
+    $routes = $router->getRoutes();
     file_put_contents($cache, serialize($routes));
     
 }
