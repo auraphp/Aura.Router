@@ -63,10 +63,10 @@ $router_map = require '/path/to/Aura.Router/scripts/instance.php';
 $router_map->add('home', '/');
 
 // add a simple unnamed route with params
-$router_map->add(null, '/{:controller}/{:action}/{:id:(\d+)}');
+$router_map->add(null, '/{controller}/{action}/{id:(\d+)}');
 
 // add a complex named route
-$router_map->add('read', '/blog/read/{:id}{:format}', [
+$router_map->add('read', '/blog/read/{id}{format}', [
     'params' => [
         'id'     => '(\d+)',
         'format' => '(\..+)?',
@@ -108,7 +108,7 @@ application foundation or framework.
 
 The returned `$route` object will contain, among other things, a `$values`
 array with values for each of the parameters identified by the route path. For
-example, matching a route with the path `/{:controller}/{:action}/{:id}` will
+example, matching a route with the path `/{controller}/{action}/{id}` will
 populate the `$route->values` array with `controller`, `action`, and `id`
 keys.
 
@@ -181,7 +181,7 @@ to be able to generate a path from it.
 The example shows that passing an array of data as the second parameter will
 cause that data to be interpolated into the route path. This data array is
 optional. If there are path params without matching data keys, those params
-will *not* be replaced, leaving the `{:param}` token in the path. If there are
+will *not* be replaced, leaving the `{param}` token in the path. If there are
 data keys without matching params, those values will not be added to the path.
 
 As a Microframework
@@ -191,7 +191,7 @@ possible by  assigning anonymous function to controller.
 
 ```php
 <?php
-$map->add("read", "/blog/read/{:id}{:format}", [
+$map->add("read", "/blog/read/{id}{format}", [
 	"params" => [
 		"id" => "(\d+)",
 		"format" => "(\..+)?",
@@ -242,7 +242,7 @@ params will override these settings. For example:
         ]
         
   Note that the path itself is allowed to contain param tokens with inline 
-  regular expressions; e.g., `/read/{:id:(\d+)}`.  This may be easier to read in some cases.
+  regular expressions; e.g., `/read/{id:(\d+)}`.  This may be easier to read in some cases.
 
 - `values` -- The default values for the route. These will be overwritten 
 by matching params from the path.
@@ -274,7 +274,7 @@ Here is a full route specification named `read` with all keys in place:
 
 ```php
 <?php
-$router_map->add('read', '/blog/read/{:id}{:format}', [
+$router_map->add('read', '/blog/read/{id}{format}', [
     'params' => [
         'id' => '(\d+)',
         'format' => '(\..+)?',
@@ -319,7 +319,7 @@ for the route instead of an array ...
 
 ```php
 <?php
-$router_map->add('archive', '/archive/{:year}/{:month}/{:day}');
+$router_map->add('archive', '/archive/{year}/{month}/{day}');
 ```
 
 ... then Aura Router will use a default subpattern that matches everything
@@ -329,7 +329,7 @@ following long-form route:
 
 ```php
 <?php
-$router_map->add('archive', '/archive/{:year}/{:month}/{:day}', [
+$router_map->add('archive', '/archive/{year}/{month}/{day}', [
     'params' => [
         'year'  => '([^/]+)',
         'month' => '([^/]+)',
@@ -349,7 +349,7 @@ all. There are two types of such "wildcard" routes. (Wildcard routing of this
 sort works only when specified at the end of the path.)
 
 The first is a "values optional" named wildcard, represented by adding
-`/{:foo*}` to the end of the path. This will allow the route to match
+`/{foo*}` to the end of the path. This will allow the route to match
 anything after that point, including nothing at all. On a match, it will
 collect the remaining slash-separated values into a sequential array named
 `'foo'`. Notably, the matched path with no wildcard values may have a slash at
@@ -357,7 +357,7 @@ the end or not.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{:id}/{:other*}');
+$router_map->add('wild_post', '/post/{id}/{other*}');
 
 // this matches, with the following values
 $route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
@@ -375,7 +375,7 @@ $route = $router_map->match('/post/88', $_SERVER);
 // $route->values['other'] = [];
 ```
 
-The second is a "values required" wildcard, represented by adding `/{:foo+}`
+The second is a "values required" wildcard, represented by adding `/{foo+}`
 to the end of the path. This will allow the route to match anything at all
 after that point, but there must be at least one slash and an additional
 value. On a match, it will collect the remaining slash-separated values into a
@@ -383,7 +383,7 @@ sequential array named `'foo'`.
 
 ```php
 <?php
-$router_map->add('wild_post', '/post/{:id}/{:other+}');
+$router_map->add('wild_post', '/post/{id}/{other+}');
 
 // this matches, with the following values
 $route = $router_map->match('/post/88/foo/bar/baz', $_SERVER);
@@ -419,7 +419,7 @@ $router_map->attach('/blog', [
         
         // a long-form route named 'read'
         'read' => [
-            'path' => '/{:id}{:format}',
+            'path' => '/{id}{format}',
             'params' => [
                 'id'     => '(\d+)',
                 'format' => '(\.json|\.atom)?'
@@ -430,7 +430,7 @@ $router_map->attach('/blog', [
         ],
         
         // a short-form route named 'edit'
-        'edit' => '/{:id:(\d+)}/edit',
+        'edit' => '/{id:(\d+)}/edit',
     ],
 ]);
 ```
@@ -439,8 +439,8 @@ Each of the route paths will be prefixed with `/blog`, so the effective paths
 become:
 
 - `browse: /blog/`
-- `read:   /blog/{:id}{:format}`
-- `edit:   /blog/{:id}/edit`
+- `read:   /blog/{id}{format}`
+- `edit:   /blog/{id}/edit`
 
 You can set other route specification keys as part of the attachment
 specification; these will be used as the defaults for each attached route, so
@@ -465,8 +465,8 @@ $router_map->attach('/blog', [
     // the routes to attach
     'routes' => [
         'browse' => '/',
-        'read'   => '/{:id}{:format}',
-        'edit'   => '/{:id}/edit',
+        'read'   => '/{id}{format}',
+        'edit'   => '/{id}/edit',
     ],
 ]);
 ```
@@ -508,8 +508,8 @@ $attach = [
         // the routes to attach
         'routes' => [
             'browse' => '/',
-            'read'   => '/read/{:id}{:format}',
-            'edit' => '/{:id}/edit',
+            'read'   => '/read/{id}{format}',
+            'edit' => '/{id}/edit',
         ],
     ],
     
