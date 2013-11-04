@@ -375,7 +375,7 @@ class Route
         foreach ($data as $key => $val) {
             // Closures can't be cast to string
             if (! ($val instanceof Closure)) {
-                $replace['{' . $key . '}'] = rawurlencode($val);
+                $replace["{{$key}}"] = rawurlencode($val);
             }
         }
         return strtr($this->path, $replace);
@@ -395,7 +395,8 @@ class Route
         if ($match) {
             $this->wildcard = $matches[1];
             $pos = strrpos($this->path, $matches[0]);
-            $this->path = substr($this->path, 0, $pos) . "/{{$this->wildcard}:(.+)}";
+            $this->path = substr($this->path, 0, $pos) . "/{{$this->wildcard}}";
+            $this->params[$this->wildcard] = '(.+)';
         }
 
         // is an optional wildcard indicated at the end of the path?
@@ -403,12 +404,13 @@ class Route
         if ($match) {
             $this->wildcard = $matches[1];
             $pos = strrpos($this->path, $matches[0]);
-            $this->path = substr($this->path, 0, $pos) . "(/{{$this->wildcard}:(.*)})?";
+            $this->path = substr($this->path, 0, $pos) . "(/{{$this->wildcard}})?";
+            $this->params[$this->wildcard] = '(.*)';
         }
         
         // now extract inline token params from the path. converts
         // {token:regex} to {token} and retains the regex in params.
-        $find = "/\{(.*?)(:(.*?))?\}/";
+        $find = "/\{([a-zA-Z0-9_]+)\}/";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $whole = $match[0];
@@ -418,7 +420,7 @@ class Route
                 // the existing param ...
                 $this->params[$name] = $match[3];
                 // ... and replace in the path without the pattern.
-                $this->path = str_replace($whole, '{' . $name . '}', $this->path);
+                $this->path = str_replace($whole, "{{$name}}", $this->path);
             } elseif (! isset($this->params[$name])) {
                 // use a default pattern when none exists
                 $this->params[$name] = "([^/]+)";
@@ -435,7 +437,7 @@ class Route
                     $message = "Subpattern for param '$name' must start with '('.";
                     throw new Exception($message);
                 } else {
-                    $keys[] = '{' . $name . '}';
+                    $keys[] = "{{$name}}";
                     $vals[] = "(?P<$name>" . substr($subpattern, 1);
                 }
             }

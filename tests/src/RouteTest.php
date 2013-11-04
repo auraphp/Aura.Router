@@ -403,10 +403,15 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         return $data;
     }
     
-    public function testIsMatchOnDefaultAndInlineSubpatterns()
+    public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
         $route = $this->factory->newInstance([
-            'path' => '/{controller}/{action:(browse|read|edit|add|delete)}/{id:(\d+)}{format:(\..*)?}',
+            'path' => '/{controller}/{action}/{id}{format}',
+            'params' => [
+                'action' => '(browse|read|edit|add|delete)',
+                'id' => '(\d+)',
+                'format' => '(\..*)?',
+            ],
         ]);
         
         $actual = $route->isMatch('/any-value/read/42', $this->server);
