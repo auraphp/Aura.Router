@@ -856,40 +856,4 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         // this is weak. we should actually see if the log contains anything.
         $this->assertSame([], $this->map->getLog());
     }
-    
-    public function testAppendRouter()
-    {
-        $append_map = $this->newRouter();
-        $append_map->add('bar', '/path/to/bar');
-        
-        $this->map->add('foo', '/path/to/foo');
-        $this->map->appendRouter($append_map);
-        
-        $actual = array_keys($this->map->getRoutes());
-        $expect = ['foo', 'bar'];
-        $this->assertSame($expect, $actual);
-        
-        // append after matching
-        $route = $this->map->match('/', $this->server);
-        $this->setExpectedException('Aura\Router\Exception');
-        $this->map->appendRouter($append_map);
-    }
-    
-    public function testPrependRouter()
-    {
-        $prepend_map = $this->newRouter();
-        $prepend_map->add('bar', '/path/to/bar');
-        
-        $this->map->add('foo', '/path/to/foo');
-        $this->map->prependRouter($prepend_map);
-        
-        $actual = array_keys($this->map->getRoutes());
-        $expect = ['bar', 'foo'];
-        $this->assertSame($expect, $actual);
-        
-        // prepend after matching
-        $route = $this->map->match('/', $this->server);
-        $this->setExpectedException('Aura\Router\Exception');
-        $this->map->prependRouter($prepend_map);
-    }
 }

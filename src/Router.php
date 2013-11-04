@@ -158,48 +158,6 @@ class Router
 
     /**
      * 
-     * Appends the definitions of another map to this map.
-     * 
-     * @param Router $map The map to append.
-     * 
-     * @return void
-     * 
-     */
-    public function appendRouter(Router $map)
-    {
-        if ($this->routes) {
-            throw new Exception("Cannot append a map after attempting match().");
-        }
-        
-        $this->definitions = array_merge(
-            $this->definitions,
-            $map->definitions
-        );
-    }
-    
-    /**
-     * 
-     * Prepends the definitions of another map to this map.
-     * 
-     * @param Router $map The map to prepend.
-     * 
-     * @return void
-     * 
-     */
-    public function prependRouter(Router $map)
-    {
-        if ($this->routes) {
-            throw new Exception("Cannot prepend a map after attempting match().");
-        }
-        
-        $this->definitions = array_merge(
-            $map->definitions,
-            $this->definitions
-        );
-    }
-    
-    /**
-     * 
      * Clears out all existing definitions.
      * 
      * @return void
