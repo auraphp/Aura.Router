@@ -17,7 +17,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     protected function newRouter($attach = null)
     {
         return new Router(
-            new DefinitionFactory,
             new RouteFactory,
             $attach
         );

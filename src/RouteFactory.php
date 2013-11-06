@@ -12,13 +12,33 @@ namespace Aura\Router;
 
 /**
  * 
- * A factory to create Route objects.
+ * A factory to create Definition and Route objects.
  * 
  * @package Aura.Router
  * 
  */
 class RouteFactory
 {
+    /**
+     * 
+     * Returns a new Definition instance.
+     * 
+     * @param string $type The type of definition, 'single' or 'attach'.
+     * 
+     * @param array|callable $spec The definition spec: either an array, or a
+     * callable that returns an array.
+     * 
+     * @param string $path_prefix For 'attach' definitions, use this as the 
+     * prefix for attached paths.
+     * 
+     * @return Route
+     * 
+     */
+    public function newDefinition($type, $spec, $path_prefix = null)
+    {
+        return new Definition($type, $spec, $path_prefix);
+    }
+    
     /**
      * 
      * An array of default parameters for Route objects.
@@ -51,7 +71,7 @@ class RouteFactory
      * @return Route
      * 
      */
-    public function newInstance(array $params)
+    public function newRoute(array $params)
     {
         $params = array_merge($this->params, $params);
         return new Route(

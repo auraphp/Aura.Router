@@ -88,22 +88,17 @@ class Router
      * 
      * Constructor.
      * 
-     * @param DefinitionFactory $definition_factory A factory for creating 
-     * definition objects.
-     * 
-     * @param RouteFactory $route_factory A factory for creating route 
-     * objects.
+     * @param RouteFactory $route_factory A factory for creating definition
+     * and route objects.
      * 
      * @param array $attach A series of route definitions to be attached to
      * the router.
      * 
      */
     public function __construct(
-        DefinitionFactory $definition_factory,
         RouteFactory $route_factory,
         array $attach = null
     ) {
-        $this->definition_factory = $definition_factory;
         $this->route_factory = $route_factory;
         foreach ((array) $attach as $path_prefix => $spec) {
             $this->attach($path_prefix, $spec);
@@ -137,7 +132,7 @@ class Router
         unset($spec['path_prefix']);
 
         // append to the route definitions
-        $this->definitions[] = $this->definition_factory->newInstance(
+        $this->definitions[] = $this->route_factory->newDefinition(
             'single',
             $spec
         );
@@ -158,7 +153,7 @@ class Router
      */
     public function attach($path_prefix, $spec)
     {
-        $this->definitions[] = $this->definition_factory->newInstance(
+        $this->definitions[] = $this->route_factory->newDefinition(
             'attach',
             $spec,
             $path_prefix
@@ -318,7 +313,7 @@ class Router
         }
 
         // create a route object from it
-        $route = $this->route_factory->newInstance($spec);
+        $route = $this->route_factory->newRoute($spec);
 
         // retain the route object ...
         $name = $route->name;

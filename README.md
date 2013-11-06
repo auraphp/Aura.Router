@@ -56,10 +56,9 @@ Instantiate a _Router_ like so:
 ```php
 <?php
 use Aura\Router\Router;
-use Aura\Router\DefinitionFactory;
 use Aura\Router\RouteFactory;
 
-$router = new Router(new DefinitionFactory, new RouteFactory);
+$router = new Router(new RouteFactory);
 ?>
 ```
 
@@ -566,11 +565,8 @@ $attach = array(
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
 
-// create the definition factory
-$definition_factory = new \Aura\Router\DefinitionFactory;
-
 // create a router with attached route groups
-$router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
+$router = new \Aura\Router\Router($route_factory, $attach);
 ?>
 ```
 
@@ -591,11 +587,8 @@ $attach = array(
 // create the route factory
 $route_factory = new \Aura\Router\RouteFactory;
 
-// create the definition factory
-$definition_factory = new \Aura\Router\DefinitionFactory;
-
 // create a router with attached route groups
-$router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
+$router = new \Aura\Router\Router($route_factory, $attach);
 ?>
 ```
 

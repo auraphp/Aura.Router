@@ -9,6 +9,9 @@ drop callables for custom matching?
 
 split the route adding/attaching from the matching
 
+get rid of $attach from the Router constructor
+
+
 * * *
 
 making resource routes:
