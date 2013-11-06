@@ -125,7 +125,7 @@ class Router
      * @param array $spec The rest of the route definition, with keys for
      * `params`, `values`, etc.
      * 
-     * @return void
+     * @return null
      * 
      */
     public function add($name, $path, array $spec = null)
@@ -157,7 +157,7 @@ class Router
      * @param array $spec An array of common route information, with an
      * additional `routes` key to define the routes themselves.
      * 
-     * @return void
+     * @return null
      * 
      */
     public function attach($path_prefix, $spec)
@@ -173,7 +173,7 @@ class Router
      * 
      * Clears out all existing definitions.
      * 
-     * @return void
+     * @return null
      * 
      */
     public function reset()
@@ -257,7 +257,7 @@ class Router
      * @param array $routes Use this array of route objects, likely generated
      * from `getRoutes()`.
      * 
-     * @return void
+     * @return null
      * 
      */
     public function setRoutes(array $routes)

@@ -383,7 +383,7 @@ class Route
      * 
      * Sets the regular expression for this Route.
      * 
-     * @return void
+     * @return null
      * 
      */
     protected function setRegex()
