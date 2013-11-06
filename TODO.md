@@ -9,8 +9,6 @@ drop callables for custom matching?
 
 split the route adding/attaching from the matching
 
-do we make sure that there is a value array key for each param?
-
 * * *
 
 making resource routes:
