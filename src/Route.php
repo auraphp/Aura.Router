@@ -328,7 +328,6 @@ class Route
 
         // is a wildcard param specified?
         if ($this->wildcard) {
-            
             // are there are actual wildcard values?
             if (empty($this->values[$this->wildcard])) {
                 // no, set a blank array

@@ -400,8 +400,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     
     public function testAttachNamedRestRoutesWithPrefixes()
     {
-        $this->markTestIncomplete("Make this work with with shared \$_SERVER.");
-        
         $type = 'Aura\Router\Route';
         
         $this->router->attach('/resource', array(
