@@ -1,44 +1,56 @@
-Aura Router
-===========
+# Aura.Router
 
-[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=develop)](https://travis-ci.org/auraphp/Aura.Router)
-
-Aura Router is a PHP package that implements web routing. Given a URI path and
-a copy of `$_SERVER`, it will extract controller, action, and parameter values
-for a specific application route.
+Provides a web router implementation. Given a URL path and a copy of
+`$_SERVER`, it will extract path-info parameter values for a specific
+application route.
 
 Your application foundation or framework is expected to take the information
 provided by the matching route and dispatch to a controller on its own. As
-long as your system can provide a URI path string and a representative copy of
-`$_SERVER`, you can use Aura Router.
+long as your system can provide a URL path string and a representative copy of
+`$_SERVER`, you can use Aura.Router.
 
-Aura Router is inspired by [Solar rewrite
-rules](http://solarphp.com/manual/dispatch-cycle.rewrite-rules) and
-<http://routes.groovie.org>.
+## Foreword
 
-This package is compliant with [PSR-0][], [PSR-1][], and [PSR-2][]. If you
-notice compliance oversights, please send a patch via pull request.
+### Requirements
 
-[PSR-0]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
+This library requires PHP 5.3 or later, and has no userland dependencies.
+
+### Installation
+
+This library is installable and autoloadable via Composer with the following
+`require` element in your `composer.json` file:
+
+    "require": {
+        "aura/router": "dev-develop-2"
+    }
+    
+Alternatively, download or clone this repository, then require or include its
+_autoload.php_ file.
+
+### Tests
+
+[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=develop-2)](https://travis-ci.org/auraphp/Aura.Autoload)
+
+This library has 100% code coverage with [PHPUnit][]. To run the tests at the
+command line, go to the _tests_ directory and issue `phpunit`.
+
+[PHPUnit]: http://phpunit.de/manual/
+
+### PSR Compliance
+
+This library attempts to comply with [PSR-1][], [PSR-2][], and [PSR-4][]. If
+you notice compliance oversights, please send a patch via pull request.
+
 [PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
+[PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
 
-Basic Usage
-===========
 
-Instantiation
--------------
+## Getting Started
 
-The easiest way to instantiate a router is to include the
-`scripts/instance.php` file:
+### Instantiation
 
-```php
-<?php
-$router = include '/path/to/Aura.Router/scripts/instance.php';
-```
-
-Alternatively, you can add Aura Router to your autoloader and instantiate it
-manually:
+Instantiate a _Router_ like so:
 
 ```php
 <?php
@@ -46,19 +58,16 @@ use Aura\Router\Router;
 use Aura\Router\DefinitionFactory;
 use Aura\Router\RouteFactory;
 
-$router = new Router(new DefinitionFactory, new RouteFactory);
+$router = new Router(new DefinitionFactory, new RouteFactory, $_SERVER);
+?>
 ```
 
-Adding A Route
----------------
+### Adding A Route
 
-To create a route, call the `add()` method.
+To create a route, call the `add()` method on the _Router_.
 
 ```php
 <?php
-// create the router object
-$router = require '/path/to/Aura.Router/scripts/instance.php';
-
 // add a simple named route without params
 $router->add('home', '/');
 
@@ -77,32 +86,33 @@ $router->add('read', '/blog/read/{id}{format}', array(
         'format'     => 'html',
     ),
 ]);
+?>
 ```
 
-You will need to place the router object where you can get to it from your
+You will need to place the _Router_ where you can get to it from your
 application; e.g., in a registry, a service locator, or a dependency injection
 container. One such system is the [Aura DI](https://github.com/auraphp/Aura.Di)
 package.
 
 
-Matching A Route
-----------------
+### Matching A Route
 
-To match a URI path against your routes, call `match()` with a path string
+To match a URL path against your routes, call `match()` with a path string
 and the `$_SERVER` values.
 
 ```php
 <?php
-// get the incoming request URI path
+// get the incoming request URL path
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // get the route based on the path and server
 $route = $router->match($path, $_SERVER);
+?>
 ```
 
-The `match()` method does not parse the URI or use `$_SERVER` internally. This
+The `match()` method does not parse the URL or use `$_SERVER` internally. This
 is because different systems may have different ways of representing that
-information; e.g., through a URI object or a context object. As long as you
+information; e.g., through a URL object or a context object. As long as you
 can pass the string path and a server array, you can use Aura Router in your
 application foundation or framework.
 
@@ -124,7 +134,7 @@ controller.
 <?php
 if (! $route) {
     // no route object was returned
-    echo "No application route was found for that URI path.";
+    echo "No application route was found for that URL path.";
     exit();
 }
 
@@ -151,6 +161,7 @@ $page = new $controller();
 
 // invoke the action method with the route values
 echo $page->$action($route->values);
+?>
 ```
 
 Again, note that Aura Router will not dispatch for you; the above is provided
@@ -160,8 +171,8 @@ as a naive example only to show how to use route values.
 Generating A Route Path
 -----------------------
 
-To generate a URI path from a route so that you can create links, call
-`generate()` on the router object and provide the route name.
+To generate a URL path from a route so that you can create links, call
+`generate()` on the _Router_ and provide the route name.
 
 ```php
 <?php
@@ -173,6 +184,7 @@ $path = $router->generate('read', array(
 
 $href = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
 echo '<a href="$href">Atom feed for this blog entry</a>';
+?>
 ```
 
 Aura Router does not do dynamic matching of routes; a route must have a name
@@ -209,6 +221,7 @@ $router->add("read", "/blog/read/{id}{format}", array(
 		"format" => ".html",
 	),
 ]);
+?>
 ```
 
 When you are using Aura.Router as a micro-framework, the dispatcher will look like
@@ -219,6 +232,7 @@ $params = $route->values;
 $controller = $params["controller"];
 unset($params["controller"]);
 $controller($params);
+?>
 ```
 
 So when you request for the url `/blog/read/1.json`, you will get json and 
@@ -305,6 +319,7 @@ $router->add('read', '/blog/read/{id}{format}', array(
         return $data;
     }
 ]);
+?>
 ```
 
 Note that using closures, instead of callbacks, means you will not be able to
@@ -320,6 +335,7 @@ for the route instead of an array ...
 ```php
 <?php
 $router->add('archive', '/archive/{year}/{month}/{day}');
+?>
 ```
 
 ... then Aura Router will use a default subpattern that matches everything
@@ -339,6 +355,7 @@ $router->add('archive', '/archive/{year}/{month}/{day}', array(
         'action' => 'archive',
     ),
 ]);
+?>
 ```
 
 Wildcard Routes
@@ -373,6 +390,7 @@ $route = $router->match('/post/88/', $_SERVER);
 $route = $router->match('/post/88', $_SERVER);
 // $route->values['id'] = 88;
 // $route->values['other'] = array();
+?>
 ```
 
 The second is a "values required" wildcard, represented by adding `/{foo+}`
@@ -393,6 +411,7 @@ $route = $router->match('/post/88/foo/bar/baz', $_SERVER);
 // these do not match
 $route = $router->match('/post/88/', $_SERVER);
 $route = $router->match('/post/88', $_SERVER);
+?>
 ```
 
 
@@ -429,6 +448,7 @@ $router->attach('/blog', array(
         'edit' => '/{id:(\d+)}/edit',
     ),
 ]);
+?>
 ```
     
 Each of the route paths will be prefixed with `/blog`, so the effective paths
@@ -465,6 +485,7 @@ $router->attach('/blog', array(
         'edit'   => '/{id}/edit',
     ),
 ]);
+?>
 ```
 
 
@@ -532,6 +553,7 @@ $definition_factory = new \Aura\Router\DefinitionFactory;
 
 // create a router with attached route groups
 $router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
+?>
 ```
 
 This technique can be very effective with modular application packages. Each
@@ -556,6 +578,7 @@ $definition_factory = new \Aura\Router\DefinitionFactory;
 
 // create a router with attached route groups
 $router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
+?>
 ```
 
 
@@ -572,9 +595,6 @@ routes:
 
 ```php
 <?php
-// create a router object
-$router = require '/path/to/Aura.Router/scripts/instance.php';
-
 // the cache file location
 $cache = '/path/to/routes.cache';
 
@@ -594,6 +614,7 @@ if (file_exists($cache)) {
     file_put_contents($cache, serialize($routes));
     
 }
+?>
 ```
 
 Note that if there are closures in the route definitions, you will not be able
