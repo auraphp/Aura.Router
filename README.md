@@ -70,7 +70,8 @@ package.
 
 ### Adding A Route
 
-To create a route, call the `add()` method on the _Router_.
+To create a route, call the `add()` method on the _Router_. Named path-info
+params are placed inside braces in the path.
 
 ```php
 <?php
@@ -121,7 +122,6 @@ array with values for each of the parameters identified by the route path. For
 example, matching a route with the path `/{controller}/{action}/{id}` will
 populate the `$route->values` array with `controller`, `action`, and `id`
 keys.
-
 
 ### Dispatching A Route
 
@@ -361,7 +361,47 @@ $router->add('archive', '/archive/{year}/{month}/{day}', array(
 ?>
 ```
 
-### Wildcard Routes
+### Optional Params
+
+Sometimes it is useful to have a route with optional named params; that is,
+none, some, or all of the optional params may be present, and the route will
+still match.
+
+To specify optional params, use the notation `{/param1,param2,param3}` in the
+path. No slash is needed as a leading separator. For example:
+
+```php
+<?php
+$router->add('archive', '/archive{/year,month,day}', array(
+    'params' => array(
+        'year'  => '(\d{4})',
+        'month' => '(\d{2})',
+        'day'   => '(\d{2})'
+    ),
+));
+?>
+```
+With that, the following routes will all match the 'archive' route, and will
+set the appropriate values:
+
+    /archive
+    /archive/1979
+    /archive/1979/11
+    /archive/1979/11/07
+
+Optional params are "sequentially" optional. This means that, in the above
+example, you cannot have a "day" without a "month", and you cannot have a
+"month" without a "year".
+
+Only one set of optional params per path is recognized by the _Router_.
+
+Optional params belong at the end of a route path; placing them elsewhere may
+result in unexpected behavior.
+
+Currently, trying to `generate()` a link that has optional params is likely
+to result in unexpected behavior.
+
+### Wildcard Params
 
 Sometimes it is useful to allow the trailing part of the path be anything at
 all. To specify that route allows arbitrary trailing portions, pass a 'wildcard'
@@ -390,6 +430,9 @@ $route = $router->match('/post/88', $_SERVER);
 // $route->values['other'] = array();
 ?>
 ```
+
+Currently, trying to `generate()` a link that has wildcard params is likely
+to result in unexpected behavior.
 
 ### Attaching Route Groups
 

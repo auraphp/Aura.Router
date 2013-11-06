@@ -9,11 +9,6 @@ drop callables for custom matching?
 
 split the route adding/attaching from the matching
 
-Go back to passing $_SERVER every time. This is because the router might get
-constructed before $_SERVER is modified.
-
-add "optional params" to the README
-
 do we make sure that there is a value array key for each param?
 
 * * *
