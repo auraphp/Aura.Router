@@ -241,11 +241,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $this->router->attach(null, array(
             'routes' => array(
-                ['path' => '/{controller}/{action}/{id}{format}'],
-                ['path' => '/{controller}/{action}/{id}'],
-                ['path' => '/{controller}/{action}'],
-                ['path' => '/{controller}'],
-                ['path' => '/'],
+                array('path' => '/{controller}/{action}/{id}{format}'),
+                array('path' => '/{controller}/{action}/{id}'),
+                array('path' => '/{controller}/{action}'),
+                array('path' => '/{controller}'),
+                array('path' => '/'),
             ),
             'params' => array(
                 'controller'    => '([a-zA-Z][a-zA-Z0-9_-]*)',
