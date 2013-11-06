@@ -406,9 +406,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'controller' => 'any-value',
             'action' => 'read',
-            'id' => 42,
+            'id' => '42',
+            'format' => null
         );
-        $this->assertEquals($expect, $route->values);
+        $this->assertSame($expect, $route->values);
     }
     
     public function testIsNotRoutable()

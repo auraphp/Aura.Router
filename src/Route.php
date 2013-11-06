@@ -436,6 +436,9 @@ class Route
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
+            if (! array_key_exists($name, $this->values)) {
+                $this->values[$name] = null;
+            }
         }
     }
     
