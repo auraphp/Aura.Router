@@ -396,13 +396,13 @@ class Route
         $vals = array();
         
         // find each param name in the path; we allow both {foo} and {/foo,bar}
-        $find = "#\{(/?[a-zA-Z0-9_,]+)\}#";
+        $find = "#\{([a-zA-Z0-9_,]+)\}#";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $keys[] = "{{$name}}";
-            $vals[] = "(?P<$name>" . substr($subpattern, 1);
+            $vals[] = $subpattern;
         }
         
         // create the regex from the path, keys, and vals
@@ -421,17 +421,16 @@ class Route
         if (isset($this->params[$name])) {
             // use a custom subpattern
             $subpattern = $this->params[$name];
+            if ($subpattern[0] != '(') {
+                $message = "Subpattern for param '$name' must start with '('.";
+                throw new Exception\MalformedSubpattern($message);
+            }
         } else {
             // use a default subpattern
             $subpattern = "([^/]+)";
         }
         
-        if ($subpattern[0] != '(') {
-            $message = "Subpattern for param '$name' must start with '('.";
-            throw new Exception($message);
-        }
-        
-        return $subpattern;
+        return "(?P<$name>" . substr($subpattern, 1);
     }
     
     /**

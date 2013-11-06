@@ -315,11 +315,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         return false;
     }
     
-    /**
-     * @expectedException \Aura\Router\Exception
-     */
     public function testBadSubpattern()
     {
+        $this->setExpectedException('Aura\Router\Exception\MalformedSubpattern');
         $route = $this->factory->newInstance([
             'path' => '/{controller}',
             'params' => [
@@ -565,5 +563,32 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         // wrong path
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+    }
+   
+    public function testIsMatchOnOptionalParams()
+    {
+        $this->markTestIncomplete("Need to add optional params logic first.");
+        
+        $route = $this->factory->newInstance([
+            'path' => '/foo/{bar}{/baz,dib,zim}',
+        ]);
+        
+        $actual = $route->isMatch('/foo', $this->server);
+        $this->assertFalse($actual);
+        
+        $actual = $route->isMatch('/foo/bar', $this->server);
+        $this->assertTrue($actual);
+        
+        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $this->assertTrue($actual);
+        
+        $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
+        $this->assertTrue($actual);
+        
+        $actual = $route->isMatch('/foo/bar/baz/dib/zim', $this->server);
+        $this->assertTrue($actual);
+        
+        $actual = $route->isMatch('/foo/bar/baz/dib/zim/gir', $this->server);
+        $this->assertFalse($actual);
    }
 }
