@@ -1,20 +1,13 @@
 <?php
 namespace Aura\Router;
 
-/**
- * Test class for Route.
- */
+use ArrayObject;
+
+
 class RouteTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var RouteFactory
-     */
     protected $factory;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
         parent::setUp();
@@ -22,10 +15,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->server = $_SERVER;
     }
     
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
     protected function tearDown()
     {
         parent::tearDown();
@@ -261,7 +250,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
-            'is_match' => function($server, &$matches) {
+            'is_match' => function($server, ArrayObject $matches) {
                 $matches['zim'] = 'gir';
                 return true;
             },
@@ -304,13 +293,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
     }
     
-    public function callbackForIsMatchTrue(array $server, \ArrayObject $matches)
+    public function callbackForIsMatchTrue(array $server, ArrayObject $matches)
     {
         $matches['zim'] = 'gir';
         return true;
     }
     
-    public function callbackForIsMatchFalse(array $server, \ArrayObject $matches)
+    public function callbackForIsMatchFalse(array $server, ArrayObject $matches)
     {
         return false;
     }

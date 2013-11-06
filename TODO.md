@@ -1,5 +1,6 @@
 need better data structure for routes. at least we need to make the route
-object modifiable before it's called for isMatch().
+object modifiable before it's called for isMatch(). probably reduce the
+constructor size and replace with setter methods.
 
 add accept header (and other headers) to router? Do we capture the values or
 do we leave that to the controller?
@@ -10,6 +11,10 @@ split the route adding/attaching from the matching
 
 Go back to passing $_SERVER every time. This is because the router might get
 constructed before $_SERVER is modified.
+
+add "optional params" to the README
+
+do we make sure that there is a value array key for each param?
 
 * * *
 

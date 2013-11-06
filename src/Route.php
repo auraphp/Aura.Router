@@ -10,6 +10,7 @@
  */
 namespace Aura\Router;
 
+use ArrayObject;
 use Closure;
 
 /**
@@ -573,9 +574,8 @@ class Route
 
         // pass the matches as an object, not as an array, so we can avoid
         // tricky hacks for references
-        $matches = new \ArrayObject($this->matches);
-        $is_match = $this->is_match;
-        $result = $is_match($server, $matches);
+        $matches = new ArrayObject($this->matches);
+        $result = call_user_func($this->is_match, $server, $matches);
 
         // convert back to array
         $this->matches = $matches->getArrayCopy();
