@@ -394,8 +394,14 @@ class Route
         $this->setRegexWildcard();
     }
 
-    // expand optional params `{/foo,bar,baz}` to single params:
-    // `(/{foo}(/{bar}(/{baz})?)?)?`
+    /**
+     * 
+     * Expands optional params in the regex from ``{/foo,bar,baz}` to
+     * `(/{foo}(/{bar}(/{baz})?)?)?`.
+     * 
+     * @return null
+     * 
+     */
     protected function setRegexOptionalParams()
     {
         $find = '#{/([a-zA-Z0-9_,]+)}#';
@@ -415,7 +421,13 @@ class Route
         $this->regex = str_replace($matches[0], $repl, $this->regex);
     }
     
-    // expand single param names in the path
+    /**
+     * 
+     * Expands param names in the regex to named subpatterns.
+     * 
+     * @return null
+     * 
+     */
     protected function setRegexParams()
     {
         $find = '#{([a-zA-Z0-9_]+)}#';
@@ -427,7 +439,13 @@ class Route
         }
     }
     
-    // add a wildcard subpattern to the end of the regex if specified
+    /**
+     * 
+     * Adds a wildcard subpattern to the end of the regex.
+     * 
+     * @return null
+     * 
+     */
     protected function setRegexWildcard()
     {
         if (! $this->wildcard) {
@@ -438,9 +456,18 @@ class Route
                      . "(/(?P<{$this->wildcard}>.*))?";
     }
     
+    /**
+     * 
+     * Returns a named subpattern for a param name.
+     * 
+     * @param string $name The param name.
+     * 
+     * @return string The named subpattern.
+     * 
+     */
     protected function getSubpattern($name)
     {
-        // is there a subpattern for the name?
+        // is there a custom subpattern for the name?
         if (isset($this->params[$name])) {
             // use a custom subpattern
             $subpattern = $this->params[$name];
