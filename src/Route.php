@@ -359,23 +359,68 @@ class Route
      * @todo Make this work with wildcards and optional params.
      * 
      */
-    public function generate(array $data = null)
+    public function generate(array $data = array())
     {
+        // the base link template
+        $link = $this->path;
+        
+        // the data for replacements
+        $data = array_merge($this->values, $data);
+        
         // use a callable to modify the path data?
         if ($this->generate) {
             $data = call_user_func($this->generate, $this, (array) $data);
         }
-
-        // interpolate into the path
-        $replace = array();
-        $data = array_merge($this->values, (array) $data);
+        
+        // replacements for single tokens
+        $repl = array();
         foreach ($data as $key => $val) {
-            // Closures can't be cast to string
-            if (! ($val instanceof Closure)) {
-                $replace["{{$key}}"] = rawurlencode($val);
+            // encode the single value
+            if (is_scalar($val) || $val === null) {
+                $repl["{{$key}}"] = rawurlencode($val);
             }
         }
-        return strtr($this->path, $replace);
+        
+        // replacements for optional params, if any
+        preg_match('#{/([a-zA-Z0-9_,]+)}#', $link, $matches);
+        if ($matches) {
+            // this is the full token to replace in the link
+            $key = $matches[0];
+            // start with an empty replacement
+            $repl[$key] = '';
+            // the optional param names in the token
+            $names = explode(',', $matches[1]);
+            // look for data for each of the param names
+            foreach ($names as $name) {
+                // is there data for this optional param?
+                if (! isset($data[$name])) {
+                    // options are *sequentially* optional, so if one is
+                    // missing, we're done
+                    break;
+                }
+                // encode the optional value
+                if (is_scalar($data[$name])) {
+                    $repl[$key] .= '/' . rawurlencode($data[$name]);
+                }
+            }
+        }
+        
+        // replace params in the link, including optional params
+        $link = strtr($link, $repl);
+        
+        // add wildcard data
+        if ($this->wildcard && isset($data[$this->wildcard])) {
+            $link = rtrim($link, '/');
+            foreach ($data[$this->wildcard] as $val) {
+                // encode the wildcard value
+                if (is_scalar($val)) {
+                    $link .= '/' . rawurlencode($val);
+                }
+            }
+        }
+        
+        // done!
+        return $link;
     }
 
     /**
@@ -403,8 +448,7 @@ class Route
      */
     protected function setRegexOptionalParams()
     {
-        $find = '#{/([a-zA-Z0-9_,]+)}#';
-        preg_match($find, $this->regex, $matches);
+        preg_match('#{/([a-zA-Z0-9_,]+)}#', $this->regex, $matches);
         if (! $matches) {
             return;
         }
@@ -477,12 +521,11 @@ class Route
                 $message = "Subpattern for param '$name' must start with '('.";
                 throw new Exception\MalformedSubpattern($message);
             }
-        } else {
-            // use a default subpattern
-            $subpattern = "([^/]+)";
+            return "(?P<$name>" . substr($subpattern, 1);
         }
         
-        return "(?P<$name>" . substr($subpattern, 1);
+        // use a default subpattern
+        return "(?P<$name>[^/]+)";
     }
     
     /**

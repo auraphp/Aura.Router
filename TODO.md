@@ -14,8 +14,6 @@ hierarchical routing, or route grouping?
 
 get rid of $attach from the Router constructor
 
-generate() should would with optional params and wildcard param
-
 * * *
 
 making resource routes:

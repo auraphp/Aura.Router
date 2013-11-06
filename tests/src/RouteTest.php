@@ -336,8 +336,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ),
         ));
         
-        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
-        $this->assertEquals('/blog/42/edit', $uri);
+        $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
+        $this->assertEquals('/blog/42/edit', $url);
     }
 
     public function testGenerate()
@@ -349,8 +349,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
           ),
         ));
         
-        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
-        $this->assertEquals('/blog/42/edit', $uri);
+        $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
+        $this->assertEquals('/blog/42/edit', $url);
     }
     
     public function testGenerateWithClosure()
@@ -366,8 +366,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
           }
         ));
         
-        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
-        $this->assertEquals('/blog/99/edit', $uri);
+        $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
+        $this->assertEquals('/blog/99/edit', $url);
     }
     
     public function testGenerateWithCallback()
@@ -380,8 +380,45 @@ class RouteTest extends \PHPUnit_Framework_TestCase
           'generate' => array($this, 'callbackForGenerate'),
         ));
         
-        $uri = $route->generate(array('id' => 42, 'foo' => 'bar'));
-        $this->assertEquals('/blog/99/edit', $uri);
+        $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
+        $this->assertEquals('/blog/99/edit', $url);
+    }
+    
+    public function testGenerateWithWildcard()
+    {
+        $route = $this->factory->newRoute(array(
+          'path' => '/blog/{id}',
+          'params' => array(
+              'id' => '([0-9]+)',
+          ),
+          'wildcard' => 'other',
+        ));
+        
+        $url = $route->generate(array(
+            'id' => 42,
+            'foo' => 'bar',
+            'other' => array(
+                'dib' => 'zim',
+                'irk' => 'gir',
+            ),
+        ));
+            
+        $this->assertEquals('/blog/42/zim/gir', $url);
+    }
+    
+    public function testGenerateWithOptional()
+    {
+        $route = $this->factory->newRoute(array(
+          'path' => '/archive/{category}{/year,month,day}',
+        ));
+        
+        $url = $route->generate(array(
+            'category' => 'foo',
+            'year' => '1979',
+            'month' => '11',
+        ));
+        
+        $this->assertEquals('/archive/foo/1979/11', $url);
     }
     
     public function callbackForGenerate(\Aura\Router\Route $route, array $data)

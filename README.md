@@ -381,6 +381,7 @@ $router->add('archive', '/archive{/year,month,day}', array(
 ));
 ?>
 ```
+
 With that, the following routes will all match the 'archive' route, and will
 set the appropriate values:
 
@@ -398,8 +399,27 @@ Only one set of optional params per path is recognized by the _Router_.
 Optional params belong at the end of a route path; placing them elsewhere may
 result in unexpected behavior.
 
-Currently, trying to `generate()` a link that has optional params is likely
-to result in unexpected behavior.
+If you `generate()` a link with optional params, the params will be filled in
+if they are present in the data for the link. Remember, the optional params
+are *sequentially* optional, so the params will not be filled in after the
+first missing one:
+
+```php
+<?php
+$router->add('archive', '/archive{/year,month,day}', array(
+    'params' => array(
+        'year'  => '(\d{4})',
+        'month' => '(\d{2})',
+        'day'   => '(\d{2})'
+    ),
+));
+
+$link = $router->generate('archive', array(
+    'year' => '1979',
+    'month' => '11',
+)); // "/archive/1979/11"
+?>
+```
 
 ### Wildcard Params
 
@@ -431,8 +451,25 @@ $route = $router->match('/post/88', $_SERVER);
 ?>
 ```
 
-Currently, trying to `generate()` a link that has wildcard params is likely
-to result in unexpected behavior.
+If you `generate()` a link with wildcard params, the wildcard key in the data
+will be used for the trailing arbitrary param values:
+
+```php
+<?php
+$router->add('wild_post', '/post/{id}', array(
+    'wildcard' => 'other',
+));
+
+$link = $router->generate('wild_post', array(
+    'id' => '88',
+    'other' => array(
+        'foo',
+        'bar',
+        'baz',
+    );
+)); // "/post/88/foo/bar/baz"
+?>
+```
 
 ### Attaching Route Groups
 
