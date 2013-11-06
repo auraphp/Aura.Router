@@ -567,8 +567,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
     public function testIsMatchOnOptionalParams()
     {
-        $this->markTestIncomplete("Need to add optional params logic first.");
-        
         $route = $this->factory->newInstance([
             'path' => '/foo/{bar}{/baz,dib,zim}',
         ]);

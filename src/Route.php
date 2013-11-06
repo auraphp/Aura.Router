@@ -339,12 +339,6 @@ class Route
                     explode('/', $this->values[$this->wildcard])
                 );
             }
-            
-            // backwards compat: rename "__wildcard__" to "*"
-            if ($this->wildcard == '__wildcard__') {
-                $this->values['*'] = $this->values['__wildcard__'];
-                unset($this->values['__wildcard__']);
-            }
         }
         
         // done!
@@ -361,6 +355,8 @@ class Route
      * place.
      * 
      * @return string
+     * 
+     * @todo Make this work with wildcards and optional params.
      * 
      */
     public function generate(array $data = null)
@@ -385,37 +381,64 @@ class Route
 
     /**
      * 
-     * Sets the regular expression for this Route based on its params.
+     * Sets the regular expression for this Route.
      * 
      * @return void
      * 
      */
     protected function setRegex()
     {
-        $keys = array();
-        $vals = array();
+        $this->regex = $this->path;
+        $this->setRegexOptionalParams();
+        $this->setRegexParams();
+        $this->setRegexWildcard();
+    }
+
+    // expand optional params `{/foo,bar,baz}` to single params:
+    // `(/{foo}(/{bar}(/{baz})?)?)?`
+    protected function setRegexOptionalParams()
+    {
+        $find = '#{/([a-zA-Z0-9_,]+)}#';
+        preg_match($find, $this->regex, $matches);
+        if (! $matches) {
+            return;
+        }
         
-        // find each param name in the path; we allow both {foo} and {/foo,bar}
-        $find = "#\{([a-zA-Z0-9_,]+)\}#";
-        preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
+        $list = explode(',', $matches[1]);
+        $head = '';
+        $tail = '';
+        foreach ($list as $name) {
+            $head .= "(/{{$name}}";
+            $tail .= ')?';
+        }
+        $repl = $head . $tail;
+        $this->regex = str_replace($matches[0], $repl, $this->regex);
+    }
+    
+    // expand single param names in the path
+    protected function setRegexParams()
+    {
+        $find = '#{([a-zA-Z0-9_]+)}#';
+        preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
-            $keys[] = "{{$name}}";
-            $vals[] = $subpattern;
-        }
-        
-        // create the regex from the path, keys, and vals
-        $this->regex = str_replace($keys, $vals, $this->path);
-
-        // add a wildcard subpattern to the end of the regex if specified
-        if ($this->wildcard) {
-            $this->regex = rtrim($this->regex, '/')
-                         . "(/(?P<{$this->wildcard}>.*))?";
+            $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
         }
     }
-
-    public function getSubpattern($name)
+    
+    // add a wildcard subpattern to the end of the regex if specified
+    protected function setRegexWildcard()
+    {
+        if (! $this->wildcard) {
+            return;
+        }
+        
+        $this->regex = rtrim($this->regex, '/')
+                     . "(/(?P<{$this->wildcard}>.*))?";
+    }
+    
+    protected function getSubpattern($name)
     {
         // is there a subpattern for the name?
         if (isset($this->params[$name])) {
