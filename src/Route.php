@@ -392,35 +392,36 @@ class Route
      */
     protected function setRegex()
     {
-        // find each param in the path
-        $find = "/\{([a-zA-Z0-9_]+)\}/";
+        $keys = array();
+        $vals = array();
+        
+        // find each param name in the path
+        $find = "#\{([a-zA-Z0-9_]+)\}#";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            $name  = $match[1];
+            
+            // is there a subpattern for the name?
+            $name = $match[1];
             if (! isset($this->params[$name])) {
-                // use a default pattern when none exists
+                // use a default subpattern when none exists
                 $this->params[$name] = "([^/]+)";
             }
-        }
-
-        // now create the regex from the path and patterns
-        $this->regex = $this->path;
-        if ($this->params) {
-            $keys = [];
-            $vals = [];
-            foreach ($this->params as $name => $subpattern) {
-                if ($subpattern[0] != '(') {
-                    $message = "Subpattern for param '$name' must start with '('.";
-                    throw new Exception($message);
-                } else {
-                    $keys[] = "{{$name}}";
-                    $vals[] = "(?P<$name>" . substr($subpattern, 1);
-                }
+            
+            // retain the named subpattern
+            if ($this->params[$name][0] != '(') {
+                $message = "Subpattern for param '$name' must start with '('.";
+                throw new Exception($message);
+            } else {
+                $keys[] = "{{$name}}";
+                $vals[] = "(?P<$name>" . substr($this->params[$name], 1);
             }
-            $this->regex = str_replace($keys, $vals, $this->regex);
+            
         }
         
-        // add a wildcard to the end of the regex if specified
+        // create the regex from the path, keys, and vals
+        $this->regex = str_replace($keys, $vals, $this->path);
+
+        // add a wildcard subpattern to the end of the regex if specified
         if ($this->wildcard) {
             $this->regex = rtrim($this->regex, '/')
                          . "(/(?P<{$this->wildcard}>.*))?";
