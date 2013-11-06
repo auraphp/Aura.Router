@@ -123,8 +123,7 @@ populate the `$route->values` array with `controller`, `action`, and `id`
 keys.
 
 
-Dispatching A Route
--------------------
+### Dispatching A Route
 
 Now that you have route, you can dispatch it. The following is what a
 foundation or framework system might do with a route to invoke a page
@@ -168,8 +167,7 @@ Again, note that Aura Router will not dispatch for you; the above is provided
 as a naive example only to show how to use route values.
 
 
-Generating A Route Path
------------------------
+### Generating A Route Path
 
 To generate a URL path from a route so that you can create links, call
 `generate()` on the _Router_ and provide the route name.
@@ -196,8 +194,8 @@ optional. If there are path params without matching data keys, those params
 will *not* be replaced, leaving the `{param}` token in the path. If there are
 data keys without matching params, those values will not be added to the path.
 
-As a Microframework
--------------------
+### As a Microframework
+
 Sometimes you may wish to use Aura.Router as a micro-framework. It’s also 
 possible by  assigning anonymous function to controller.
 
@@ -238,11 +236,9 @@ $controller($params);
 So when you request for the url `/blog/read/1.json`, you will get json and 
 for `/blog/read/1` you will get `Reading blog ID 1` as output.
 
-Advanced Usage
-==============
+## Advanced Usage
 
-Complex Route Specification
----------------------------
+### Complex Route Specification
 
 When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
@@ -326,8 +322,7 @@ Note that using closures, instead of callbacks, means you will not be able to
 `serialize()` or `var_export()` the router for caching.
 
 
-Simple Routes
--------------
+### Simple Routes
 
 You don't need to specify a complex route specification. If you pass a string
 for the route instead of an array ...
@@ -358,8 +353,7 @@ $router->add('archive', '/archive/{year}/{month}/{day}', array(
 ?>
 ```
 
-Wildcard Routes
----------------
+### Wildcard Routes
 
 Sometimes it is useful to allow the trailing part of the path be anything at
 all. There are two types of such "wildcard" routes. (Wildcard routing of this
@@ -415,8 +409,7 @@ $route = $router->match('/post/88', $_SERVER);
 ```
 
 
-Attaching Route Groups
-----------------------
+### Attaching Route Groups
 
 You can add a series of routes all at once under a single "mount point" in
 your application. For example, if you want all your blog-related routes to be
@@ -489,8 +482,7 @@ $router->attach('/blog', array(
 ```
 
 
-Constructor-Time Attachment
----------------------------
+### Constructor-Time Attachment
 
 You can configure your routes in a single array of attachment groups, and then
 pass them to the router constructor all at once. This allows you to
@@ -582,8 +574,7 @@ $router = new \Aura\Router\Router($definition_factory, $route_factory, $attach);
 ```
 
 
-Caching
--------
+### Caching
 
 You may wish to cache the router for production deployments so that the
 router does not have to build the route objects from definitions on each page
