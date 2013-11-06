@@ -49,7 +49,7 @@ class Route
      * @var array
      * 
      */
-    protected $params = [];
+    protected $params = array();
 
     /**
      * 
@@ -60,7 +60,7 @@ class Route
      * @var array
      * 
      */
-    protected $values = [];
+    protected $values = array();
 
     /**
      * 
@@ -70,7 +70,7 @@ class Route
      * @var array
      * 
      */
-    protected $method = [];
+    protected $method = array();
 
     /**
      * 
@@ -331,7 +331,7 @@ class Route
             // are there are actual wildcard values?
             if (empty($this->values[$this->wildcard])) {
                 // no, set a blank array
-                $this->values[$this->wildcard] = [];
+                $this->values[$this->wildcard] = array();
             } else {
                 // yes, retain and rawurldecode them
                 $this->values[$this->wildcard] = array_map(
@@ -368,7 +368,7 @@ class Route
         }
 
         // interpolate into the path
-        $replace = [];
+        $replace = array();
         $data = array_merge($this->values, (array) $data);
         foreach ($data as $key => $val) {
             // Closures can't be cast to string

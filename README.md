@@ -66,16 +66,16 @@ $router->add('home', '/');
 $router->add(null, '/{controller}/{action}/{id:(\d+)}');
 
 // add a complex named route
-$router->add('read', '/blog/read/{id}{format}', [
-    'params' => [
+$router->add('read', '/blog/read/{id}{format}', array(
+    'params' => array(
         'id'     => '(\d+)',
         'format' => '(\..+)?',
-    ],
-    'values' => [
+    ),
+    'values' => array(
         'controller' => 'blog',
         'action'     => 'read',
         'format'     => 'html',
-    ],
+    ),
 ]);
 ```
 
@@ -166,7 +166,7 @@ To generate a URI path from a route so that you can create links, call
 ```php
 <?php
 // $path => "/blog/read/42.atom"
-$path = $router->generate('read', [
+$path = $router->generate('read', array(
     'id' => 42,
     'format' => '.atom',
 ]);
@@ -191,12 +191,12 @@ possible by  assigning anonymous function to controller.
 
 ```php
 <?php
-$router->add("read", "/blog/read/{id}{format}", [
-	"params" => [
+$router->add("read", "/blog/read/{id}{format}", array(
+	"params" => array(
 		"id" => "(\d+)",
 		"format" => "(\..+)?",
-	],
-	"values" => [
+	),
+	"values" => array(
 		"controller" => function ($args) {
 		    if ($args['format'] == '.json') {
 		        echo header('Content-Type:application/json');
@@ -207,7 +207,7 @@ $router->add("read", "/blog/read/{id}{format}", [
 		    }
 		},
 		"format" => ".html",
-	],
+	),
 ]);
 ```
 
@@ -237,7 +237,7 @@ keys:
 - `params` -- The regular expression subpatterns for path params; inline 
 params will override these settings. For example:
         
-        'params' => [
+        'params' => array(
             'id' => '(\d+)',
         ]
         
@@ -247,7 +247,7 @@ params will override these settings. For example:
 - `values` -- The default values for the route. These will be overwritten 
 by matching params from the path.
 
-        'values' => [
+        'values' => array(
             'controller' => 'blog',
             'action' => 'read',
             'id' => 1,
@@ -274,19 +274,19 @@ Here is a full route specification named `read` with all keys in place:
 
 ```php
 <?php
-$router->add('read', '/blog/read/{id}{format}', [
-    'params' => [
+$router->add('read', '/blog/read/{id}{format}', array(
+    'params' => array(
         'id' => '(\d+)',
         'format' => '(\..+)?',
-    ],
-    'values' => [
+    ),
+    'values' => array(
         'controller' => 'blog',
         'action' => 'read',
         'id' => 1,
         'format' => '.html',
-    ],
+    ),
     'secure' => false,
-    'method' => ['GET'],
+    'method' => array('GET'),
     'routable' => true,
     'is_match' => function(array $server, \ArrayObject $matches) {
             
@@ -329,15 +329,15 @@ following long-form route:
 
 ```php
 <?php
-$router->add('archive', '/archive/{year}/{month}/{day}', [
-    'params' => [
+$router->add('archive', '/archive/{year}/{month}/{day}', array(
+    'params' => array(
         'year'  => '([^/]+)',
         'month' => '([^/]+)',
         'day'   => '([^/]+)',
-    ],
-    'values' => [
+    ),
+    'values' => array(
         'action' => 'archive',
-    ],
+    ),
 ]);
 ```
 
@@ -362,17 +362,17 @@ $router->add('wild_post', '/post/{id}/{other*}');
 // this matches, with the following values
 $route = $router->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = array('foo', 'bar', 'baz'= array(
 
 // this also matches, with the following values; note the trailing slash
 $route = $router->match('/post/88/', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = [];
+// $route->values['other'] = array();
 
 // this also matches, with the following values; note the missing slash
 $route = $router->match('/post/88', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = [];
+// $route->values['other'] = array();
 ```
 
 The second is a "values required" wildcard, represented by adding `/{foo+}`
@@ -388,7 +388,7 @@ $router->add('wild_post', '/post/{id}/{other+}');
 // this matches, with the following values
 $route = $router->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->values['id'] = 88;
-// $route->values['other'] = ['foo', 'bar', 'baz'];
+// $route->values['other'] = array('foo', 'bar', 'baz'= array(
 
 // these do not match
 $route = $router->match('/post/88/', $_SERVER);
@@ -405,29 +405,29 @@ mounted at `'/blog'` in your application, you can do this:
 
 ```php
 <?php
-$router->attach('/blog', [
+$router->attach('/blog', array(
     
     // the routes to attach
-    'routes' => [
+    'routes' => array(
         
         // a short-form route named 'browse'
         'browse' => '/',
         
         // a long-form route named 'read'
-        'read' => [
+        'read' => array(
             'path' => '/{id}{format}',
-            'params' => [
+            'params' => array(
                 'id'     => '(\d+)',
                 'format' => '(\.json|\.atom)?'
-            ],
-            'values' => [
+            ),
+            'values' => array(
                 'format' => '.html',
-            ],
-        ],
+            ),
+        ),
         
         // a short-form route named 'edit'
         'edit' => '/{id:(\d+)}/edit',
-    ],
+    ),
 ]);
 ```
     
@@ -444,26 +444,26 @@ you don't need to repeat common information:
 
 ```php
 <?php
-$router->attach('/blog', [
+$router->attach('/blog', array(
     
     // common params for the routes
-    'params' => [
+    'params' => array(
         'id'     => '(\d+)',
         'format' => '(\.json|\.atom)?',
-    ],
+    ),
     
     // common values for the routes
-    'values' => [
+    'values' => array(
         'controller' => 'blog',
         'format'     => '.html',
-    ],
+    ),
     
     // the routes to attach
-    'routes' => [
+    'routes' => array(
         'browse' => '/',
         'read'   => '/{id}{format}',
         'edit'   => '/{id}/edit',
-    ],
+    ),
 ]);
 ```
 
@@ -482,46 +482,46 @@ same names in different groups.
 
 ```php
 <?php
-$attach = [
+$attach = array(
     // attach to /blog
-    '/blog' => [
+    '/blog' => array(
         
         // prefix for route names
         'name_prefix' => 'projectname.blog.',
         
         // common params for the routes
-        'params' => [
+        'params' => array(
             'id' => '(\d+)',
             'format' => '(\.json|\.atom)?',
-        ],
+        ),
     
         // common values for the routes
-        'values' => [
+        'values' => array(
             'controller' => 'blog',
             'format' => '.html',
-        ],
+        ),
     
         // the routes to attach
-        'routes' => [
+        'routes' => array(
             'browse' => '/',
             'read'   => '/read/{id}{format}',
             'edit' => '/{id}/edit',
-        ],
-    ],
+        ),
+    ),
     
     // attach to '/forum'
-    '/forum' => [
+    '/forum' => array(
         // prefix for route names
         'name_prefix' => 'projectname.forum.',
         // ...
-    ],
+    ),
 
     // attach to '/wiki'
-    '/wiki' => [
+    '/wiki' => array(
         // prefix for route names
         'name_prefix' => 'projectname.wiki.',
         // ...
-    ],
+    ),
 ];
 
 // create the route factory
@@ -542,7 +542,7 @@ array for the router. For example:
 ```php
 <?php
 // get a routes array from each application packages
-$attach = [
+$attach = array(
     '/blog'  => require 'projectname/blog/routes.php',
     '/forum' => require 'projectname/forum/routes.php',
     '/wiki'  => require 'projectname/wiki/routes.php',

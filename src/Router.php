@@ -28,7 +28,7 @@ class Router
      * @var array
      * 
      */
-    protected $attach_common = [];
+    protected $attach_common = array();
 
     /**
      * 
@@ -37,7 +37,7 @@ class Router
      * @var array
      * 
      */
-    protected $attach_routes = [];
+    protected $attach_routes = array();
 
     /**
      * 
@@ -46,7 +46,7 @@ class Router
      * @var array
      * 
      */
-    protected $definitions = [];
+    protected $definitions = array();
 
     /**
      * 
@@ -64,7 +64,7 @@ class Router
      * @var array
      * 
      */
-    protected $routes = [];
+    protected $routes = array();
 
     /**
      * 
@@ -82,7 +82,7 @@ class Router
      * @var array
      * 
      */
-    protected $log = [];
+    protected $log = array();
 
     /**
      * 
@@ -178,7 +178,7 @@ class Router
      */
     public function reset()
     {
-        return $this->setRoutes([]);
+        return $this->setRoutes(array());
     }
     
     /**
@@ -194,7 +194,7 @@ class Router
     public function match($path)
     {
         // reset the log
-        $this->log = [];
+        $this->log = array();
 
         // look through existing route objects
         foreach ($this->routes as $route) {
@@ -263,9 +263,9 @@ class Router
     public function setRoutes(array $routes)
     {
         $this->routes = $routes;
-        $this->definitions = [];
-        $this->attach_common = [];
-        $this->attach_routes = [];
+        $this->definitions = array();
+        $this->attach_common = array();
+        $this->attach_routes = array();
     }
 
     /**
@@ -358,7 +358,7 @@ class Router
     protected function getNextDefinition()
     {
         // get the next definition and extract the definition type
-        $def =  array_shift($this->definitions);
+        $def  = array_shift($this->definitions);
         $spec = $def->getSpec();
         $type = $def->getType();
 
@@ -398,18 +398,18 @@ class Router
         // which definition form are we using?
         if (is_string($key) && is_string($val)) {
             // short form, named in key
-            $spec = [
+            $spec = array(
                 'name' => $key,
                 'path' => $val,
-                'values' => [
+                'values' => array(
                     'action' => $key,
-                ],
-            ];
+                ),
+            );
         } elseif (is_int($key) && is_string($val)) {
             // short form, no name
-            $spec = [
+            $spec = array(
                 'path' => $val,
-            ];
+            );
         } elseif (is_string($key) && is_array($val)) {
             // long form, named in key
             $spec = $val;
