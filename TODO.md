@@ -1,16 +1,20 @@
 need better data structure for routes. at least we need to make the route
-object modifiable before it's called for isMatch(). probably reduce the
-constructor size and replace with setter methods.
+object modifiable before it's called for isMatch() to support micro-framework
+idioms. probably reduce the constructor size and replace with setter methods.
+lock it after matched?
 
 add accept header (and other headers) to router? Do we capture the values or
 do we leave that to the controller?
 
 drop callables for custom matching?
 
-split the route adding/attaching from the matching
+split the route adding/attaching from the matching?
+
+hierarchical routing, or route grouping?
 
 get rid of $attach from the Router constructor
 
+generate() should would with optional params and wildcard param
 
 * * *
 
