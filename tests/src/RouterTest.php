@@ -14,13 +14,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router = $this->newRouter();
     }
 
-    protected function newRouter($attach = null, $server = array())
+    protected function newRouter($attach = null)
     {
-        $server = array_merge($_SERVER, $server);
         return new Router(
             new DefinitionFactory,
             new RouteFactory,
-            $server,
             $attach
         );
     }
