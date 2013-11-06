@@ -364,8 +364,7 @@ class Route
     {
         // use a callable to modify the path data?
         if ($this->generate) {
-            $generate = $this->generate;
-            $data = $generate($this, (array) $data);
+            $data = call_user_func($this->generate, $this, (array) $data);
         }
 
         // interpolate into the path
