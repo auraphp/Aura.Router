@@ -407,7 +407,7 @@ class Route
                 $subpattern = $this->params[$name];
             } else {
                 // use a default subpattern
-                $subpattern =  = "([^/]+)";
+                $subpattern = "([^/]+)";
             }
             
             // retain the named subpattern
