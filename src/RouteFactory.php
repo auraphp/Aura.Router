@@ -26,7 +26,7 @@ class RouteFactory
      * @var array
      * 
      */
-    protected $params = [
+    protected $params = array(
         'name'        => null,
         'path'        => null,
         'params'      => null,
@@ -39,7 +39,7 @@ class RouteFactory
         'generate'    => null,
         'name_prefix' => null,
         'path_prefix' => null,
-    ];
+    );
 
     /**
      * 
