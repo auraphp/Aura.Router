@@ -408,20 +408,12 @@ class Route
             $this->params[$this->wildcard] = '(.*)';
         }
         
-        // now extract inline token params from the path. converts
-        // {token:regex} to {token} and retains the regex in params.
+        // find each param in the path
         $find = "/\{([a-zA-Z0-9_]+)\}/";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            $whole = $match[0];
             $name  = $match[1];
-            if (isset($match[3])) {
-                // there is an inline token pattern; retain it, overriding
-                // the existing param ...
-                $this->params[$name] = $match[3];
-                // ... and replace in the path without the pattern.
-                $this->path = str_replace($whole, "{{$name}}", $this->path);
-            } elseif (! isset($this->params[$name])) {
+            if (! isset($this->params[$name])) {
                 // use a default pattern when none exists
                 $this->params[$name] = "([^/]+)";
             }
