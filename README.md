@@ -1,14 +1,15 @@
 # Aura.Router
 
-Provides a web router implementation. Given a URL path and a copy of
-`$_SERVER`, it will extract path-info parameter values for a specific
-application route.
+Provides a web router implementation: given a URL path and a copy of
+`$_SERVER`, it will extract path-info parameter values for a specific route.
 
-Your application foundation or framework is expected to take the information
-provided by the matching route and dispatch to a controller on its own. As
-long as your system can provide a URL path string and a representative copy of
-`$_SERVER`, you can use Aura.Router.
+Note that this package does not provide a dispatching mechanism. Your
+application is expected to take the information provided by the matching route
+and dispatch to a controller on its own. For one possible dispatch system,
+please see [Aura.Dispatcher][].
 
+  [Aura.Dispatcher]: (https://github.com/auraphp/Aura.Dispatcher)
+  
 ## Foreword
 
 ### Requirements
@@ -165,7 +166,7 @@ echo $page->$action($route->values);
 
 Again, note that Aura Router will not dispatch for you; the above is provided
 as a naive example only to show how to use route values.  For a more complex
-dispatching system, try [Aura.Dispatcher](https://github.com/auraphp/Aura.Dispatcher).
+dispatching system, try [Aura.Dispatcher][].
 
 
 ### Generating A Route Path
