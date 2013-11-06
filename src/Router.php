@@ -167,18 +167,6 @@ class Router
 
     /**
      * 
-     * Clears out all existing definitions.
-     * 
-     * @return null
-     * 
-     */
-    public function reset()
-    {
-        return $this->setRoutes(array());
-    }
-    
-    /**
-     * 
      * Gets a route that matches a given path and other server conditions.
      * 
      * @param string $path The path to match against.
