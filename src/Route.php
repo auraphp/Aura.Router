@@ -390,24 +390,6 @@ class Route
      */
     protected function setRegex()
     {
-        // is a required wildcard indicated at the end of the path?
-        $match = preg_match("/\/\{([a-z_][a-z0-9_]+)\+\}$/i", $this->path, $matches);
-        if ($match) {
-            $this->wildcard = $matches[1];
-            $pos = strrpos($this->path, $matches[0]);
-            $this->path = substr($this->path, 0, $pos) . "/{{$this->wildcard}}";
-            $this->params[$this->wildcard] = '(.+)';
-        }
-
-        // is an optional wildcard indicated at the end of the path?
-        $match = preg_match("/\/\{([a-z_][a-z0-9_]+)\*\}$/i", $this->path, $matches);
-        if ($match) {
-            $this->wildcard = $matches[1];
-            $pos = strrpos($this->path, $matches[0]);
-            $this->path = substr($this->path, 0, $pos) . "(/{{$this->wildcard}})?";
-            $this->params[$this->wildcard] = '(.*)';
-        }
-        
         // find each param in the path
         $find = "/\{([a-zA-Z0-9_]+)\}/";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
@@ -419,7 +401,7 @@ class Route
             }
         }
 
-        // now create the regular expression from the path and param patterns
+        // now create the regex from the path and patterns
         $this->regex = $this->path;
         if ($this->params) {
             $keys = [];
@@ -434,6 +416,12 @@ class Route
                 }
             }
             $this->regex = str_replace($keys, $vals, $this->regex);
+        }
+        
+        // add a wildcard to the end of the regex
+        if ($this->wildcard) {
+            $name = $this->wildcard;
+            $this->regex = rtrim($this->regex, '/') . "(/(?P<$name>(.*))?";
         }
     }
 
