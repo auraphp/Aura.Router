@@ -542,10 +542,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $route->values);
    }
    
-   public function testIsMatchOnOptionalWildcard()
+   public function testIsMatchOnlWildcard()
    {
         $route = $this->factory->newInstance([
-            'path' => '/foo/{zim}/{wild*}',
+            'path' => '/foo/{zim}/',
+            'wildcard' => 'wild',
         ]);
         
         // right path with wildcard values
@@ -561,27 +562,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         // right path without trailing slash
         $this->assertTrue($route->isMatch('/foo/bar', $this->server));
         $this->assertSame([], $route->values['wild']);
-        
-        // wrong path
-        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
-   }
-   
-   public function testIsMatchOnRequiredWildcard()
-   {
-        $route = $this->factory->newInstance([
-            'path' => '/foo/{zim}/{wild+}',
-        ]);
-        
-        // right path with wildcard values
-        $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
-        $this->assertSame('bar', $route->values['zim']);
-        $this->assertSame(['baz', 'dib'], $route->values['wild']);
-        
-        // right path with trailing slash but no wildcard values
-        $this->assertFalse($route->isMatch('/foo/bar/', $this->server));
-        
-        // right path without trailing slash
-        $this->assertFalse($route->isMatch('/foo/bar', $this->server));
         
         // wrong path
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));

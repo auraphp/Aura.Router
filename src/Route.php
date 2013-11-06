@@ -219,6 +219,7 @@ class Route
         $values      = null,
         $method      = null,
         $secure      = null,
+        $wildcard    = null,
         $routable    = true,
         $is_match    = null,
         $generate    = null,
@@ -251,6 +252,7 @@ class Route
         $this->values      = (array) $values;
         $this->method      = ($method === null) ? null : (array) $method;
         $this->secure      = ($secure === null) ? null : (bool)  $secure;
+        $this->wildcard    = $wildcard;
         $this->routable    = (bool) $routable;
         $this->is_match    = $is_match;
         $this->generate    = $generate;
@@ -418,10 +420,10 @@ class Route
             $this->regex = str_replace($keys, $vals, $this->regex);
         }
         
-        // add a wildcard to the end of the regex
+        // add a wildcard to the end of the regex if specified
         if ($this->wildcard) {
-            $name = $this->wildcard;
-            $this->regex = rtrim($this->regex, '/') . "(/(?P<$name>(.*))?";
+            $this->regex = rtrim($this->regex, '/')
+                         . "(/(?P<{$this->wildcard}>.*))?";
         }
     }
 
