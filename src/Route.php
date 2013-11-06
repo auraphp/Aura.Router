@@ -395,30 +395,14 @@ class Route
         $keys = array();
         $vals = array();
         
-        // find each param name in the path
-        $find = "#\{(/?[a-zA-Z0-9_]+)\}#";
+        // find each param name in the path; we allow both {foo} and {/foo,bar}
+        $find = "#\{(/?[a-zA-Z0-9_,]+)\}#";
         preg_match_all($find, $this->path, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            
-            // is there a subpattern for the name?
             $name = $match[1];
-            if (isset($this->params[$name])) {
-                // use a custom subpattern
-                $subpattern = $this->params[$name];
-            } else {
-                // use a default subpattern
-                $subpattern = "([^/]+)";
-            }
-            
-            // retain the named subpattern
-            if ($subpattern[0] != '(') {
-                $message = "Subpattern for param '$name' must start with '('.";
-                throw new Exception($message);
-            } else {
-                $keys[] = "{{$name}}";
-                $vals[] = "(?P<$name>" . substr($subpattern, 1);
-            }
-            
+            $subpattern = $this->getSubpattern($name);
+            $keys[] = "{{$name}}";
+            $vals[] = "(?P<$name>" . substr($subpattern, 1);
         }
         
         // create the regex from the path, keys, and vals
@@ -431,6 +415,25 @@ class Route
         }
     }
 
+    public function getSubpattern($name)
+    {
+        // is there a subpattern for the name?
+        if (isset($this->params[$name])) {
+            // use a custom subpattern
+            $subpattern = $this->params[$name];
+        } else {
+            // use a default subpattern
+            $subpattern = "([^/]+)";
+        }
+        
+        if ($subpattern[0] != '(') {
+            $message = "Subpattern for param '$name' must start with '('.";
+            throw new Exception($message);
+        }
+        
+        return $subpattern;
+    }
+    
     /**
      * 
      * Checks that the path matches the Route regex.
