@@ -7,8 +7,6 @@ Note that this package does not provide a dispatching mechanism. Your
 application is expected to take the information provided by the matching route
 and dispatch to a controller on its own. For one possible dispatch system,
 please see [Aura.Dispatcher][].
-
-  [Aura.Dispatcher]: (https://github.com/auraphp/Aura.Dispatcher)
   
 ## Foreword
 
@@ -668,3 +666,5 @@ Note that if there are closures in the route definitions, you will not be able
 to cache the routes; this is because closures cannot be represented
 properly for caching. Use traditional callbacks instead of closures if you
 wish to pursue a cache strategy.
+
+[Aura.Dispatcher]: https://github.com/auraphp/Aura.Dispatcher
