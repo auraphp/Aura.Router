@@ -6,13 +6,22 @@ lock it after matched?
 add accept header (and other headers) to router? Do we capture the values or
 do we leave that to the controller?
 
-drop callables for custom matching?
+drop callables for custom matching and generation?
 
 split the route adding/attaching from the matching?
 
-hierarchical routing, or route grouping?
+rename "params" to "conditions" or "regex"? can we make it a callable, too?
 
-get rid of $attach from the Router constructor
+get rid of $attach from the Router constructor? still want to be able to
+attach route defs from packages/modules/etc, and not just have them call the
+router directly.
+
+hierarchical routing, or route grouping? can we do this by attaching a second
+router object?
+
+for the main router object, define defaults? that would go along with "second
+router object" being attached.
+
 
 * * *
 
