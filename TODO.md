@@ -27,14 +27,17 @@ router object" being attached.
 
 making resource routes:
 
+```php
 <?php
     $router->set('api.v1.blog', '/api/v1/blog', array(
         'resource' => true,
     ));
 ?>
+```
 
 Is the equivalent of:
 
+```php
 <?php
     // browse/index/home/etc
     $router->set('api.v1.blog', '/api/v1/blog', array(
@@ -99,6 +102,7 @@ Is the equivalent of:
         ]
     ));
 ?>
+```
 
 If no ID is specified, use `id`.
 
@@ -106,6 +110,7 @@ If no controller is specified, use the route name.
 
 Overrides:
 
+```php
 <?php
     $router->set('api.v1.blog', '/api/v1/blog', array(
         'resource' => array(
@@ -126,3 +131,4 @@ Overrides:
         ),
     ));
 ?>
+```
