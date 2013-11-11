@@ -6,6 +6,8 @@ lock it after matched?
 add accept header (and other headers) to router? Do we capture the values or
 do we leave that to the controller?
 
+capture domain information?
+
 drop callables for custom matching and generation?
 
 split the route adding/attaching from the matching?
