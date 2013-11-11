@@ -366,7 +366,7 @@ none, some, or all of the optional params may be present, and the route will
 still match.
 
 To specify optional params, use the notation `{/param1,param2,param3}` in the
-path. No slash is needed as a leading separator. For example:
+path. For example:
 
 ```php
 <?php
@@ -379,6 +379,9 @@ $router->add('archive', '/archive{/year,month,day}', array(
 ));
 ?>
 ```
+
+> N.b.: Note that the leadig slash separator is inside the params token, not
+> outside it.
 
 With that, the following routes will all match the 'archive' route, and will
 set the appropriate values:
