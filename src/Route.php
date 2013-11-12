@@ -569,8 +569,8 @@ class Route
                 return false;
             }
             
-            // retain the matched value
-            $this->matches[$name] = $value;
+            // retain the matched portion, not the entire server value
+            $this->matches[$name] = $matches[$name];
         }
         
         // everything matched!

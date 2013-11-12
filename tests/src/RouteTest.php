@@ -633,5 +633,24 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         $actual = $route->isMatch('/foo/bar/baz/dib/zim/gir', $this->server);
         $this->assertFalse($actual);
-   }
+    }
+   
+    public function testCaptureServerParams()
+    {
+        $route = $this->factory->newRoute(array(
+            'path' => '/foo',
+            'require' => array(
+                'HTTP_ACCEPT' => '(application/xml(;q=(1\.0|0\.[1-9]))?)|(application/json(;q=(1\.0|0\.[1-9]))?)',
+            ),
+        ));
+        $server = array('HTTP_ACCEPT' => 'application/json;q=0.9,text/csv;q=0.5,application/xml;q=0.7');
+        $actual = $route->isMatch('/foo', $server);
+        $this->assertTrue($actual);
+        
+        $actual = $route->params;
+        $expect = array(
+            'HTTP_ACCEPT' => 'application/json;q=0.9',
+        );
+        $this->assertEquals($expect, $actual);
+    }
 }
