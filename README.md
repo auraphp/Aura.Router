@@ -77,12 +77,12 @@ params are placed inside braces in the path.
 $router->add('home', '/');
 
 // add a simple unnamed route with params
-$router->add(null, '/{controller}/{action}/{id:(\d+)}');
+$router->add(null, '/{controller}/{action}/{id}');
 
 // add a complex named route
 $router->add('read', '/blog/read/{id}{format}', array(
     'params' => array(
-        'id'     => '(\d+)',
+        'id'     => '\d+',
         'format' => '(\..+)?',
     ),
     'values' => array(
@@ -204,7 +204,7 @@ possible by assigning anonymous function to controller.
 <?php
 $router->add('read', '/blog/read/{id}{format}', array(
 	'params' => array(
-		'id' => '(\d+)',
+		'id' => '\d+',
 		'format' => '(\..+)?',
 	),
 	'values' => array(
@@ -248,16 +248,12 @@ When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
 keys:
 
-- `params` -- The regular expression subpatterns for path params; inline
-  params will override these settings. For example:
+- `params` -- The regular expression subpatterns for path params. For example:
         
         'params' => array(
-            'id' => '(\d+)',
+            'id' => '\d+',
         ]
         
-  Note that the path itself is allowed to contain param tokens with inline 
-  regular expressions; e.g., `/read/{id:(\d+)}`.  This may be easier to read in some cases.
-
 - `values` -- The default values for the route. These will be overwritten by
   matching params from the path.
 
@@ -292,7 +288,7 @@ Here is a full route specification named `read` with all keys in place:
 <?php
 $router->add('read', '/blog/read/{id}{format}', array(
     'params' => array(
-        'id' => '(\d+)',
+        'id' => '\d+',
         'format' => '(\..+)?',
     ),
     'values' => array(
@@ -348,9 +344,9 @@ following long-form route:
 <?php
 $router->add('archive', '/archive/{year}/{month}/{day}', array(
     'params' => array(
-        'year'  => '([^/]+)',
-        'month' => '([^/]+)',
-        'day'   => '([^/]+)',
+        'year'  => '[^/]+',
+        'month' => '[^/]+',
+        'day'   => '[^/]+',
     ),
     'values' => array(
         'action' => 'archive',
@@ -372,9 +368,9 @@ path. For example:
 <?php
 $router->add('archive', '/archive{/year,month,day}', array(
     'params' => array(
-        'year'  => '(\d{4})',
-        'month' => '(\d{2})',
-        'day'   => '(\d{2})'
+        'year'  => '\d{4}',
+        'month' => '\d{2}',
+        'day'   => '\d{2}'
     ),
 ));
 ?>
@@ -409,9 +405,9 @@ first missing one:
 <?php
 $router->add('archive', '/archive{/year,month,day}', array(
     'params' => array(
-        'year'  => '(\d{4})',
-        'month' => '(\d{2})',
-        'day'   => '(\d{2})'
+        'year'  => '\d{4}',
+        'month' => '\d{2}',
+        'day'   => '\d{2}'
     ),
 ));
 
@@ -492,7 +488,7 @@ $router->attach('/blog', array(
         'read' => array(
             'path' => '/{id}{format}',
             'params' => array(
-                'id'     => '(\d+)',
+                'id'     => '\d+',
                 'format' => '(\.json|\.atom)?'
             ),
             'values' => array(
@@ -501,7 +497,7 @@ $router->attach('/blog', array(
         ),
         
         // a short-form route named 'edit'
-        'edit' => '/{id:(\d+)}/edit',
+        'edit' => '/{id}/edit',
     ),
 ));
 ?>
@@ -524,7 +520,7 @@ $router->attach('/blog', array(
     
     // common params for the routes
     'params' => array(
-        'id'     => '(\d+)',
+        'id'     => '\d+',
         'format' => '(\.json|\.atom)?',
     ),
     
@@ -567,7 +563,7 @@ $attach = array(
         
         // common params for the routes
         'params' => array(
-            'id' => '(\d+)',
+            'id' => '\d+',
             'format' => '(\.json|\.atom)?',
         ),
     
