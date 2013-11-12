@@ -208,12 +208,12 @@ $router->add('read', '/blog/read/{id}{format}', array(
 		'format' => '(\..+)?',
 	),
 	'default' => array(
-		'controller' => function ($args) {
-		    if ($args['format'] == '.json') {
+		'controller' => function ($params) {
+		    if ($params['format'] == '.json') {
 		        echo header('Content-Type: application/json');
-		        echo json_encode($args);
+		        echo json_encode($params);
 		    } else {
-    			$id = (int) $args['id'];
+    			$id = (int) $params['id'];
     			echo "Reading blog ID {$id}";
 		    }
 		},
@@ -228,14 +228,14 @@ A naive micro-framework dispatcher might work like this:
 ```php
 <?php
 // get the arguments from the route values
-$args = $route->params;
+$params = $route->params;
 
 // pull out the closure controller from the args
-$controller = $args['controller'];
-unset($args['controller']);
+$controller = $params['controller'];
+unset($params['controller']);
 
 // invoke the closure controller
-$controller($args);
+$controller($params);
 ?>
 ```
 
@@ -248,15 +248,16 @@ When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
 keys:
 
-- `require` -- The regular expression subpatterns for path params. For
-  example:
+- `require` -- The regular expression subpatterns that params must match;
+  these include `$_SERVER` values. For example:
         
         'require' => array(
             'id' => '\d+',
+            'REQUEST_METHOD' => 'GET|POST',
         ]
         
 - `default` -- The default values for the params. These will be overwritten by
-  matching params from the path.
+  matching params.
 
         'default' => array(
             'controller' => 'blog',
@@ -264,8 +265,6 @@ keys:
             'id' => 1,
         ]
         
-- `method` -- The `$server['REQUEST_METHOD']` must match one of these values.
-
 - `secure` -- When `true` the `$server['HTTPS']` value must be on, or the
   request must be on port 443; when `false`, neither of those must be in
   place.
@@ -291,6 +290,7 @@ $router->add('read', '/blog/read/{id}{format}', array(
     'require' => array(
         'id' => '\d+',
         'format' => '(\..+)?',
+        'REQUEST_METHOD' => 'GET|POST',
     ),
     'default' => array(
         'controller' => 'blog',
@@ -299,7 +299,6 @@ $router->add('read', '/blog/read/{id}{format}', array(
         'format' => '.html',
     ),
     'secure' => false,
-    'method' => array('GET'),
     'routable' => true,
     'is_match' => function(array $server, \ArrayObject $matches) {
             

@@ -3,7 +3,6 @@ namespace Aura\Router;
 
 use ArrayObject;
 
-
 class RouteTest extends \PHPUnit_Framework_TestCase
 {
     protected $factory;
@@ -87,11 +86,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $type = 'Aura\Router\Route';
     
         /**
-         * try one method
+         * try one REQUEST_METHOD
          */
         $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
-            'method' => 'POST',
+            'require' => array(
+                'REQUEST_METHOD' => 'POST',
+            ),
         ));
     
         // correct
@@ -106,18 +107,20 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'POST',
         )));
     
-        // wrong method
+        // wrong REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'GET',
         )));
         
         /**
-         * try many methods
+         * try many REQUEST_METHOD
          */
         $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
-            'method' => array('GET', 'POST'),
+            'require' => array(
+                'REQUEST_METHOD' => 'GET|POST',
+            ),
         ));
     
         // correct
@@ -131,7 +134,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'POST',
         )));
     
-        // wrong path, right methods
+        // wrong path, right REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'GET',
@@ -142,13 +145,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'POST',
         )));
         
-        // right path, wrong method
+        // right path, wrong REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'PUT',
         )));
         
-        // no request method
+        // no REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array()));
     }
@@ -338,9 +341,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '([0-9]+)',
             ),
             'default' => array(
-                "controller" => function ($args) {
-                    $id = (int) $args["id"];
-                    echo "Hello World";
+                "controller" => function ($params) {
+                    $id = (int) $params['id'];
+                    return "Hello World";
                 },
                 'action' => 'read',
                 'format' => '.html',

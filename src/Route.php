@@ -20,6 +20,8 @@ use Closure;
  * In general, you should never need to instantiate a Route directly. Use the
  * RouteFactory instead, or the Router.
  * 
+ * @todo Reset each time we call isMatch() to clear debug, values, etc.
+ * 
  * @package Aura.Router
  * 
  */
@@ -69,16 +71,6 @@ class Route
      * 
      */
     protected $params = array();
-
-    /**
-     * 
-     * The `REQUEST_METHOD` value must match one of the methods in this array;
-     * method; e.g., `'GET'` or `['POST', 'DELETE']`.
-     * 
-     * @var array
-     * 
-     */
-    protected $method = array();
 
     /**
      * 
@@ -201,9 +193,6 @@ class Route
      * 
      * @param array $default Default values for params.
      * 
-     * @param string|array $method The server REQUUEST_METHOD must be one of
-     * these values.
-     * 
      * @param bool $secure If true, the server must indicate an HTTPS request.
      * 
      * @param bool $routable If true, this Route can be matched; if not, it
@@ -225,7 +214,6 @@ class Route
         $path        = null,
         $require     = null,
         $default     = null,
-        $method      = null,
         $secure      = null,
         $wildcard    = null,
         $routable    = true,
@@ -258,14 +246,13 @@ class Route
         // other properties
         $this->require     = (array) $require;
         $this->default     = (array) $default;
-        $this->method      = ($method === null) ? null : (array) $method;
         $this->secure      = ($secure === null) ? null : (bool)  $secure;
         $this->wildcard    = $wildcard;
         $this->routable    = (bool) $routable;
         $this->is_match    = $is_match;
         $this->generate    = $generate;
 
-        // convert path and params to a regular expression
+        // convert path to a regular expression
         $this->setRegex();
     }
 
@@ -318,7 +305,7 @@ class Route
         }
 
         $is_match = $this->isRegexMatch($path)
-                 && $this->isMethodMatch($server)
+                 && $this->isServerMatch($server)
                  && $this->isSecureMatch($server)
                  && $this->isCustomMatch($server);
 
@@ -392,7 +379,7 @@ class Route
         }
         
         // replacements for optional params, if any
-        preg_match('#{/([a-zA-Z0-9_,]+)}#', $link, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]+)}#', $link, $matches);
         if ($matches) {
             // this is the full token to replace in the link
             $key = $matches[0];
@@ -458,7 +445,7 @@ class Route
      */
     protected function setRegexOptionalParams()
     {
-        preg_match('#{/([a-zA-Z0-9_,]+)}#', $this->regex, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]+)}#', $this->regex, $matches);
         if (! $matches) {
             return;
         }
@@ -483,7 +470,7 @@ class Route
      */
     protected function setRegexParams()
     {
-        $find = '#{([a-zA-Z0-9_]+)}#';
+        $find = '#{([a-z][a-zA-Z0-9_]+)}#';
         preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $name = $match[1];
@@ -553,25 +540,40 @@ class Route
 
     /**
      * 
-     * Checks that the Route `$method` matches the corresponding server value.
+     * Checks that $_SERVER values match requirements.
      * 
      * @param array $server A copy of $_SERVER.
      * 
-     * @return bool True on a match, false if not.
+     * @return bool True if, false if not.
      * 
      */
-    protected function isMethodMatch($server)
+    protected function isServerMatch($server)
     {
-        if (isset($this->method)) {
-            if (! isset($server['REQUEST_METHOD'])) {
-                $this->debug[] = 'Method match requested but REQUEST_METHOD not set.';
+        foreach ($this->require as $name => $regex) {
+            
+            // only honor all caps as $_SERVER keys
+            if ($name !== strtoupper($name)) {
+                continue;
+            }
+            
+            // get the corresponding server value
+            $value = isset($server[$name]) ? $server[$name] : '';
+            
+            // define the regex for that server value
+            $regex = "#(?P<{$name}>{$regex})#";
+            
+            // does the server value match the required regex?
+            $match = preg_match($regex, $value, $matches);
+            if (! $match) {
+                $this->debug[] = "Not a server match ($name).";
                 return false;
             }
-            if (! in_array($server['REQUEST_METHOD'], $this->method)) {
-                $this->debug[] = 'Not a method match.';
-                return false;
-            }
+            
+            // retain the matched value
+            $this->matches[$name] = $value;
         }
+        
+        // everything matched!
         return true;
     }
 

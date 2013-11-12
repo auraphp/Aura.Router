@@ -12,8 +12,6 @@ drop callables for custom matching and generation?
 
 split the route adding/attaching from the matching?
 
-can we make "require" a callable?
-
 get rid of $attach from the Router constructor? still want to be able to
 attach route defs from packages/modules/etc, and not just have them call the
 router directly.
@@ -23,6 +21,12 @@ router object?
 
 for the main router object, define defaults? that would go along with "second
 router object" being attached.
+
+change 'format' examples to '(\.[^/]+)?'
+
+make token regex: [a-z][a-zA-Z0-9_]
+
+need to make token regex work with optional params
 
 
 * * *
@@ -43,7 +47,9 @@ Is the equivalent of:
 <?php
     // browse/index/home/etc
     $router->set('api.v1.blog', '/api/v1/blog', array(
-        'method' => 'GET',
+        'require' => array(
+            'REQUEST_METHOD' => 'GET',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'browse',
@@ -52,7 +58,9 @@ Is the equivalent of:
     
     // read a resource
     $router->set('api.v1.blog.read', '/api/v1/blog/{id}', array(
-        'method' => 'GET',
+        'require' => array(
+            'REQUEST_METHOD' => 'GET',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'read',
@@ -61,7 +69,9 @@ Is the equivalent of:
     
     // edit an existing resource
     $router->set('api.v1.blog.edit', '/api/v1/blog/{id}', array(
-        'method' => array('PUT', 'PATCH'),
+        'require' => array(
+            'REQUEST_METHOD' => 'PUT|PATCH',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'edit',
@@ -70,7 +80,9 @@ Is the equivalent of:
     
     // add a new resource
     $router->set('api.v1.blog.add', '/api/v1/blog', array(
-        'method' => 'POST',
+        'require' => array(
+            'REQUEST_METHOD' => 'POST',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'add',
@@ -79,7 +91,9 @@ Is the equivalent of:
     
     // delete an existing resource
     $router->set('api.v1.blog.delete', '/api/v1/blog/{id}', array(
-        'method' => 'DELETE',
+        'require' => array(
+            'REQUEST_METHOD' => 'DELETE',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'delete',
@@ -88,7 +102,9 @@ Is the equivalent of:
 
     // search a resource
     $router->set('api.v1.blog.search', '/api/v1/blog/search', array(
-        'method' => 'GET',
+        'require' => array(
+            'REQUEST_METHOD' => 'GET',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'search',
@@ -97,7 +113,9 @@ Is the equivalent of:
 
     // blank form or template for a new resource
     $router->set('api.v1.blog.form', '/api/v1/blog/form', array(
-        'method' => 'GET',
+        'require' => array(
+            'REQUEST_METHOD' => 'GET',
+        ),
         'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'form',

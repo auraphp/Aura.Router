@@ -412,7 +412,7 @@ class Router
 
         // now merge with the attach info
         $spec = array_merge_recursive($this->attach_common, $spec);
-
+        
         // done!
         return $spec;
     }
