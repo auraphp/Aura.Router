@@ -36,7 +36,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsMatchOnStaticPath()
     {
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'values' => array(
                 'controller' => 'zim',
@@ -45,12 +45,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         ));
         
         // right path
+        $route = clone $proto;
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
         $this->assertEquals('zim', $route->values['controller']);
         $this->assertEquals('dib', $route->values['action']);
         
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
     }
     
@@ -62,7 +64,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'id' => '([0-9]+)',
-                'format' => '(\.[a-zA-Z0-9]$)?'
+                'format' => '(\.[a-zA-Z0-9]+)?'
             ),
             'values' => array(
                 'format' => '.html',
@@ -87,22 +89,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * try one method
          */
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'method' => 'POST',
         ));
     
         // correct
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'POST',
         )));
     
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'POST',
         )));
     
         // wrong method
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'GET',
         )));
@@ -110,35 +115,41 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * try many methods
          */
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'method' => array('GET', 'POST'),
         ));
     
         // correct
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'GET',
         )));
         
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'POST',
         )));
     
         // wrong path, right methods
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'GET',
         )));
         
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'POST',
         )));
         
         // right path, wrong method
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'PUT',
         )));
         
         // no request method
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array()));
     }
     
@@ -149,22 +160,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * secure required
          */
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'secure' => true,
         ));
         
         // correct
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'on',
         )));
         
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'HTTPS' => 'on',
         )));
         
         // not secure
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'off',
         )));
@@ -172,22 +186,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * not-secure required
          */
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'secure' => false,
         ));
         
         // correct
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'off',
         )));
         
         // secured when it should not be
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'on',
         )));
         
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'HTTPS' => 'off',
         )));
@@ -200,22 +217,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * secure required
          */
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'secure' => true,
         ));
         
         // correct
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '443',
         )));
         
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'SERVER_PORT' => '443',
         )));
         
         // not secure
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '80',
         )));
@@ -223,22 +243,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * not-secure required
          */
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'secure' => false,
         ));
         
         // correct
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '80',
         )));
         
         // secured when it should not be
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '443',
         )));
         
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'SERVER_PORT' => '80',
         )));
@@ -327,14 +350,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
         $this->assertEquals('/blog/42/edit', $url);
     }
-
+    
     public function testGenerate()
     {
         $route = $this->factory->newRoute(array(
-          'path' => '/blog/{id}/edit',
-          'params' => array(
-              'id' => '([0-9]+)',
-          ),
+            'path' => '/blog/{id}/edit',
+            'params' => array(
+                'id' => '([0-9]+)',
+            ),
         ));
         
         $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
@@ -344,14 +367,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithClosure()
     {
         $route = $this->factory->newRoute(array(
-          'path' => '/blog/{id}/edit',
-          'params' => array(
-              'id' => '([0-9]+)',
-          ),
-          'generate' => function($route, $data) {
-              $data['id'] = 99;
-              return $data;
-          }
+            'path' => '/blog/{id}/edit',
+            'params' => array(
+                'id' => '([0-9]+)',
+            ),
+            'generate' => function($route, $data) {
+                $data['id'] = 99;
+                return $data;
+            }
         ));
         
         $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
@@ -361,11 +384,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithCallback()
     {
         $route = $this->factory->newRoute(array(
-          'path' => '/blog/{id}/edit',
-          'params' => array(
-              'id' => '([0-9]+)',
-          ),
-          'generate' => array($this, 'callbackForGenerate'),
+            'path' => '/blog/{id}/edit',
+            'params' => array(
+                'id' => '([0-9]+)',
+            ),
+            'generate' => array($this, 'callbackForGenerate'),
         ));
         
         $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
@@ -375,11 +398,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithWildcard()
     {
         $route = $this->factory->newRoute(array(
-          'path' => '/blog/{id}',
-          'params' => array(
-              'id' => '([0-9]+)',
-          ),
-          'wildcard' => 'other',
+            'path' => '/blog/{id}',
+            'params' => array(
+                'id' => '([0-9]+)',
+            ),
+            'wildcard' => 'other',
         ));
         
         $url = $route->generate(array(
@@ -397,7 +420,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithOptional()
     {
         $route = $this->factory->newRoute(array(
-          'path' => '/archive/{category}{/year,month,day}',
+            'path' => '/archive/{category}{/year,month,day}',
         ));
         
         $url = $route->generate(array(
@@ -422,7 +445,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'params' => array(
                 'action' => '(browse|read|edit|add|delete)',
                 'id' => '(\d+)',
-                'format' => '(\..*)?',
+                'format' => '(\..+)?',
             ),
         ));
         
@@ -469,7 +492,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $expect = "http://google.com/?q=what%27s%20up%20doc%3F";
         $this->assertSame($expect, $actual);
     }
-
+   
     public function testGenerateRFC3986()
     {
         $route = $this->factory->newRoute(array(
@@ -477,17 +500,17 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'path' => '/path/{string}',
             'routable' => false,
         ));
-
+   
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
         $actual = $route->generate(array('string' => 'foo @+%/'));
         $expect = '/path/foo%20%40%2B%25%2F';
         $this->assertSame($actual, $expect);
-
+   
         $actual = $route->generate(array('string' => 'sales and marketing/Miami'));
         $expect = '/path/sales%20and%20marketing%2FMiami';
         $this->assertSame($actual, $expect);        
     }
-
+   
     public function testIsMatchOnRFC3986Paths()
     {
         $route = $this->factory->newRoute(array(
@@ -505,7 +528,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expect, $route->values);
     }
-
+   
    public function testGithubIssue7()
    {
         $server = array(
@@ -557,26 +580,30 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
    public function testIsMatchOnlWildcard()
    {
-        $route = $this->factory->newRoute(array(
+        $proto = $this->factory->newRoute(array(
             'path' => '/foo/{zim}/',
             'wildcard' => 'wild',
         ));
         
         // right path with wildcard values
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
         $this->assertSame('bar', $route->values['zim']);
         $this->assertSame(array('baz', 'dib'), $route->values['wild']);
         
         // right path with trailing slash but no wildcard values
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
         $this->assertSame('bar', $route->values['zim']);
         $this->assertSame(array(), $route->values['wild']);
         
         // right path without trailing slash
+        $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar', $this->server));
         $this->assertSame(array(), $route->values['wild']);
         
         // wrong path
+        $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
     }
    

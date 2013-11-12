@@ -319,9 +319,11 @@ class Route
             return false;
         }
 
-        // populate the path matches into the route values
+        // populate the path matches into the route values. if the path match
+        // is exactly an empty string, treat it as missing/unset. (this is
+        // to support optional ".format" param values.)
         foreach ($this->matches as $key => $val) {
-            if (is_string($key)) {
+            if (is_string($key) && $val !== '') {
                 $this->values[$key] = rawurldecode($val);
             }
         }
