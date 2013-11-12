@@ -158,8 +158,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsSecureMatch_https()
     {
-        $type = 'Aura\Router\Route';
-        
         /**
          * secure required
          */
@@ -215,8 +213,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsSecureMatch_serverPort()
     {
-        $type = 'Aura\Router\Route';
-        
         /**
          * secure required
          */
@@ -272,8 +268,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsCustomMatchWithClosure()
     {
-        $type = 'Aura\Router\Route';
-        
         $route = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'is_match' => function($server, ArrayObject $matches) {
@@ -299,8 +293,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsCustomMatchWithCallback()
     {
-        $type = 'Aura\Router\Route';
-        
         $route = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
             'is_match' => array($this, 'callbackForIsMatchTrue'),
