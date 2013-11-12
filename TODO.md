@@ -15,8 +15,6 @@ router object?
 for the main router object, define defaults? that would go along with "second
 router object" being attached.
 
-reset the route each time we call isMatch() to clear debug, values, etc.
-
 * * *
 
 making resource routes:
