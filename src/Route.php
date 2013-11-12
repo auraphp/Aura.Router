@@ -45,7 +45,8 @@ class Route
 
     /**
      * 
-     * A map of param tokens to their regex subpatterns.
+     * A map of params to regex subpatterns; all-caps param names are treated
+     * as `$_SERVER` keys to be checked.
      * 
      * @var array
      * 
@@ -54,7 +55,7 @@ class Route
 
     /**
      * 
-     * Defalt values for route params.
+     * Defalt param values.
      * 
      * @var array
      * 
@@ -63,7 +64,7 @@ class Route
     
     /**
      * 
-     * Actual values of route params.
+     * Matched param values.
      * 
      * @var array
      * 
@@ -99,11 +100,11 @@ class Route
 
     /**
      * 
-     * A callable to modify path-generation values. The signature 
-     * must be `function($route, array $data)`; its return value is an array 
-     * of data to be used in the path. The `$route` is this Route object, and 
-     * `$data` is the set of key-value pairs to be interpolated into the path
-     * as provided by the caller.
+     * A callable to modify path-generation values. The signature must be
+     * `function (\Aura\Router\Route $route, array $data)`. Its return value
+     * is an array  of data to be used in the path. The `$route` is this Route
+     * object, and  `$data` is the set of key-value pairs to be interpolated
+     * into the path as provided by the caller.
      * 
      * @var callable
      * 
@@ -124,8 +125,8 @@ class Route
 
     /**
      * 
-     * The $path property converted to a regular expression, using the $require
-     * subpatterns.
+     * The `$path` property converted to a regular expression, using the
+     * `$require` subpatterns.
      * 
      * @var string
      * 
@@ -134,7 +135,8 @@ class Route
 
     /**
      * 
-     * All param matches found in the path during the `isMatch()` process.
+     * All param matches found in the path during the `isMatch()` process,
+     * both in the path and in `$_SERVER`.
      * 
      * @var array
      * 
@@ -145,7 +147,7 @@ class Route
 
     /**
      * 
-     * Retain debugging information about why the route did not match.
+     * Debugging information about why the route did not match.
      * 
      * @var array
      * 
@@ -165,28 +167,8 @@ class Route
      * 
      * Constructor.
      * 
-     * @param string $name The name for this Route.
-     * 
-     * @param string $path The path for this Route with param token placeholders.
-     * 
-     * @param array $require Params are reuqired to match these expressions.
-     * 
-     * @param array $default Default values for params.
-     * 
-     * @param bool $secure If true, the server must indicate an HTTPS request.
-     * 
-     * @param bool $routable If true, this Route can be matched; if not, it
-     * can be used only to generate a path.
-     * 
-     * @param callable $is_match A custom callable to evaluate the route.
-     * 
-     * @param callable $generate A custom callable to generate a path.
-     * 
-     * @param string $name_prefix A prefix for the name.
-     * 
-     * @param string $path_prefix A prefix for the path.
-     * 
-     * @return Route
+     * @param string $path The path for this Route with param token
+     * placeholders.
      * 
      */
     public function __construct($path)
@@ -194,55 +176,6 @@ class Route
         $this->path = $path;
     }
 
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-    
-    public function setRequire(array $require)
-    {
-        $this->require = $require;
-        $this->regex = null;
-        return $this;
-    }
-    
-    public function setDefault(array $default)
-    {
-        $this->default = $default;
-        return $this;
-    }
-    
-    public function setSecure($secure)
-    {
-        $this->secure = ($secure === null) ? null : (bool) $secure;
-        return $this;
-    }
-    
-    public function setWildcard($wildcard)
-    {
-        $this->wildcard = $wildcard;
-        return $this;
-    }
-    
-    public function setRoutable($routable = true)
-    {
-        $this->routable = (bool) $routable;
-        return $this;
-    }
-    
-    public function setIsMatchCallable($is_match)
-    {
-        $this->is_match = $is_match;
-        return $this;
-    }
-    
-    public function setGenerateCallable($generate)
-    {
-        $this->generate = $generate;
-        return $this;
-    }
-    
     /**
      * 
      * Magic read-only for all properties.
@@ -271,6 +204,130 @@ class Route
         return isset($this->$key);
     }
 
+    /**
+     * 
+     * Sets the name for this Route.
+     * 
+     * @param string $name The name for this Route.
+     * 
+     * @return $this
+     * 
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets the regular expressions that params must match.
+     * 
+     * @param array $require Params are required to match these expressions.
+     * 
+     * @return $this
+     * 
+     */
+    public function setRequire(array $require)
+    {
+        $this->require = $require;
+        $this->regex = null;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets the default values for params.
+     * 
+     * @param array $default Default values for params.
+     * 
+     * @return $this
+     * 
+     */
+    public function setDefault(array $default)
+    {
+        $this->default = $default;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets whether or not the route must be secure.
+     * 
+     * @param bool $secure If true, the server must indicate an HTTPS request;
+     * if false, it must *not* be HTTPS; if null, it doesn't matter.
+     * 
+     * @return $this
+     * 
+     */
+    public function setSecure($secure = true)
+    {
+        $this->secure = ($secure === null) ? null : (bool) $secure;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets the name of the wildcard param.
+     * 
+     * @param string $wildcard The name of the wildcard param, if any.
+     * 
+     * @return $this
+     * 
+     */
+    public function setWildcard($wildcard)
+    {
+        $this->wildcard = $wildcard;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets whether or not this route should be used for matching.
+     * 
+     * @param bool $routable If true, this Route can be matched; if not, it
+     * can be used only to generate a path.
+     * 
+     * @return $this
+     * 
+     */
+    public function setRoutable($routable = true)
+    {
+        $this->routable = (bool) $routable;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets a custom callable to evaluate the route for matching.
+     * 
+     * @param callable $is_match A custom callable to evaluate the route.
+     * 
+     * @return $this
+     * 
+     */
+    public function setIsMatchCallable($is_match)
+    {
+        $this->is_match = $is_match;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets a custom callable to modify data for `generate()`.
+     * 
+     * @param callable $generate A custom callable to modify data for
+     * `generate()`.
+     * 
+     * @return $this
+     * 
+     */
+    public function setGenerateCallable($generate)
+    {
+        $this->generate = $generate;
+        return $this;
+    }
+    
     /**
      * 
      * Checks if a given path and server values are a match for this
@@ -325,8 +382,6 @@ class Route
      * place.
      * 
      * @return string
-     * 
-     * @todo Make this work with wildcards and optional params.
      * 
      */
     public function generate(array $data = array())

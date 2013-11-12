@@ -602,9 +602,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect_values, $actual->params);
     }
     
-    /**
-     * @todo Implement testGenerate().
-     */
     public function testGenerate()
     {
         $this->router->attach('/page', array(
