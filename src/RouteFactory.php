@@ -46,10 +46,10 @@ class RouteFactory
      * @var array
      * 
      */
-    protected $params = array(
+    protected $args = array(
         'name'        => null,
         'path'        => null,
-        'params'      => null,
+        'require'      => null,
         'values'      => null,
         'method'      => null,
         'secure'      => null,
@@ -65,28 +65,28 @@ class RouteFactory
      * 
      * Returns a new Route instance.
      * 
-     * @param array $params An array of key-value pairs corresponding to the
-     * Route parameters.
+     * @param array $args An array of key-value pairs corresponding to the
+     * Route arguments.
      * 
      * @return Route
      * 
      */
-    public function newRoute(array $params)
+    public function newRoute(array $args)
     {
-        $params = array_merge($this->params, $params);
+        $args = array_merge($this->args, $args);
         return new Route(
-            $params['name'],
-            $params['path'],
-            $params['params'],
-            $params['values'],
-            $params['method'],
-            $params['secure'],
-            $params['wildcard'],
-            $params['routable'],
-            $params['is_match'],
-            $params['generate'],
-            $params['name_prefix'],
-            $params['path_prefix']
+            $args['name'],
+            $args['path'],
+            $args['require'],
+            $args['values'],
+            $args['method'],
+            $args['secure'],
+            $args['wildcard'],
+            $args['routable'],
+            $args['is_match'],
+            $args['generate'],
+            $args['name_prefix'],
+            $args['path_prefix']
         );
     }
 }

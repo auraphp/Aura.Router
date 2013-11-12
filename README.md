@@ -81,7 +81,7 @@ $router->add(null, '/{controller}/{action}/{id}');
 
 // add a complex named route
 $router->add('read', '/blog/read/{id}{format}', array(
-    'params' => array(
+    'require' => array(
         'id'     => '\d+',
         'format' => '(\..+)?',
     ),
@@ -203,7 +203,7 @@ possible by assigning anonymous function to controller.
 ```php
 <?php
 $router->add('read', '/blog/read/{id}{format}', array(
-	'params' => array(
+	'require' => array(
 		'id' => '\d+',
 		'format' => '(\..+)?',
 	),
@@ -250,7 +250,7 @@ keys:
 
 - `params` -- The regular expression subpatterns for path params. For example:
         
-        'params' => array(
+        'require' => array(
             'id' => '\d+',
         ]
         
@@ -287,7 +287,7 @@ Here is a full route specification named `read` with all keys in place:
 ```php
 <?php
 $router->add('read', '/blog/read/{id}{format}', array(
-    'params' => array(
+    'require' => array(
         'id' => '\d+',
         'format' => '(\..+)?',
     ),
@@ -343,7 +343,7 @@ following long-form route:
 ```php
 <?php
 $router->add('archive', '/archive/{year}/{month}/{day}', array(
-    'params' => array(
+    'require' => array(
         'year'  => '[^/]+',
         'month' => '[^/]+',
         'day'   => '[^/]+',
@@ -367,7 +367,7 @@ path. For example:
 ```php
 <?php
 $router->add('archive', '/archive{/year,month,day}', array(
-    'params' => array(
+    'require' => array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
@@ -404,7 +404,7 @@ first missing one:
 ```php
 <?php
 $router->add('archive', '/archive{/year,month,day}', array(
-    'params' => array(
+    'require' => array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
@@ -487,7 +487,7 @@ $router->attach('/blog', array(
         // a long-form route named 'read'
         'read' => array(
             'path' => '/{id}{format}',
-            'params' => array(
+            'require' => array(
                 'id'     => '\d+',
                 'format' => '(\.json|\.atom)?'
             ),
@@ -519,7 +519,7 @@ you don't need to repeat common information:
 $router->attach('/blog', array(
     
     // common params for the routes
-    'params' => array(
+    'require' => array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?',
     ),
@@ -562,7 +562,7 @@ $attach = array(
         'name_prefix' => 'projectname.blog.',
         
         // common params for the routes
-        'params' => array(
+        'require' => array(
             'id' => '\d+',
             'format' => '(\.json|\.atom)?',
         ),

@@ -50,7 +50,7 @@ class Route
      * @var array
      * 
      */
-    protected $params = array();
+    protected $require = array();
 
     /**
      * 
@@ -145,7 +145,7 @@ class Route
 
     /**
      * 
-     * The $path property converted to a regular expression, using the $params
+     * The $path property converted to a regular expression, using the $require
      * subpatterns.
      * 
      * @var string
@@ -190,7 +190,7 @@ class Route
      * 
      * @param string $path The path for this Route with param token placeholders.
      * 
-     * @param array $params Router of param tokens to regex subpatterns.
+     * @param array $require Router of param tokens to regex subpatterns.
      * 
      * @param array $values Default values for params.
      * 
@@ -216,7 +216,7 @@ class Route
     public function __construct(
         $name        = null,
         $path        = null,
-        $params      = null,
+        $require      = null,
         $values      = null,
         $method      = null,
         $secure      = null,
@@ -249,7 +249,7 @@ class Route
         }
 
         // other properties
-        $this->params      = (array) $params;
+        $this->require     = (array) $require;
         $this->values      = (array) $values;
         $this->method      = ($method === null) ? null : (array) $method;
         $this->secure      = ($secure === null) ? null : (bool)  $secure;
@@ -516,8 +516,8 @@ class Route
     protected function getSubpattern($name)
     {
         // is there a custom subpattern for the name?
-        if (isset($this->params[$name])) {
-            return "(?P<{$name}>{$this->params[$name]})";
+        if (isset($this->require[$name])) {
+            return "(?P<{$name}>{$this->require[$name]})";
         }
         
         // use a default subpattern

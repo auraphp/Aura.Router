@@ -42,7 +42,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testAddComplexRoute()
     {
         $this->router->add('read', '/resource/{id}', array(
-            'params' => array(
+            'require' => array(
                 'id' => '(\d+)',
             ),
             'values' => array(
@@ -84,7 +84,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 '/{controller}',
                 '/',
             ),
-            'params' => array(
+            'require' => array(
                 'controller'    => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'action'        => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'id'            => '([0-9]+)',
@@ -154,7 +154,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'add' => '/add',
                 'delete' => '/{id}/delete',
             ),
-            'params' => array(
+            'require' => array(
                 'action'        => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
@@ -244,7 +244,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 array('path' => '/{controller}'),
                 array('path' => '/'),
             ),
-            'params' => array(
+            'require' => array(
                 'controller'    => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'action'        => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'id'            => '([0-9]+)',
@@ -314,7 +314,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'add' => '/add',
                 'delete' => '/{id}/delete',
             ),
-            'params' => array(
+            'require' => array(
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
@@ -425,7 +425,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 ),
             ),
             
-            'params' => array(
+            'require' => array(
                 'id'            => '([0-9]+)',
             ),
             
@@ -506,7 +506,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'add' => '/add',
                     'delete' => '/{id}/delete',
                 ),
-                'params' => array(
+                'require' => array(
                     'id'            => '([0-9]+)',
                     'format'        => '(\.[a-z0-9]+$)?',
                 ),
@@ -603,7 +603,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'add' => '/add',
                 'delete' => '/{id}/delete',
             ),
-            'params' => array(
+            'require' => array(
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
@@ -646,7 +646,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'add' => '/add',
                 'delete' => '/{id}/delete',
             ),
-            'params' => array(
+            'require' => array(
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
@@ -675,7 +675,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'add' => '/add',
                     'delete' => '/{id}/delete',
                 ),
-                'params' => array(
+                'require' => array(
                     'id'            => '([0-9]+)',
                     'format'        => '(\.[a-z0-9]+$)?',
                 ),
@@ -775,7 +775,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'add' => '/add',
                     'delete' => '/{id}/delete',
                 ),
-                'params' => array(
+                'require' => array(
                     'id'            => '([0-9]+)',
                     'format'        => '(\.[a-z0-9]+$)?',
                 ),
@@ -801,7 +801,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'browse' => '/',
                 'read' => '/{id}{format}',
             ),
-            'params' => array(
+            'require' => array(
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),

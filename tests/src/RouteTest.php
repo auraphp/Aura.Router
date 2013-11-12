@@ -60,7 +60,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/{controller}/{action}/{id}{format}',
-            'params' => array(
+            'require' => array(
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'id' => '([0-9]+)',
@@ -334,7 +334,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/blog/{id}/edit',
-            'params' => array(
+            'require' => array(
                 'id' => '([0-9]+)',
             ),
             'values' => array(
@@ -355,7 +355,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/blog/{id}/edit',
-            'params' => array(
+            'require' => array(
                 'id' => '([0-9]+)',
             ),
         ));
@@ -368,7 +368,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/blog/{id}/edit',
-            'params' => array(
+            'require' => array(
                 'id' => '([0-9]+)',
             ),
             'generate' => function($route, $data) {
@@ -385,7 +385,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/blog/{id}/edit',
-            'params' => array(
+            'require' => array(
                 'id' => '([0-9]+)',
             ),
             'generate' => array($this, 'callbackForGenerate'),
@@ -399,7 +399,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/blog/{id}',
-            'params' => array(
+            'require' => array(
                 'id' => '([0-9]+)',
             ),
             'wildcard' => 'other',
@@ -442,7 +442,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/{controller}/{action}/{id}{format}',
-            'params' => array(
+            'require' => array(
                 'action' => '(browse|read|edit|add|delete)',
                 'id' => '(\d+)',
                 'format' => '(\..+)?',
@@ -556,7 +556,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         $route = $this->factory->newRoute(array(
             'path' => '/blog/read/{id}{format}',
-            'params' => array(
+            'require' => array(
                 'id' => '(\d+)',
                 'format' => '(\.json|\.html)?',
             ),
