@@ -298,8 +298,8 @@ class Route
     public function isMatch($path, array $server)
     {
         // reset
-        $this->debug = [];
-        $this->params = [];
+        $this->debug = array();
+        $this->params = array();
         
         // routable?
         if (! $this->routable) {
