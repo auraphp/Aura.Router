@@ -297,46 +297,27 @@ class Route
      */
     public function isMatch($path, array $server)
     {
+        // reset
+        $this->debug = [];
+        $this->params = [];
+        
+        // routable?
         if (! $this->routable) {
             $this->debug[] = 'Not routable.';
             return false;
         }
 
+        // check matches
         $is_match = $this->isRegexMatch($path)
                  && $this->isServerMatch($server)
                  && $this->isSecureMatch($server)
                  && $this->isCustomMatch($server);
-
         if (! $is_match) {
             return false;
         }
-
-        // populate the path matches into the route values. if the path match
-        // is exactly an empty string, treat it as missing/unset. (this is
-        // to support optional ".format" param values.)
-        $this->params = $this->default;
-        foreach ($this->matches as $key => $val) {
-            if (is_string($key) && $val !== '') {
-                $this->params[$key] = rawurldecode($val);
-            }
-        }
-
-        // is a wildcard param specified?
-        if ($this->wildcard) {
-            // are there are actual wildcard values?
-            if (empty($this->params[$this->wildcard])) {
-                // no, set a blank array
-                $this->params[$this->wildcard] = array();
-            } else {
-                // yes, retain and rawurldecode them
-                $this->params[$this->wildcard] = array_map(
-                    'rawurldecode',
-                    explode('/', $this->params[$this->wildcard])
-                );
-            }
-        }
         
-        // done!
+        // set params from matches, and done!
+        $this->setParams();
         return true;
     }
 
@@ -634,5 +615,41 @@ class Route
         }
 
         return $result;
+    }
+    
+    /**
+     * 
+     * Sets the route params from the matched values.
+     * 
+     * @return null
+     * 
+     */
+    protected function setParams()
+    {
+        $this->params = $this->default;
+        
+        // populate the path matches into the route values. if the path match
+        // is exactly an empty string, treat it as missing/unset. (this is
+        // to support optional ".format" param values.)
+        foreach ($this->matches as $key => $val) {
+            if (is_string($key) && $val !== '') {
+                $this->params[$key] = rawurldecode($val);
+            }
+        }
+
+        // is a wildcard param specified?
+        if ($this->wildcard) {
+            // are there are actual wildcard values?
+            if (empty($this->params[$this->wildcard])) {
+                // no, set a blank array
+                $this->params[$this->wildcard] = array();
+            } else {
+                // yes, retain and rawurldecode them
+                $this->params[$this->wildcard] = array_map(
+                    'rawurldecode',
+                    explode('/', $this->params[$this->wildcard])
+                );
+            }
+        }
     }
 }
