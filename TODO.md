@@ -1,7 +1,3 @@
-need better data structure for routes. at least we need to make the route
-object modifiable before it's called for isMatch() to support micro-framework
-idioms. probably reduce the constructor size and replace with setter methods.
-
 split the route adding/attaching from the matching?
 
 get rid of $attach from the Router constructor? still want to be able to

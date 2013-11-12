@@ -49,8 +49,8 @@ class RouteFactory
     protected $args = array(
         'name'        => null,
         'path'        => null,
-        'require'     => null,
-        'default'     => null,
+        'require'     => array(),
+        'default'     => array(),
         'secure'      => null,
         'wildcard'    => null,
         'routable'    => true,
@@ -95,16 +95,16 @@ class RouteFactory
             $args['path'] = (string) $args['path'];
         }
 
-        return new Route(
-            $args['name'],
-            $args['path'],
-            $args['require'],
-            $args['default'],
-            $args['secure'],
-            $args['wildcard'],
-            $args['routable'],
-            $args['is_match'],
-            $args['generate']
-        );
+        // create and configure the route
+        $route = new Route($args['path']);
+        $route->setName($args['name'])
+              ->setRequire((array) $args['require'])
+              ->setDefault((array) $args['default'])
+              ->setSecure($args['secure'])
+              ->setWildcard($args['wildcard'])
+              ->setRoutable($args['routable'])
+              ->setIsMatchCallable($args['is_match'])
+              ->setGenerateCallable($args['generate']);
+        return $route;
     }
 }

@@ -189,29 +189,60 @@ class Route
      * @return Route
      * 
      */
-    public function __construct(
-        $name        = null,
-        $path        = null,
-        $require     = null,
-        $default     = null,
-        $secure      = null,
-        $wildcard    = null,
-        $routable    = true,
-        $is_match    = null,
-        $generate    = null
-    ) {
-        $this->name     = $name;
-        $this->path     = $path;
-        $this->require  = (array) $require;
-        $this->default  = (array) $default;
-        $this->secure   = ($secure === null) ? null : (bool)  $secure;
-        $this->wildcard = $wildcard;
-        $this->routable = (bool) $routable;
-        $this->is_match = $is_match;
-        $this->generate = $generate;
-        $this->setRegex();
+    public function __construct($path)
+    {
+        $this->path = $path;
     }
 
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+    
+    public function setRequire(array $require)
+    {
+        $this->require = $require;
+        $this->regex = null;
+        return $this;
+    }
+    
+    public function setDefault(array $default)
+    {
+        $this->default = $default;
+        return $this;
+    }
+    
+    public function setSecure($secure)
+    {
+        $this->secure = ($secure === null) ? null : (bool) $secure;
+        return $this;
+    }
+    
+    public function setWildcard($wildcard)
+    {
+        $this->wildcard = $wildcard;
+        return $this;
+    }
+    
+    public function setRoutable($routable = true)
+    {
+        $this->routable = (bool) $routable;
+        return $this;
+    }
+    
+    public function setIsMatchCallable($is_match)
+    {
+        $this->is_match = $is_match;
+        return $this;
+    }
+    
+    public function setGenerateCallable($generate)
+    {
+        $this->generate = $generate;
+        return $this;
+    }
+    
     /**
      * 
      * Magic read-only for all properties.
@@ -264,7 +295,12 @@ class Route
             $this->debug[] = 'Not routable.';
             return false;
         }
-
+        
+        // do we have a regex?
+        if (! $this->regex) {
+            $this->setRegex();
+        }
+        
         // check matches
         $is_match = $this->isRegexMatch($path)
                  && $this->isServerMatch($server)
