@@ -1,7 +1,6 @@
 need better data structure for routes. at least we need to make the route
 object modifiable before it's called for isMatch() to support micro-framework
 idioms. probably reduce the constructor size and replace with setter methods.
-lock it after matched?
 
 split the route adding/attaching from the matching?
 

@@ -412,6 +412,7 @@ class Route
         $this->setRegexOptionalParams();
         $this->setRegexParams();
         $this->setRegexWildcard();
+        $this->regex = '^' . $this->regex . '$';
     }
 
     /**
