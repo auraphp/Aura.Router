@@ -15,8 +15,6 @@ router object?
 for the main router object, define defaults? that would go along with "second
 router object" being attached.
 
-change 'format' examples to '(\.[^/]+)?'
-
 make token regex [a-z][a-zA-Z0-9_] and make it work more properly with
 optional params
 
