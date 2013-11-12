@@ -304,18 +304,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         return false;
     }
     
-    public function testBadSubpattern()
-    {
-        $this->setExpectedException('Aura\Router\Exception\MalformedSubpattern');
-        $route = $this->factory->newRoute(array(
-            'path' => '/{controller}',
-            'params' => array(
-                // should open with a paren
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]+',
-            ),
-        ));
-    }
-    
     /**
      * This test should not get exception for the urlencode on closure
      */

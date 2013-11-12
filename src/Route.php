@@ -515,17 +515,11 @@ class Route
     {
         // is there a custom subpattern for the name?
         if (isset($this->params[$name])) {
-            // use a custom subpattern
-            $subpattern = $this->params[$name];
-            if ($subpattern[0] != '(') {
-                $message = "Subpattern for param '$name' must start with '('.";
-                throw new Exception\MalformedSubpattern($message);
-            }
-            return "(?P<$name>" . substr($subpattern, 1);
+            return "(?P<{$name}>{$this->params[$name]})";
         }
         
         // use a default subpattern
-        return "(?P<$name>[^/]+)";
+        return "(?P<{$name}>[^/]+)";
     }
     
     /**
