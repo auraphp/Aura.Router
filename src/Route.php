@@ -68,7 +68,7 @@ class Route
      * @var array
      * 
      */
-    protected $values = array();
+    protected $params = array();
 
     /**
      * 
@@ -329,24 +329,24 @@ class Route
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
         // to support optional ".format" param values.)
-        $this->values = $this->default;
+        $this->params = $this->default;
         foreach ($this->matches as $key => $val) {
             if (is_string($key) && $val !== '') {
-                $this->values[$key] = rawurldecode($val);
+                $this->params[$key] = rawurldecode($val);
             }
         }
 
         // is a wildcard param specified?
         if ($this->wildcard) {
             // are there are actual wildcard values?
-            if (empty($this->values[$this->wildcard])) {
+            if (empty($this->params[$this->wildcard])) {
                 // no, set a blank array
-                $this->values[$this->wildcard] = array();
+                $this->params[$this->wildcard] = array();
             } else {
                 // yes, retain and rawurldecode them
-                $this->values[$this->wildcard] = array_map(
+                $this->params[$this->wildcard] = array_map(
                     'rawurldecode',
-                    explode('/', $this->values[$this->wildcard])
+                    explode('/', $this->params[$this->wildcard])
                 );
             }
         }

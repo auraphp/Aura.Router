@@ -48,8 +48,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = clone $proto;
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
-        $this->assertEquals('zim', $route->values['controller']);
-        $this->assertEquals('dib', $route->values['action']);
+        $this->assertEquals('zim', $route->params['controller']);
+        $this->assertEquals('dib', $route->params['action']);
         
         // wrong path
         $route = clone $proto;
@@ -79,7 +79,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => 42,
             'format' => '.html'
         );
-        $this->assertEquals($expect, $route->values);
+        $this->assertEquals($expect, $route->params);
     }
     
     public function testIsMethodMatch()
@@ -281,7 +281,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
-        $this->assertEquals('gir', $route->values['zim']);
+        $this->assertEquals('gir', $route->params['zim']);
         
         $route = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
@@ -305,7 +305,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
-        $this->assertEquals('gir', $route->values['zim']);
+        $this->assertEquals('gir', $route->params['zim']);
         
         $route = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
@@ -457,7 +457,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => '42',
             'format' => null
         );
-        $this->assertSame($expect, $route->values);
+        $this->assertSame($expect, $route->params);
     }
     
     public function testIsNotRoutable()
@@ -526,7 +526,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'param1' => 'foo @+%/',
             'param2' => 'sales and marketing/Miami',
         );
-        $this->assertEquals($expect, $route->values);
+        $this->assertEquals($expect, $route->params);
     }
    
    public function testGithubIssue7()
@@ -575,7 +575,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => 42,
             'format' => '.json'
         );
-        $this->assertEquals($expect, $route->values);
+        $this->assertEquals($expect, $route->params);
    }
    
    public function testIsMatchOnlWildcard()
@@ -588,19 +588,19 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         // right path with wildcard values
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
-        $this->assertSame('bar', $route->values['zim']);
-        $this->assertSame(array('baz', 'dib'), $route->values['wild']);
+        $this->assertSame('bar', $route->params['zim']);
+        $this->assertSame(array('baz', 'dib'), $route->params['wild']);
         
         // right path with trailing slash but no wildcard values
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
-        $this->assertSame('bar', $route->values['zim']);
-        $this->assertSame(array(), $route->values['wild']);
+        $this->assertSame('bar', $route->params['zim']);
+        $this->assertSame(array(), $route->params['wild']);
         
         // right path without trailing slash
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar', $this->server));
-        $this->assertSame(array(), $route->values['wild']);
+        $this->assertSame(array(), $route->params['wild']);
         
         // wrong path
         $route = clone $proto;

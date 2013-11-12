@@ -115,10 +115,10 @@ information; e.g., through a URL object or a context object. As long as you
 can pass the string path and a server array, you can use Aura Router in your
 application foundation or framework.
 
-The returned `$route` object will contain, among other things, a `$values`
+The returned `$route` object will contain, among other things, a `$params`
 array with values for each of the parameters identified by the route path. For
 example, matching a route with the path `/{controller}/{action}/{id}` will
-populate the `$route->values` array with `controller`, `action`, and `id`
+populate the `$route->params` array with `controller`, `action`, and `id`
 keys.
 
 ### Dispatching A Route
@@ -136,18 +136,18 @@ if (! $route) {
 }
 
 // does the route indicate a controller?
-if (isset($route->values['controller'])) {
+if (isset($route->params['controller'])) {
     // take the controller class directly from the route
-    $controller = $route->values['controller'];
+    $controller = $route->params['controller'];
 } else {
     // use a default controller
     $controller = 'Index';
 }
 
 // does the route indicate an action?
-if (isset($route->values['action'])) {
+if (isset($route->params['action'])) {
     // take the action method directly from the route
-    $action = $route->values['action'];
+    $action = $route->params['action'];
 } else {
     // use a default action
     $action = 'index';
@@ -157,7 +157,7 @@ if (isset($route->values['action'])) {
 $page = new $controller();
 
 // invoke the action method with the route values
-echo $page->$action($route->values);
+echo $page->$action($route->params);
 ?>
 ```
 
@@ -228,7 +228,7 @@ A naive micro-framework dispatcher might work like this:
 ```php
 <?php
 // get the arguments from the route values
-$args = $route->values;
+$args = $route->params;
 
 // pull out the closure controller from the args
 $controller = $args['controller'];
@@ -434,18 +434,18 @@ $router->add('wild_post', '/post/{id}', array(
 
 // this matches, with the following values
 $route = $router->match('/post/88/foo/bar/baz', $_SERVER);
-// $route->values['id'] = 88;
-// $route->values['other'] = array('foo', 'bar', 'baz'= array(
+// $route->params['id'] = 88;
+// $route->params['other'] = array('foo', 'bar', 'baz'= array(
 
 // this also matches, with the following values; note the trailing slash
 $route = $router->match('/post/88/', $_SERVER);
-// $route->values['id'] = 88;
-// $route->values['other'] = array();
+// $route->params['id'] = 88;
+// $route->params['other'] = array();
 
 // this also matches, with the following values; note the missing slash
 $route = $router->match('/post/88', $_SERVER);
-// $route->values['id'] = 88;
-// $route->values['other'] = array();
+// $route->params['id'] = 88;
+// $route->params['other'] = array();
 ?>
 ```
 
