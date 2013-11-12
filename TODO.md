@@ -10,8 +10,6 @@ router object?
 for the main router object, define defaults? that would go along with "second
 router object" being attached.
 
-put `name_prefix` and `path_prefix` logic into factory?
-
 * * *
 
 making resource routes:
