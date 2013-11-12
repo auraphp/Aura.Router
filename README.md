@@ -1,12 +1,13 @@
 # Aura.Router
 
 Provides a web router implementation: given a URL path and a copy of
-`$_SERVER`, it will extract path-info parameter values for a specific route.
+`$_SERVER`, it will extract path-info and `$_SERVER` values for a specific
+route.
 
-Note that this package does not provide a dispatching mechanism. Your
-application is expected to take the information provided by the matching route
-and dispatch to a controller on its own. For one possible dispatch system,
-please see [Aura.Dispatcher][].
+This package does not provide a dispatching mechanism. Your application is
+expected to take the information provided by the matching route and dispatch
+to a controller on its own. For one possible dispatch system, please see
+[Aura.Dispatcher][].
   
 ## Foreword
 
@@ -112,7 +113,7 @@ $route = $router->match($path, $_SERVER);
 The `match()` method does not parse the URL or use `$_SERVER` internally. This
 is because different systems may have different ways of representing that
 information; e.g., through a URL object or a context object. As long as you
-can pass the string path and a server array, you can use Aura Router in your
+can pass the string path and a server array, you can use the _Router_ in your
 application foundation or framework.
 
 The returned `$route` object will contain, among other things, a `$params`
@@ -161,7 +162,7 @@ echo $page->$action($route->params);
 ?>
 ```
 
-Again, note that Aura Router will not dispatch for you; the above is provided
+Again, note that the _Router_ will not dispatch for you; the above is provided
 as a naive example only to show how to use route values.  For a more complex
 dispatching system, try [Aura.Dispatcher][].
 
@@ -197,8 +198,9 @@ data keys without matching params, those values will not be added to the path.
 
 ### As a Micro-Framework
 
-Sometimes you may wish to use Aura.Router as a micro-framework. It’s also 
-possible by assigning anonymous function to controller.
+Sometimes you may wish to use the _Router_ as a micro-framework. This is 
+possible by assigning a `callable` as a default param value, then calling that
+param to dispatch it.
 
 ```php
 <?php
@@ -210,10 +212,12 @@ $router->add('read', '/blog/read/{id}{format}', array(
 	'default' => array(
 		'controller' => function ($params) {
 		    if ($params['format'] == '.json') {
-		        echo header('Content-Type: application/json');
-		        echo json_encode($params);
+    			$id = (int) $params['id'];
+		        header('Content-Type: application/json');
+		        echo json_encode(['id' => $id]);
 		    } else {
     			$id = (int) $params['id'];
+		        header('Content-Type: text/plain');
     			echo "Reading blog ID {$id}";
 		    }
 		},
@@ -227,20 +231,20 @@ A naive micro-framework dispatcher might work like this:
 
 ```php
 <?php
-// get the arguments from the route values
+// get the route params
 $params = $route->params;
 
-// pull out the closure controller from the args
+// extract the controller callable from the params
 $controller = $params['controller'];
 unset($params['controller']);
 
-// invoke the closure controller
+// invoke the callable
 $controller($params);
 ?>
 ```
 
-When you request the URL `/blog/read/1.json`, you will get JSON, but for 
-`/blog/read/1` you will get `Reading blog ID 1` as output.
+With the above example controller, the URL `/blog/read/1.json` will send JSON
+ouput, but for `/blog/read/1` it will send plain text output.
 
 ### Complex Route Specification
 
@@ -269,8 +273,8 @@ keys:
   request must be on port 443; when `false`, neither of those must be in
   place.
 
-- `routable` -- When `false` the route will not be used for matching, only for
-  generating paths.
+- `routable` -- When `false` the route will be used only for generating paths,
+  not for matching.
 
 - `is_match` -- A custom callback or closure with the signature
   `function(array $server, \ArrayObject $matches)` that returns true on a
@@ -279,7 +283,7 @@ keys:
   path.
 
 - `generate` -- A custom callback or closure with the signature
-  `function(\aura\router\Route $route, array $data)` that returns a modified
+  `function(\Aura\Router\Route $route, array $data)` that returns a modified
   `$data` array to be used when generating the path.
 
 Here is a full route specification named `read` with all keys in place:
@@ -335,9 +339,9 @@ $router->add('archive', '/archive/{year}/{month}/{day}');
 ?>
 ```
 
-... then Aura Router will use a default subpattern that matches everything
+... then the _Router_ will use a default subpattern that matches everything
 except slashes for the path params, and use the route name as the default
-value for `'action'`. Thus, the above short-form route is equivalent to the
+value for `action`. Thus, the above short-form route is equivalent to the
 following long-form route:
 
 ```php

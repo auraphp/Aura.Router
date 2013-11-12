@@ -49,8 +49,8 @@ class RouteFactory
     protected $args = array(
         'name'        => null,
         'path'        => null,
-        'require'      => null,
-        'default'      => null,
+        'require'     => null,
+        'default'     => null,
         'secure'      => null,
         'wildcard'    => null,
         'routable'    => true,
