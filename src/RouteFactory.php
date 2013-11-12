@@ -73,6 +73,28 @@ class RouteFactory
     public function newRoute(array $args)
     {
         $args = array_merge($this->args, $args);
+        
+        // set the name, with prefix if needed
+	    $args['name_prefix'] = (string) $args['name_prefix'];
+	    if ($args['name_prefix'] && $args['name']) {
+	        $args['name'] = (string) $args['name_prefix'] . $args['name'];
+	    } else {
+	        $args['name'] = (string) $args['name'];
+	    }
+	    
+	    // set the path, with prefix if needed
+        $args['path_prefix'] = (string) $args['path_prefix'];
+        if ($args['path_prefix'] && strpos($args['path'], '://') === false) {
+            // concat the prefix and path
+            $args['path'] = (string) $args['path_prefix'] . $args['path'];
+            // convert all // to /, so that prefixes ending with / do not mess
+            // with paths starting with /
+            $args['path'] = str_replace('//', '/', $args['path']);
+        } else {
+            // no path prefix, or path has :// in it
+            $args['path'] = (string) $args['path'];
+        }
+
         return new Route(
             $args['name'],
             $args['path'],
@@ -82,9 +104,7 @@ class RouteFactory
             $args['wildcard'],
             $args['routable'],
             $args['is_match'],
-            $args['generate'],
-            $args['name_prefix'],
-            $args['path_prefix']
+            $args['generate']
         );
     }
 }

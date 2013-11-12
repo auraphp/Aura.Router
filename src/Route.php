@@ -124,24 +124,6 @@ class Route
 
     /**
      * 
-     * A prefix for the Route name, generally from attached route groups.
-     * 
-     * @var string
-     * 
-     */
-    protected $name_prefix;
-
-    /**
-     * 
-     * A prefix for the Route path, generally from attached route groups.
-     * 
-     * @var string
-     * 
-     */
-    protected $path_prefix;
-
-    /**
-     * 
      * The $path property converted to a regular expression, using the $require
      * subpatterns.
      * 
@@ -216,41 +198,17 @@ class Route
         $wildcard    = null,
         $routable    = true,
         $is_match    = null,
-        $generate    = null,
-        $name_prefix = null,
-        $path_prefix = null
+        $generate    = null
     ) {
-        // set the name, with prefix if needed
-        $this->name_prefix = (string) $name_prefix;
-        if ($name_prefix && $name) {
-            $this->name = (string) $name_prefix . $name;
-        } else {
-            $this->name = (string) $name;
-        }
-
-        // set the path, with prefix if needed
-        $this->path_prefix = (string) $path_prefix;
-        if ($path_prefix && strpos($path, '://') === false) {
-            // concat the prefix and path
-            $this->path = (string) $path_prefix . $path;
-            // convert all // to /, so that prefixes ending with / do not mess
-            // with paths starting with /
-            $this->path = str_replace('//', '/', $this->path);
-        } else {
-            // no path prefix, or path has :// in it
-            $this->path = (string) $path;
-        }
-
-        // other properties
-        $this->require     = (array) $require;
-        $this->default     = (array) $default;
-        $this->secure      = ($secure === null) ? null : (bool)  $secure;
-        $this->wildcard    = $wildcard;
-        $this->routable    = (bool) $routable;
-        $this->is_match    = $is_match;
-        $this->generate    = $generate;
-
-        // convert path to a regular expression
+        $this->name     = $name;
+        $this->path     = $path;
+        $this->require  = (array) $require;
+        $this->default  = (array) $default;
+        $this->secure   = ($secure === null) ? null : (bool)  $secure;
+        $this->wildcard = $wildcard;
+        $this->routable = (bool) $routable;
+        $this->is_match = $is_match;
+        $this->generate = $generate;
         $this->setRegex();
     }
 
