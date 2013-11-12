@@ -330,8 +330,8 @@ Note that using closures, instead of callbacks, means you will not be able to
 
 ### Simple Routes
 
-You don't need to specify a complex route specification. If you pass a string
-for the route instead of an array ...
+You don't need to specify a complex route specification. If you omit the final
+array parameter ...
 
 ```php
 <?php
@@ -425,9 +425,9 @@ $link = $router->generate('archive', array(
 ### Wildcard Params
 
 Sometimes it is useful to allow the trailing part of the path be anything at
-all. To specify that route allows arbitrary trailing portions, pass a 'wildcard'
-key in the route definition; that key will be the param name under which the
-arbitrary trailing param values will be placed in the route values.
+all. To specify that a route allows arbitrary trailing portions, pass a
+'wildcard' key in the route definition; that key will be the param name under
+which the arbitrary trailing param values will be placed in the route values.
 
 ```php
 <?php
@@ -438,7 +438,7 @@ $router->add('wild_post', '/post/{id}', array(
 // this matches, with the following values
 $route = $router->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->params['id'] = 88;
-// $route->params['other'] = array('foo', 'bar', 'baz'= array(
+// $route->params['other'] = array('foo', 'bar', 'baz')
 
 // this also matches, with the following values; note the trailing slash
 $route = $router->match('/post/88/', $_SERVER);
