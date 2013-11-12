@@ -44,7 +44,7 @@ Is the equivalent of:
     // browse/index/home/etc
     $router->set('api.v1.blog', '/api/v1/blog', array(
         'method' => 'GET',
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'browse',
         ),
@@ -53,7 +53,7 @@ Is the equivalent of:
     // read a resource
     $router->set('api.v1.blog.read', '/api/v1/blog/{id}', array(
         'method' => 'GET',
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'read',
         ]
@@ -62,7 +62,7 @@ Is the equivalent of:
     // edit an existing resource
     $router->set('api.v1.blog.edit', '/api/v1/blog/{id}', array(
         'method' => array('PUT', 'PATCH'),
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'edit',
         ]
@@ -71,7 +71,7 @@ Is the equivalent of:
     // add a new resource
     $router->set('api.v1.blog.add', '/api/v1/blog', array(
         'method' => 'POST',
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'add',
         ]
@@ -80,7 +80,7 @@ Is the equivalent of:
     // delete an existing resource
     $router->set('api.v1.blog.delete', '/api/v1/blog/{id}', array(
         'method' => 'DELETE',
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'delete',
         ]
@@ -89,7 +89,7 @@ Is the equivalent of:
     // search a resource
     $router->set('api.v1.blog.search', '/api/v1/blog/search', array(
         'method' => 'GET',
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'search',
         ]
@@ -98,7 +98,7 @@ Is the equivalent of:
     // blank form or template for a new resource
     $router->set('api.v1.blog.form', '/api/v1/blog/form', array(
         'method' => 'GET',
-        'values' => array(
+        'default' => array(
             'controller' => 'api.v1.blog',
             'action' => 'form',
         ]
@@ -128,7 +128,7 @@ Overrides:
             'search'    => 'find',
             'form'      => false, // do not generate a route for this
         ),
-        'values' => array(
+        'default' => array(
             'controller' => 'Vendor\Package\Api\Blog',
         ),
     ));

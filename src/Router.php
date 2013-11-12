@@ -382,7 +382,7 @@ class Router
             $spec = array(
                 'name' => $key,
                 'path' => $val,
-                'values' => array(
+                'default' => array(
                     'action' => $key,
                 ),
             );
@@ -396,8 +396,8 @@ class Router
             $spec = $val;
             $spec['name'] = $key;
             // if no action, use key
-            if (! isset($spec['values']['action'])) {
-                $spec['values']['action'] = $key;
+            if (! isset($spec['default']['action'])) {
+                $spec['default']['action'] = $key;
             }
         } elseif (is_int($key) && is_array($val)) {
             // long form, no name

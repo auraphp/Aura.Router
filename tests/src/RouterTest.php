@@ -45,7 +45,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'require' => array(
                 'id' => '(\d+)',
             ),
-            'values' => array(
+            'default' => array(
                 'controller' => 'foo',
                 'action' => 'bar',
                 'zim' => 'gir'
@@ -90,7 +90,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'default_controller',
                 'action'     => 'default_action',
                 'format' => null,
@@ -159,7 +159,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'page',
                 'format' => null,
             ),
@@ -250,7 +250,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'default_controller',
                 'action'     => 'default_action',
                 'format' => null,
@@ -318,7 +318,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'page',
                 'format' => null,
             ),
@@ -429,7 +429,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
             ),
             
-            'values' => array(
+            'default' => array(
                 'controller' => 'resource',
             ),
             
@@ -510,7 +510,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'id'            => '([0-9]+)',
                     'format'        => '(\.[a-z0-9]+$)?',
                 ),
-                'values'     => array(
+                'default'     => array(
                     'controller' => 'page',
                     'format' => null,
                 ),
@@ -607,7 +607,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'page',
                 'format' => null,
             ),
@@ -650,7 +650,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'page',
                 'format' => null,
             ),
@@ -679,7 +679,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'id'            => '([0-9]+)',
                     'format'        => '(\.[a-z0-9]+$)?',
                 ),
-                'values'     => array(
+                'default'     => array(
                     'controller' => 'page',
                     'format' => null,
                 ),
@@ -779,7 +779,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'id'            => '([0-9]+)',
                     'format'        => '(\.[a-z0-9]+$)?',
                 ),
-                'values'     => array(
+                'default'     => array(
                     'controller' => 'page',
                     'format' => null,
                 ),
@@ -805,7 +805,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '([0-9]+)',
                 'format'        => '(\.[a-z0-9]+$)?',
             ),
-            'values'     => array(
+            'default'     => array(
                 'controller' => 'page',
                 'format' => null,
             ),

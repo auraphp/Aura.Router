@@ -24,7 +24,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
-            'values' => array(
+            'default' => array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ),
@@ -38,7 +38,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $proto = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
-            'values' => array(
+            'default' => array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ),
@@ -66,7 +66,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '([0-9]+)',
                 'format' => '(\.[a-zA-Z0-9]+)?'
             ),
-            'values' => array(
+            'default' => array(
                 'format' => '.html',
             ),
         ));
@@ -337,7 +337,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'require' => array(
                 'id' => '([0-9]+)',
             ),
-            'values' => array(
+            'default' => array(
                 "controller" => function ($args) {
                     $id = (int) $args["id"];
                     echo "Hello World";
@@ -464,7 +464,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newRoute(array(
             'path' => '/foo/bar/baz',
-            'values' => array(
+            'default' => array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ),
@@ -560,7 +560,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
                 'format' => '(\.json|\.html)?',
             ),
-            'values' => array(
+            'default' => array(
                 'controller' => 'blog',
                 'action' => 'read',
                 'format' => '.html',

@@ -85,7 +85,7 @@ $router->add('read', '/blog/read/{id}{format}', array(
         'id'     => '\d+',
         'format' => '(\..+)?',
     ),
-    'values' => array(
+    'default' => array(
         'controller' => 'blog',
         'action'     => 'read',
         'format'     => 'html',
@@ -207,7 +207,7 @@ $router->add('read', '/blog/read/{id}{format}', array(
 		'id' => '\d+',
 		'format' => '(\..+)?',
 	),
-	'values' => array(
+	'default' => array(
 		'controller' => function ($args) {
 		    if ($args['format'] == '.json') {
 		        echo header('Content-Type: application/json');
@@ -257,7 +257,7 @@ keys:
 - `values` -- The default values for the route. These will be overwritten by
   matching params from the path.
 
-        'values' => array(
+        'default' => array(
             'controller' => 'blog',
             'action' => 'read',
             'id' => 1,
@@ -291,7 +291,7 @@ $router->add('read', '/blog/read/{id}{format}', array(
         'id' => '\d+',
         'format' => '(\..+)?',
     ),
-    'values' => array(
+    'default' => array(
         'controller' => 'blog',
         'action' => 'read',
         'id' => 1,
@@ -348,7 +348,7 @@ $router->add('archive', '/archive/{year}/{month}/{day}', array(
         'month' => '[^/]+',
         'day'   => '[^/]+',
     ),
-    'values' => array(
+    'default' => array(
         'action' => 'archive',
     ),
 ));
@@ -491,7 +491,7 @@ $router->attach('/blog', array(
                 'id'     => '\d+',
                 'format' => '(\.json|\.atom)?'
             ),
-            'values' => array(
+            'default' => array(
                 'format' => '.html',
             ),
         ),
@@ -525,7 +525,7 @@ $router->attach('/blog', array(
     ),
     
     // common values for the routes
-    'values' => array(
+    'default' => array(
         'controller' => 'blog',
         'format'     => '.html',
     ),
@@ -568,7 +568,7 @@ $attach = array(
         ),
     
         // common values for the routes
-        'values' => array(
+        'default' => array(
             'controller' => 'blog',
             'format' => '.html',
         ),

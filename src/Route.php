@@ -54,9 +54,16 @@ class Route
 
     /**
      * 
-     * A map of param tokens to their default values; if this Route is
-     * matched, these will retain the corresponding values from the param 
-     * tokens in the matching path.
+     * Defalt values for route params.
+     * 
+     * @var array
+     * 
+     */
+    protected $default = array();
+    
+    /**
+     * 
+     * Actual values of route params.
      * 
      * @var array
      * 
@@ -190,9 +197,9 @@ class Route
      * 
      * @param string $path The path for this Route with param token placeholders.
      * 
-     * @param array $require Router of param tokens to regex subpatterns.
+     * @param array $require Params are reuqired to match these expressions.
      * 
-     * @param array $values Default values for params.
+     * @param array $default Default values for params.
      * 
      * @param string|array $method The server REQUUEST_METHOD must be one of
      * these values.
@@ -216,8 +223,8 @@ class Route
     public function __construct(
         $name        = null,
         $path        = null,
-        $require      = null,
-        $values      = null,
+        $require     = null,
+        $default     = null,
         $method      = null,
         $secure      = null,
         $wildcard    = null,
@@ -250,7 +257,7 @@ class Route
 
         // other properties
         $this->require     = (array) $require;
-        $this->values      = (array) $values;
+        $this->default     = (array) $default;
         $this->method      = ($method === null) ? null : (array) $method;
         $this->secure      = ($secure === null) ? null : (bool)  $secure;
         $this->wildcard    = $wildcard;
@@ -322,6 +329,7 @@ class Route
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
         // to support optional ".format" param values.)
+        $this->values = $this->default;
         foreach ($this->matches as $key => $val) {
             if (is_string($key) && $val !== '') {
                 $this->values[$key] = rawurldecode($val);
@@ -367,7 +375,7 @@ class Route
         $link = $this->path;
         
         // the data for replacements
-        $data = array_merge($this->values, $data);
+        $data = array_merge($this->default, $data);
         
         // use a callable to modify the path data?
         if ($this->generate) {
@@ -481,8 +489,8 @@ class Route
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! array_key_exists($name, $this->values)) {
-                $this->values[$name] = null;
+            if (! array_key_exists($name, $this->default)) {
+                $this->default[$name] = null;
             }
         }
     }
