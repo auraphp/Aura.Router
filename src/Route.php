@@ -20,8 +20,6 @@ use Closure;
  * In general, you should never need to instantiate a Route directly. Use the
  * RouteFactory instead, or the Router.
  * 
- * @todo Reset each time we call isMatch() to clear debug, values, etc.
- * 
  * @package Aura.Router
  * 
  */

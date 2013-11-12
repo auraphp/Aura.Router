@@ -18,6 +18,7 @@ router object" being attached.
 make token regex [a-z][a-zA-Z0-9_] and make it work more properly with
 optional params
 
+reset the route each time we call isMatch() to clear debug, values, etc.
 
 * * *
 
