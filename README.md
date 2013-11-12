@@ -248,13 +248,14 @@ When you add a complex route specification, you describe extra information
 related to the path as an array with one or more of the following recognized
 keys:
 
-- `params` -- The regular expression subpatterns for path params. For example:
+- `require` -- The regular expression subpatterns for path params. For
+  example:
         
         'require' => array(
             'id' => '\d+',
         ]
         
-- `values` -- The default values for the route. These will be overwritten by
+- `default` -- The default values for the params. These will be overwritten by
   matching params from the path.
 
         'default' => array(
@@ -518,13 +519,13 @@ you don't need to repeat common information:
 <?php
 $router->attach('/blog', array(
     
-    // common params for the routes
+    // common param requirements for the routes
     'require' => array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?',
     ),
     
-    // common values for the routes
+    // common default param values for the routes
     'default' => array(
         'controller' => 'blog',
         'format'     => '.html',
@@ -561,13 +562,13 @@ $attach = array(
         // prefix for route names
         'name_prefix' => 'projectname.blog.',
         
-        // common params for the routes
+        // common param requirements for the routes
         'require' => array(
             'id' => '\d+',
             'format' => '(\.json|\.atom)?',
         ),
     
-        // common values for the routes
+        // common default param values for the routes
         'default' => array(
             'controller' => 'blog',
             'format' => '.html',

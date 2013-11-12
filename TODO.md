@@ -12,7 +12,7 @@ drop callables for custom matching and generation?
 
 split the route adding/attaching from the matching?
 
-rename "params" to "conditions" or "regex"? can we make it a callable, too?
+can we make "require" a callable?
 
 get rid of $attach from the Router constructor? still want to be able to
 attach route defs from packages/modules/etc, and not just have them call the
@@ -23,6 +23,8 @@ router object?
 
 for the main router object, define defaults? that would go along with "second
 router object" being attached.
+
+rename "values" to "params"
 
 
 * * *
