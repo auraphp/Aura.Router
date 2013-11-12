@@ -24,8 +24,6 @@ router object?
 for the main router object, define defaults? that would go along with "second
 router object" being attached.
 
-rename "values" to "params"
-
 
 * * *
 
