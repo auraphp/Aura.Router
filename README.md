@@ -83,12 +83,12 @@ $router->add(null, '/{controller}/{action}/{id}');
 $router->add('read', '/blog/read/{id}{format}', array(
     'require' => array(
         'id'     => '\d+',
-        'format' => '(\..+)?',
+        'format' => '(\.[^/]+)?',
     ),
     'default' => array(
         'controller' => 'blog',
         'action'     => 'read',
-        'format'     => 'html',
+        'format'     => '.html',
     ),
 ));
 ?>
@@ -205,7 +205,7 @@ possible by assigning anonymous function to controller.
 $router->add('read', '/blog/read/{id}{format}', array(
 	'require' => array(
 		'id' => '\d+',
-		'format' => '(\..+)?',
+        'format' => '(\.[^/]+)?',
 	),
 	'default' => array(
 		'controller' => function ($params) {
@@ -289,7 +289,7 @@ Here is a full route specification named `read` with all keys in place:
 $router->add('read', '/blog/read/{id}{format}', array(
     'require' => array(
         'id' => '\d+',
-        'format' => '(\..+)?',
+        'format' => '(\.[^/]+)?',
         'REQUEST_METHOD' => 'GET|POST',
     ),
     'default' => array(

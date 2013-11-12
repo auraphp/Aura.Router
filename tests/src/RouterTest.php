@@ -88,12 +88,12 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'controller'    => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'action'        => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default'     => array(
                 'controller' => 'default_controller',
                 'action'     => 'default_action',
-                'format' => null,
+                'format'     => null,
             ),
         ));
         
@@ -156,7 +156,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
             'require' => array(
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default' => array(
                 'controller'    => 'page',
@@ -247,7 +247,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'controller'    => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'action'        => '([a-zA-Z][a-zA-Z0-9_-]*)',
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default'     => array(
                 'controller' => 'default_controller',
@@ -315,7 +315,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
             'require' => array(
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default'     => array(
                 'controller' => 'page',
@@ -520,7 +520,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 ),
                 'require' => array(
                     'id'            => '([0-9]+)',
-                    'format'        => '(\.[a-z0-9]+$)?',
+                    'format'        => '(\.[^/]+)?',
                 ),
                 'default'     => array(
                     'controller' => 'page',
@@ -617,7 +617,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
             'require' => array(
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default'     => array(
                 'controller' => 'page',
@@ -660,7 +660,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
             'require' => array(
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default'     => array(
                 'controller' => 'page',
@@ -689,7 +689,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 ),
                 'require' => array(
                     'id'            => '([0-9]+)',
-                    'format'        => '(\.[a-z0-9]+$)?',
+                    'format'        => '(\.[^/]+)?',
                 ),
                 'default'     => array(
                     'controller' => 'page',
@@ -789,7 +789,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 ),
                 'require' => array(
                     'id'            => '([0-9]+)',
-                    'format'        => '(\.[a-z0-9]+$)?',
+                    'format'        => '(\.[^/]+)?',
                 ),
                 'default'     => array(
                     'controller' => 'page',
@@ -815,7 +815,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
             'require' => array(
                 'id'            => '([0-9]+)',
-                'format'        => '(\.[a-z0-9]+$)?',
+                'format'        => '(\.[^/]+)?',
             ),
             'default'     => array(
                 'controller' => 'page',

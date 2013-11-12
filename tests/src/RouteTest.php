@@ -63,7 +63,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'id' => '([0-9]+)',
-                'format' => '(\.[a-zA-Z0-9]+)?'
+                'format' => '(\.[^/]+)?',
             ),
             'default' => array(
                 'format' => '.html',
@@ -448,7 +448,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'require' => array(
                 'action' => '(browse|read|edit|add|delete)',
                 'id' => '(\d+)',
-                'format' => '(\..+)?',
+                'format' => '(\.[^/]+)?',
             ),
         ));
         
