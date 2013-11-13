@@ -1,135 +1,77 @@
-split the route adding/attaching from the matching?
+- addResource() and setResourceCallable() method
 
-get rid of $attach from the Router constructor? still want to be able to
-attach route defs from packages/modules/etc, and not just have them call the
-router directly.
-
-hierarchical routing, or route grouping? can we do this by attaching a second
-router object?
-
-for the main router object, define defaults? that would go along with "second
-router object" being attached.
+- make generate() use ArrayObject in the callable, like is_match, and not
+  return a replacement $data array?
 
 * * *
 
-making resource routes:
+Resource notes.
 
 ```php
 <?php
-    $router->set('api.v1.blog', '/api/v1/blog', array(
-        'resource' => true,
-    ));
-?>
-```
+    
+class Router
+{
+    public function setResourceCallable($resource)
+    {
+        $this->resource = $resource;
+    }
+    
+    public function addResource($name, $path)
+    {
+        // save current values
+        
+        call_user_func($this->resource, $this, $name, $path);
+        
+        // restore previous values
+    }
+}
 
-Is the equivalent of:
 
-```php
-<?php
-    // browse/index/home/etc
-    $router->set('api.v1.blog', '/api/v1/blog', array(
-        'require' => array(
-            'REQUEST_METHOD' => 'GET',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'browse',
-        ),
+// mimics Rails 3 as described at
+// http://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
+$router->setResourceCallable(function ($router, $name, $path) {
+    
+    $router->setDefault(array(
+        'controller' => $name,
     ));
     
-    // read a resource
-    $router->set('api.v1.blog.read', '/api/v1/blog/{id}', array(
-        'require' => array(
-            'REQUEST_METHOD' => 'GET',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'read',
-        ]
+    $router->setRequire(array(
+        'format' => '(\.[^/]+)?',
     ));
     
-    // edit an existing resource
-    $router->set('api.v1.blog.edit', '/api/v1/blog/{id}', array(
-        'require' => array(
-            'REQUEST_METHOD' => 'PUT|PATCH',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'edit',
-        ]
-    ));
+    $path = rtrim($path, '/');
     
-    // add a new resource
-    $router->set('api.v1.blog.add', '/api/v1/blog', array(
-        'require' => array(
-            'REQUEST_METHOD' => 'POST',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'add',
-        ]
-    ));
+    $router->setNameParam('action');
     
-    // delete an existing resource
-    $router->set('api.v1.blog.delete', '/api/v1/blog/{id}', array(
+    // browse the resources, optionally in a format.
+    // can double for search when a query string is passed.
+    $router->addGet('browse', '{format}');
+    
+    // get a single resource by ID, optionally in a format
+    $router->addGet('read', '/{id}{format}');
+    
+    // add a new resource and get back its location
+    $router->addPost('add', '');
+    
+    // get the form for an existing resource by ID, optionally in a format
+    $router->addGet('edit', '/{id}/edit{format}');
+    
+    // delete a resource by ID
+    $router->addDelete('delete', '/{id}');
+    
+    // get the form for a new resource
+    $router->addGet('new', '/new');
+    
+    // update an existing resource by ID
+    $router->add('update', '/{id}', array(
         'require' => array(
-            'REQUEST_METHOD' => 'DELETE',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'delete',
-        ]
-    ));
-
-    // search a resource
-    $router->set('api.v1.blog.search', '/api/v1/blog/search', array(
-        'require' => array(
-            'REQUEST_METHOD' => 'GET',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'search',
-        ]
-    ));
-
-    // blank form or template for a new resource
-    $router->set('api.v1.blog.form', '/api/v1/blog/form', array(
-        'require' => array(
-            'REQUEST_METHOD' => 'GET',
-        ),
-        'default' => array(
-            'controller' => 'api.v1.blog',
-            'action' => 'form',
-        ]
-    ));
-?>
-```
-
-If no ID is specified, use `id`.
-
-If no controller is specified, use the route name.
-
-Overrides:
-
-```php
-<?php
-    $router->set('api.v1.blog', '/api/v1/blog', array(
-        'resource' => array(
-            // use blog_id instead
-            'id'        => 'blog_id',
-            
-            // use these action names instead
-            'browse'    => 'listing',
-            'read'      => 'retrieve',
-            'edit'      => 'modify',
-            'add'       => 'create',
-            'delete'    => 'destroy',
-            'search'    => 'find',
-            'form'      => false, // do not generate a route for this
-        ),
-        'default' => array(
-            'controller' => 'Vendor\Package\Api\Blog',
+            'REQUEST_METHOD' => 'PUT|PATCH'
         ),
     ));
+});
+
+$router->addResource('blogs', '/api/v1/blogs');
+$router->addResource('blogs_comments', '/api/v1/blogs/{blog_id}/comments');
 ?>
 ```

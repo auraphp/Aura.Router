@@ -14,40 +14,13 @@ use Aura\Router\Exception;
 
 /**
  * 
- * A collection point for URI routes.
+ * A collection of routes to be matched.
  * 
  * @package Aura.Router
  * 
  */
 class Router
 {
-    /**
-     * 
-     * Currently processing this attached common route information.
-     * 
-     * @var array
-     * 
-     */
-    protected $attach_common = array();
-
-    /**
-     * 
-     * Currently processing these attached routes.
-     * 
-     * @var array
-     * 
-     */
-    protected $attach_routes = array();
-
-    /**
-     * 
-     * Route definitions; these will be converted into objects.
-     * 
-     * @var array
-     * 
-     */
-    protected $definitions = array();
-
     /**
      * 
      * A RouteFactory for creating route objects.
@@ -68,15 +41,6 @@ class Router
 
     /**
      * 
-     * A copy of the $_SERVER array.
-     * 
-     * @var array
-     * 
-     */
-    protected $server;
-    
-    /**
-     * 
      * Logging information about which routes were attempted to match.
      * 
      * @var array
@@ -86,80 +50,411 @@ class Router
 
     /**
      * 
-     * Constructor.
+     * Prefix route names with this name.
      * 
-     * @param RouteFactory $route_factory A factory for creating definition
-     * and route objects.
+     * @var string
      * 
-     * @param array $attach A series of route definitions to be attached to
-     * the router.
+     * @see attach()
      * 
      */
-    public function __construct(
-        RouteFactory $route_factory,
-        array $attach = null
-    ) {
+    protected $name_prefix;
+    
+    /**
+     * 
+     * Capture the un-prefixed route name as a default value for this param.
+     * 
+     * @var string
+     * 
+     */
+    protected $name_param;
+    
+    /**
+     * 
+     * Prefix route paths with this path.
+     * 
+     * @var string
+     * 
+     * @see attach()
+     * 
+     */
+    protected $path_prefix;
+    
+    /**
+	 * 
+	 * An array of default route specifications.
+	 * 
+	 * @var array
+	 * 
+	 */
+	protected $spec = array(
+	    'name'        => null,
+	    'path'        => null,
+	    'require'     => array(),
+	    'default'     => array(),
+	    'secure'      => null,
+	    'wildcard'    => null,
+	    'routable'    => true,
+	    'is_match'    => null,
+	    'generate'    => null,
+	);
+	
+    /**
+     * 
+     * Constructor.
+     * 
+     * @param RouteFactory $route_factory A factory for route objects.
+     * 
+     */
+    public function __construct(RouteFactory $route_factory)
+    {
         $this->route_factory = $route_factory;
-        foreach ((array) $attach as $path_prefix => $spec) {
-            $this->attach($path_prefix, $spec);
-        }
     }
 
     /**
      * 
-     * Adds a single route definition to the stack.
+     * Sets the array of route objects to use.
      * 
-     * @param string $name The route name for `generate()` lookups.
+     * @param array $routes Use this array of route objects.
+     * 
+     * @return null
+     * 
+     * @see getRoutes()
+     * 
+     */
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
+    }
+
+    /**
+     * 
+     * Gets the array of route objects in this router, likely for caching and
+     * re-setting via `setRoutes()`.
+     * 
+     * @return array
+     * 
+     * @see setRoutes()
+     * 
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     * 
+     * Gets the log of attempted route matches.
+     * 
+     * @return array
+     * 
+     */
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    /**
+     * 
+     * Sets the param into which the un-prefixed route name should be
+     * captured.
+     * 
+     * @param string $name_param The param into which the name should be
+     * captured.
+     * 
+     * @return null
+     * 
+     */
+    public function setNameParam($name_param)
+    {
+        $this->name_param = $name_param;
+    }
+    
+    /**
+     * 
+     * Adds a route.
+     * 
+     * @param string $name The route name.
      * 
      * @param string $path The route path.
      * 
-     * @param array $spec The rest of the route definition, with keys for
-     * `params`, `values`, etc.
-     * 
-     * @return null
+     * @return Route The newly-added route object.
      * 
      */
-    public function add($name, $path, array $spec = null)
+    public function add($name, $path, array $spec = array())
     {
-        $spec = (array) $spec;
-
-        // overwrite the name and path
-        $spec['name'] = $name;
-        $spec['path'] = $path;
-
-        // these should be set only by the router
-        unset($spec['name_prefix']);
-        unset($spec['path_prefix']);
-
-        // append to the route definitions
-        $this->definitions[] = $this->route_factory->newDefinition(
-            'single',
-            $spec
-        );
+        // merge with default route spec
+        $spec = array_merge_recursive($this->spec, $spec);
+        
+        // add the name prefix, but only if a name is given
+        $spec['name'] = ($name) ? $this->name_prefix . $name : $name;
+        
+        // always add the path prefix
+        $spec['path'] = $this->path_prefix . $path;
+        
+        // capture the un-prefixed name as a default param value
+        $capture = $this->name_param
+                && ! isset($spec['default'][$this->name_param]);
+        if ($capture) {
+            $spec['default'][$this->name_param] = $name;
+        }
+        
+        // create the route
+        $route = $this->route_factory->newInstance($spec);
+        
+        // add the route under its full name
+        if (! $route->name) {
+            $this->routes[] = $route;
+        } else {
+            $this->routes[$route->name] = $route;
+        }
+        
+        // done!
+        return $route;
     }
 
     /**
      * 
-     * Attaches several routes at once to a specific path prefix.
+     * Adds a GET route.
      * 
-     * @param string $path_prefix The path that the routes should be attached
-     * to.
+     * @param string $name The route name.
      * 
-     * @param array $spec An array of common route information, with an
-     * additional `routes` key to define the routes themselves.
+     * @param string $path The route path.
+     * 
+     * @return Route The newly-added route object.
+     * 
+     */
+    public function addGet($name, $path, array $spec = array())
+    {
+        $spec['require']['REQUEST_METHOD'] = 'GET';
+        return $this->add($name, $path, $spec);
+    }
+    
+    /**
+     * 
+     * Adds a DELETE route.
+     * 
+     * @param string $name The route name.
+     * 
+     * @param string $path The route path.
+     * 
+     * @return Route The newly-added route object.
+     * 
+     */
+    public function addDelete($name, $path, array $spec = array())
+    {
+        $spec['require']['REQUEST_METHOD'] = 'DELETE';
+        return $this->add($name, $path, $spec);
+    }
+    
+    /**
+     * 
+     * Adds an Options route.
+     * 
+     * @param string $name The route name.
+     * 
+     * @param string $path The route path.
+     * 
+     * @return Route The newly-added route object.
+     * 
+     */
+    public function addOptions($name, $path, array $spec = array())
+    {
+        $spec['require']['REQUEST_METHOD'] = 'OPTIONS';
+        return $this->add($name, $path, $spec);
+    }
+    
+    /**
+     * 
+     * Adds a PATCH route.
+     * 
+     * @param string $name The route name.
+     * 
+     * @param string $path The route path.
+     * 
+     * @return Route The newly-added route object.
+     * 
+     */
+    public function addPatch($name, $path, array $spec = array())
+    {
+        $spec['require']['REQUEST_METHOD'] = 'PATCH';
+        return $this->add($name, $path, $spec);
+    }
+    
+    /**
+     * 
+     * Adds a POST route.
+     * 
+     * @param string $name The route name.
+     * 
+     * @param string $path The route path.
+     * 
+     * @return Route The newly-added route object.
+     * 
+     */
+    public function addPost($name, $path, array $spec = array())
+    {
+        $spec['require']['REQUEST_METHOD'] = 'POST';
+        return $this->add($name, $path, $spec);
+    }
+    
+    /**
+     * 
+     * Adds a PUT route.
+     * 
+     * @param string $name The route name.
+     * 
+     * @param string $path The route path.
+     * 
+     * @return Route The newly-added route object.
+     * 
+     */
+    public function addPut($name, $path, array $spec = array())
+    {
+        $spec['require']['REQUEST_METHOD'] = 'PUT';
+        return $this->add($name, $path, $spec);
+    }
+    
+    /**
+     * 
+     * Attaches routes to a specific path prefix and prefixes the attached 
+     * route names.
+     * 
+     * @param string $name_prefix The prefix for all route names being
+     * attached.
+     * 
+     * @param string $path_prefix The prefix for all route paths being
+     * attached.
+     * 
+     * @param callable $callable A callable that uses the Router to add new
+     * routes. Its signature is `function (\Aura\Router\Router $router)`; this
+     * Router instance will be passed to the callable.
      * 
      * @return null
      * 
      */
-    public function attach($path_prefix, $spec)
+    public function attach($name_prefix, $path_prefix, $callable)
     {
-        $this->definitions[] = $this->route_factory->newDefinition(
-            'attach',
-            $spec,
-            $path_prefix
-        );
+        // save previous values
+        $old_name_prefix = $this->name_prefix;
+        $old_path_prefix = $this->path_prefix;
+        $old_spec        = $this->spec;
+        $old_name_param  = $this->name_param;
+        
+        // append to the current prefixes
+        $this->name_prefix .= $name_prefix;
+        $this->path_prefix .= $path_prefix;
+        
+        // invoke the callable, passing this Router as the only param
+        call_user_func($callable, $this);
+        
+        // restore previous values which the callable may have modified
+        $this->name_prefix = $old_name_prefix;
+        $this->path_prefix = $old_path_prefix;
+        $this->spec        = $old_spec;
+        $this->name_param  = $old_name_param;
     }
-
+    
+    /**
+     * 
+     * Sets the regular expressions that params must match.
+     * 
+     * @param array $require Params are required to match these expressions.
+     * 
+     * @return null
+     * 
+     */
+    public function setRequire(array $require)
+    {
+        $this->spec['require'] = $require;
+    }
+    
+    /**
+     * 
+     * Sets the default values for params.
+     * 
+     * @param array $default Default values for params.
+     * 
+     * @return null
+     * 
+     */
+    public function setDefault(array $default)
+    {
+        $this->spec['default'] = $default;
+    }
+    
+    /**
+     * 
+     * Sets whether or not the route must be secure.
+     * 
+     * @param bool $secure If true, the server must indicate an HTTPS request;
+     * if false, it must *not* be HTTPS; if null, it doesn't matter.
+     * 
+     * @return null
+     * 
+     */
+    public function setSecure($secure = true)
+    {
+        $this->spec['secure'] = ($secure === null) ? null : (bool) $secure;
+    }
+    
+    /**
+     * 
+     * Sets the name of the wildcard param.
+     * 
+     * @param string $wildcard The name of the wildcard param, if any.
+     * 
+     * @return null
+     * 
+     */
+    public function setWildcard($wildcard)
+    {
+        $this->spec['wildcard'] = $wildcard;
+    }
+    
+    /**
+     * 
+     * Sets whether or not this route should be used for matching.
+     * 
+     * @param bool $routable If true, this route can be matched; if not, it
+     * can be used only to generate a path.
+     * 
+     * @return null
+     * 
+     */
+    public function setRoutable($routable = true)
+    {
+        $this->spec['routable'] = (bool) $routable;
+    }
+    
+    /**
+     * 
+     * Sets a custom callable to evaluate the route for matching.
+     * 
+     * @param callable $is_match A custom callable to evaluate the route.
+     * 
+     * @return null
+     * 
+     */
+    public function setIsMatchCallable($is_match)
+    {
+        $this->spec['is_match'] = $is_match;
+    }
+    
+    /**
+     * 
+     * Sets a custom callable to modify data for `generate()`.
+     * 
+     * @param callable $generate A custom callable to modify data for
+     * `generate()`.
+     * 
+     * @return null
+     * 
+     */
+    public function setGenerateCallable($generate)
+    {
+        $this->spec['generate'] = $generate;
+    }
+    
     /**
      * 
      * Gets a route that matches a given path and other server conditions.
@@ -168,33 +463,22 @@ class Router
      * 
      * @param array $server A copy of the $_SERVER superglobal.
      * 
-     * @return Route|false Returns a Route object when it finds a match, or 
+     * @return Route|false Returns a route object when it finds a match, or 
      * boolean false if there is no match.
      * 
      */
     public function match($path, array $server = array())
     {
-        // reset the log
         $this->log = array();
 
-        // look through existing route objects
         foreach ($this->routes as $route) {
-            $this->logRoute($route);
-            if ($route->isMatch($path, $server)) {
+            $match = $route->isMatch($path, $server);
+            $this->log[] = $route;
+            if ($match) {
                 return $route;
             }
         }
-
-        // convert remaining definitions as needed
-        while ($this->attach_routes || $this->definitions) {
-            $route = $this->createNextRoute();
-            $this->logRoute($route);
-            if ($route->isMatch($path, $server)) {
-                return $route;
-            }
-        }
-
-        // no joy
+        
         return false;
     }
 
@@ -214,206 +498,10 @@ class Router
      */
     public function generate($name, $data = null)
     {
-        // do we already have the route object?
-        if (isset($this->routes[$name])) {
-            return $this->routes[$name]->generate($data);
+        if (! isset($this->routes[$name])) {
+            throw new Exception\RouteNotFound($name);
         }
-
-        // convert remaining definitions as needed
-        while ($this->attach_routes || $this->definitions) {
-            $route = $this->createNextRoute();
-            if ($route->name == $name) {
-                return $route->generate($data);
-            }
-        }
-
-        // no joy
-        throw new Exception\RouteNotFound($name);
-    }
-
-    /**
-     * 
-     * Reset the Router to use an array of Route objects.
-     * 
-     * @param array $routes Use this array of route objects, likely generated
-     * from `getRoutes()`.
-     * 
-     * @return null
-     * 
-     */
-    public function setRoutes(array $routes)
-    {
-        $this->routes = $routes;
-        $this->definitions = array();
-        $this->attach_common = array();
-        $this->attach_routes = array();
-    }
-
-    /**
-     * 
-     * Get the array of Route objects in this Router, likely for caching and
-     * re-setting via `setRoutes()`.
-     * 
-     * @return array
-     * 
-     */
-    public function getRoutes()
-    {
-        // convert remaining definitions as needed
-        while ($this->attach_routes || $this->definitions) {
-            $this->createNextRoute();
-        }
-        return $this->routes;
-    }
-
-    /**
-     * 
-     * Get the log of attempted route matches.
-     * 
-     * @return array
-     * 
-     */
-    public function getLog()
-    {
-        return $this->log;
-    }
-
-    /**
-     * 
-     * Add a route to the log of attempted matches.
-     * 
-     * @param Route $route Route object
-     * 
-     * @return array
-     * 
-     */
-    protected function logRoute(Route $route)
-    {
-        $this->log[] = $route;
-    }
-
-    /**
-     * 
-     * Gets the next Route object in the stack, converting definitions to 
-     * Route objects as needed.
-     * 
-     * @return Route|false A Route object, or boolean false at the end of the 
-     * stack.
-     * 
-     */
-    protected function createNextRoute()
-    {
-        // do we have attached routes left to process?
-        if ($this->attach_routes) {
-            // yes, get the next attached definition
-            $spec = $this->getNextAttach();
-        } else {
-            // no, get the next unattached definition
-            $spec = $this->getNextDefinition();
-        }
-
-        // create a route object from it
-        $route = $this->route_factory->newRoute($spec);
-
-        // retain the route object ...
-        $name = $route->name;
-        if ($name) {
-            // ... under its name so we can look it up later
-            $this->routes[$name] = $route;
-        } else {
-            // ... under no name, which means we can't look it up later
-            $this->routes[] = $route;
-        }
-
-        // return whatever route got retained
-        return $route;
-    }
-
-    /**
-     * 
-     * Gets the next route definition from the stack.
-     * 
-     * @return array A route definition.
-     * 
-     */
-    protected function getNextDefinition()
-    {
-        // get the next definition and extract the definition type
-        $def  = array_shift($this->definitions);
-        $spec = $def->getSpec();
-        $type = $def->getType();
-
-        // is it a 'single' definition type?
-        if ($type == 'single') {
-            // done!
-            return $spec;
-        }
-
-        // it's an 'attach' definition; set up for attach processing.
-        // retain the routes from the array ...
-        $this->attach_routes = $spec['routes'];
-        unset($spec['routes']);
-
-        // ... and the remaining common information
-        $this->attach_common = $spec;
         
-        // reset the internal pointer of the array to avoid misnamed routes
-        reset($this->attach_routes);
-        
-        // now get the next attached route
-        return $this->getNextAttach();
-    }
-
-    /**
-     * 
-     * Gets the next attached route definition.
-     * 
-     * @return array A route definition.
-     * 
-     */
-    protected function getNextAttach()
-    {
-        $key = key($this->attach_routes);
-        $val = array_shift($this->attach_routes);
-
-        // which definition form are we using?
-        if (is_string($key) && is_string($val)) {
-            // short form, named in key
-            $spec = array(
-                'name' => $key,
-                'path' => $val,
-                'default' => array(
-                    'action' => $key,
-                ),
-            );
-        } elseif (is_int($key) && is_string($val)) {
-            // short form, no name
-            $spec = array(
-                'path' => $val,
-            );
-        } elseif (is_string($key) && is_array($val)) {
-            // long form, named in key
-            $spec = $val;
-            $spec['name'] = $key;
-            // if no action, use key
-            if (! isset($spec['default']['action'])) {
-                $spec['default']['action'] = $key;
-            }
-        } elseif (is_int($key) && is_array($val)) {
-            // long form, no name
-            $spec = $val;
-        } else {
-            throw new Exception\UnexpectedType("Route spec for '$key' should be a string or array.");
-        }
-
-        // unset any path or name prefix on the spec itself
-        unset($spec['name_prefix']);
-        unset($spec['path_prefix']);
-
-        // now merge with the attach info
-        $spec = array_merge_recursive($this->attach_common, $spec);
-        
-        // done!
-        return $spec;
+        return $this->routes[$name]->generate($data);
     }
 }

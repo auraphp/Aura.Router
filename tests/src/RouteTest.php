@@ -7,6 +7,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 {
     protected $factory;
 
+    protected $server;
+    
     protected function setUp()
     {
         parent::setUp();
@@ -21,7 +23,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function test__isset()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'default' => array(
                 'controller' => 'zim',
@@ -35,7 +37,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsMatchOnStaticPath()
     {
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'default' => array(
                 'controller' => 'zim',
@@ -57,7 +59,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsMatchOnDynamicPath()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/{controller}/{action}/{id}{format}',
             'require' => array(
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
@@ -83,12 +85,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsMethodMatch()
     {
-        $type = 'Aura\Router\Route';
-    
         /**
          * try one REQUEST_METHOD
          */
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'require' => array(
                 'REQUEST_METHOD' => 'POST',
@@ -116,7 +116,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * try many REQUEST_METHOD
          */
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'require' => array(
                 'REQUEST_METHOD' => 'GET|POST',
@@ -161,7 +161,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * secure required
          */
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'secure' => true,
         ));
@@ -187,7 +187,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * not-secure required
          */
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'secure' => false,
         ));
@@ -216,7 +216,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * secure required
          */
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'secure' => true,
         ));
@@ -242,7 +242,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         /**
          * not-secure required
          */
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'secure' => false,
         ));
@@ -268,7 +268,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsCustomMatchWithClosure()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'is_match' => function($server, ArrayObject $matches) {
                 $matches['zim'] = 'gir';
@@ -280,7 +280,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($actual);
         $this->assertEquals('gir', $route->params['zim']);
         
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'is_match' => function($server, $matches) {
                 return false;
@@ -293,7 +293,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsCustomMatchWithCallback()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'is_match' => array($this, 'callbackForIsMatchTrue'),
         ));
@@ -302,7 +302,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($actual);
         $this->assertEquals('gir', $route->params['zim']);
         
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'is_match' => array($this, 'callbackForIsMatchFalse'),
         ));
@@ -327,7 +327,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateControllerAsClosureIssue19()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/blog/{id}/edit',
             'require' => array(
                 'id' => '([0-9]+)',
@@ -348,7 +348,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testGenerate()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/blog/{id}/edit',
             'require' => array(
                 'id' => '([0-9]+)',
@@ -361,7 +361,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testGenerateWithClosure()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/blog/{id}/edit',
             'require' => array(
                 'id' => '([0-9]+)',
@@ -378,7 +378,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testGenerateWithCallback()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/blog/{id}/edit',
             'require' => array(
                 'id' => '([0-9]+)',
@@ -392,7 +392,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testGenerateWithWildcard()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/blog/{id}',
             'require' => array(
                 'id' => '([0-9]+)',
@@ -414,7 +414,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testGenerateWithOptional()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/archive/{category}{/year,month,day}',
         ));
         
@@ -435,7 +435,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/{controller}/{action}/{id}{format}',
             'require' => array(
                 'action' => '(browse|read|edit|add|delete)',
@@ -457,7 +457,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testIsNotRoutable()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/bar/baz',
             'default' => array(
                 'controller' => 'zim',
@@ -476,7 +476,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     
     public function testGenerateOnFullUri()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'name' => 'google-search',
             'path' => 'http://google.com/?q={q}',
             'routable' => false,
@@ -490,7 +490,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
     public function testGenerateRFC3986()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'name' => 'rfc3986',
             'path' => '/path/{string}',
             'routable' => false,
@@ -508,7 +508,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
     public function testIsMatchOnRFC3986Paths()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/{controller}/{action}/{param1}/{param2}',
         ));
         
@@ -549,7 +549,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'REQUEST_TIME' => '1327369518.2441',
         );
         
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/blog/read/{id}{format}',
             'require' => array(
                 'id' => '(\d+)',
@@ -575,7 +575,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
    public function testIsMatchOnlWildcard()
    {
-        $proto = $this->factory->newRoute(array(
+        $proto = $this->factory->newInstance(array(
             'path' => '/foo/{zim}/',
             'wildcard' => 'wild',
         ));
@@ -604,7 +604,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
     public function testIsMatchOnOptionalParams()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo/{bar}{/baz,dib,zim}',
         ));
         
@@ -629,7 +629,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
    
     public function testCaptureServerParams()
     {
-        $route = $this->factory->newRoute(array(
+        $route = $this->factory->newInstance(array(
             'path' => '/foo',
             'require' => array(
                 'HTTP_ACCEPT' => '(application/xml(;q=(1\.0|0\.[1-9]))?)|(application/json(;q=(1\.0|0\.[1-9]))?)',

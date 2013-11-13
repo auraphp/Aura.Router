@@ -171,8 +171,9 @@ class Route
      * placeholders.
      * 
      */
-    public function __construct($path)
+    public function __construct($name, $path)
     {
+        $this->name = $name;
         $this->path = $path;
     }
 
@@ -206,21 +207,6 @@ class Route
 
     /**
      * 
-     * Sets the name for this Route.
-     * 
-     * @param string $name The name for this Route.
-     * 
-     * @return $this
-     * 
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-    
-    /**
-     * 
      * Sets the regular expressions that params must match.
      * 
      * @param array $require Params are required to match these expressions.
@@ -230,7 +216,13 @@ class Route
      */
     public function setRequire(array $require)
     {
-        $this->require = $require;
+        $this->require = array();
+        return $this->addRequire($require);
+    }
+    
+    public function addRequire(array $require)
+    {
+        $this->require = array_merge($this->require, $require);
         $this->regex = null;
         return $this;
     }
@@ -246,7 +238,13 @@ class Route
      */
     public function setDefault(array $default)
     {
-        $this->default = $default;
+        $this->default = array();
+        return $this->addDefault($default);
+    }
+    
+    public function addDefault(array $default)
+    {
+        $this->default = array_merge($this->default, $default);
         return $this;
     }
     
@@ -392,7 +390,7 @@ class Route
         // the data for replacements
         $data = array_merge($this->default, $data);
         
-        // use a callable to modify the path data?
+        // use a callable to modify the data?
         if ($this->generate) {
             $data = call_user_func($this->generate, $this, (array) $data);
         }
@@ -407,7 +405,7 @@ class Route
         }
         
         // replacements for optional params, if any
-        preg_match('#{/([a-z][a-zA-Z0-9_,]+)}#', $link, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $link, $matches);
         if ($matches) {
             // this is the full token to replace in the link
             $key = $matches[0];
@@ -474,7 +472,7 @@ class Route
      */
     protected function setRegexOptionalParams()
     {
-        preg_match('#{/([a-z][a-zA-Z0-9_,]+)}#', $this->regex, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
         if (! $matches) {
             return;
         }
@@ -499,7 +497,7 @@ class Route
      */
     protected function setRegexParams()
     {
-        $find = '#{([a-z][a-zA-Z0-9_]+)}#';
+        $find = '#{([a-z][a-zA-Z0-9_]*)}#';
         preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $name = $match[1];
