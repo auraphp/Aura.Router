@@ -20,8 +20,17 @@ namespace Aura\Router;
 class RouteFactory
 {
     /**
+     * 
+     * The class to create.
+     * 
+     * @param string
+     * 
+     */
+    protected $class = 'Aura\Router\Route';
+    
+    /**
 	 * 
-	 * An array of default Route specifications.
+	 * A default specification array.
 	 * 
 	 * @var array
 	 * 
@@ -38,6 +47,18 @@ class RouteFactory
 	    'generate'    => null,
 	);
 	
+	/**
+	 * 
+	 * Constructor.
+	 * 
+	 * @param string $class The class to create.
+	 * 
+	 */
+	public function __construct($class = 'Aura\Router\Route')
+	{
+	    $this->class = $class;
+	}
+	
     /**
      * 
      * Returns a new Route instance.
@@ -50,7 +71,8 @@ class RouteFactory
     public function newInstance(array $spec = array())
     {
         $spec = array_merge($this->spec, $spec);
-        $route = new Route($spec['name'], $spec['path']);
+        $class = $this->class;
+        $route = new $class($spec['name'], $spec['path']);
         $route->setRequire((array) $spec['require'])
               ->setDefault((array) $spec['default'])
               ->setSecure($spec['secure'])

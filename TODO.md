@@ -1,7 +1,11 @@
-- addResource() and setResourceCallable() method
+- get rid of array keys in Route and use only methods
 
 - make generate() use ArrayObject in the callable, like is_match, and not
   return a replacement $data array?
+
+- move $_SERVER matching requirements to a 'server' key?
+
+- addResource() and setResourceCallable() method
 
 * * *
 
