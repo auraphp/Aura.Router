@@ -95,6 +95,17 @@ $router->add('read', '/blog/read/{id}{format}', array(
 ?>
 ```
 
+You can create a route that matches only against a particular HTTP method
+as well. The following _Router_ methods are identical to `add()` but require
+the related HTTP method:
+
+- `$router->addGet()`
+- `$router->addDelete()`
+- `$router->addOption()`
+- `$router->addPatch()`
+- `$router->addPost()`
+- `$router->addPut()`
+
 ### Matching A Route
 
 To match a URL path against your routes, call `match()` with a path string
@@ -258,7 +269,7 @@ keys:
         'require' => array(
             'id' => '\d+',
             'REQUEST_METHOD' => 'GET|POST',
-        ]
+        )
         
 - `default` -- The default values for the params. These will be overwritten by
   matching params.
@@ -267,7 +278,7 @@ keys:
             'controller' => 'blog',
             'action' => 'read',
             'id' => 1,
-        ]
+        )
         
 - `secure` -- When `true` the `$server['HTTPS']` value must be on, or the
   request must be on port 443; when `false`, neither of those must be in
@@ -276,13 +287,13 @@ keys:
 - `routable` -- When `false` the route will be used only for generating paths,
   not for matching.
 
-- `is_match` -- A custom callback or closure with the signature
+- `is_match` -- A custom callable with the signature
   `function(array $server, \ArrayObject $matches)` that returns true on a
   match, or false if not. This allows developers to build any kind of matching
   logic for the route, and to change the `$matches` for param values from the
   path.
 
-- `generate` -- A custom callback or closure with the signature
+- `generate` -- A custom callable with the signature
   `function(\Aura\Router\Route $route, array $data)` that returns a modified
   `$data` array to be used when generating the path.
 
@@ -305,7 +316,7 @@ $router->add('read', '/blog/read/{id}{format}', array(
     'secure' => false,
     'routable' => true,
     'is_match' => function(array $server, \ArrayObject $matches) {
-            
+        
         // disallow matching if referred from example.com
         if ($server['HTTP_REFERER'] == 'http://example.com') {
             return false;
@@ -324,9 +335,92 @@ $router->add('read', '/blog/read/{id}{format}', array(
 ?>
 ```
 
-Note that using closures, instead of callbacks, means you will not be able to
-`serialize()` or `var_export()` the router for caching.
+Instead of using array keys, you can use fluent methods on the _Route_ object
+that is returned from `$router->add()`. Here is the same setup as above:
 
+```php
+<?php
+$route = $router->add('read', '/blog/read/{id}{format}');
+$route->setRequire(array(
+        'id' => '\d+',
+        'format' => '(\.[^/]+)?',
+        'REQUEST_METHOD' => 'GET|POST',
+    ))
+    ->setDefault(array(
+        'controller' => 'blog',
+        'action' => 'read',
+        'id' => 1,
+        'format' => '.html',
+    ))
+    ->setSecure(false)
+    ->setRoutable(false)
+    ->setIsMatch(function(array $server, \ArrayObject $matches) {
+            
+        // disallow matching if referred from example.com
+        if ($server['HTTP_REFERER'] == 'http://example.com') {
+            return false;
+        }
+        
+        // add the referer from $server to the match values
+        $matches['referer'] = $server['HTTP_REFERER'];
+        return true;
+        
+    })
+    ->setGenerate(function(\Aura\Router\Route $route, array $data) {
+        $data['foo'] = 'bar';
+        return $data;
+    });
+?>
+```
+
+### Default Route Specifications
+
+You can set the default route specifications with the following _Router_
+methods; the values will apply to all routes added thereafter.
+
+```php
+<?php
+// set the default 'require' expressions
+$router->setRequire(array(
+    'id' => '\d+',
+));
+
+// set the default param values
+$router->setDefault(array(
+    'format' => null,
+));
+
+// set the default 'secure' value 
+$router->setSecure(true);
+
+// set the default wildcard param name
+$router->setWildcard('other');
+
+// set the default 'routable' flag
+$router->setRoutable(false);
+
+// set the default 'is_match' callable
+$router->setIsMatchCallable(function (...) { ... });
+
+// set the default 'generate' callable
+$router->setGenerateCallable(function (...) { ... });
+?>
+```
+  
+### Route Name As Param
+
+You can have the _Router_ use the route name as the default value for param,
+if that param does not already have a default value:
+
+```php
+<?php
+// use the route name as the 'action' param
+$router->useNameAsParam('action');
+
+// the default value for the 'action' param on this route will be 'foo'
+$route->add('foo', '/path/to/foo');
+?>
+```
 
 ### Simple Routes
 
@@ -476,160 +570,77 @@ $link = $router->generate('wild_post', array(
 
 You can add a series of routes all at once under a single "mount point" in
 your application. For example, if you want all your blog-related routes to be
-mounted at `'/blog'` in your application, you can do this:
+mounted at `/blog` in your application, you can do this:
 
 ```php
 <?php
-$router->attach('/blog', array(
-    
-    // the routes to attach
-    'routes' => array(
-        
-        // a short-form route named 'browse'
-        'browse' => '/',
-        
-        // a long-form route named 'read'
-        'read' => array(
-            'path' => '/{id}{format}',
-            'require' => array(
-                'id'     => '\d+',
-                'format' => '(\.json|\.atom)?'
-            ),
-            'default' => array(
-                'format' => '.html',
-            ),
-        ),
-        
-        // a short-form route named 'edit'
-        'edit' => '/{id}/edit',
-    ),
-));
-?>
-```
-    
-Each of the route paths will be prefixed with `/blog`, so the effective paths
-become:
+$name_prefix = 'blog.';
+$path_prefix = '/blog';
 
-- `browse: /blog/`
-- `read:   /blog/{id}{format}`
-- `edit:   /blog/{id}/edit`
-
-You can set other route specification keys as part of the attachment
-specification; these will be used as the defaults for each attached route, so
-you don't need to repeat common information:
-
-```php
-<?php
-$router->attach('/blog', array(
-    
-    // common param requirements for the routes
-    'require' => array(
-        'id'     => '\d+',
-        'format' => '(\.json|\.atom)?',
-    ),
-    
-    // common default param values for the routes
-    'default' => array(
-        'controller' => 'blog',
-        'format'     => '.html',
-    ),
-    
-    // the routes to attach
-    'routes' => array(
-        'browse' => '/',
-        'read'   => '/{id}{format}',
-        'edit'   => '/{id}/edit',
-    ),
-));
-?>
-```
-
-
-### Constructor-Time Attachment
-
-You can configure your routes in a single array of attachment groups, and then
-pass them to the router constructor all at once. This allows you to
-separate configuration and construction of routes.
-
-Note that you can specify a `name_prefix` as part of the common route
-information for each attached route group; the route names in that group will
-be prefixed with that value. This helps with deconfliction of routes with the
-same names in different groups.
-
-```php
-<?php
-$attach = array(
-    // attach to /blog
-    '/blog' => array(
-        
-        // prefix for route names
-        'name_prefix' => 'projectname.blog.',
-        
-        // common param requirements for the routes
+$router->attach($name_prefix, $path_prefix, function ($router) {
+    $router->add('browse', '{format}', array(
         'require' => array(
-            'id' => '\d+',
-            'format' => '(\.json|\.atom)?',
+            'format' => '(\.json|\.atom|\.html)?'
         ),
-    
-        // common default param values for the routes
         'default' => array(
-            'controller' => 'blog',
             'format' => '.html',
         ),
-    
-        // the routes to attach
-        'routes' => array(
-            'browse' => '/',
-            'read'   => '/read/{id}{format}',
-            'edit' => '/{id}/edit',
+    );
+    $router->add('read', '/{id}{format}', array(
+        'require' => array(
+            'id'     => '\d+',
+            'format' => '(\.json|\.atom|\.html)?'
         ),
-    ),
-    
-    // attach to '/forum'
-    '/forum' => array(
-        // prefix for route names
-        'name_prefix' => 'projectname.forum.',
-        // ...
-    ),
-
-    // attach to '/wiki'
-    '/wiki' => array(
-        // prefix for route names
-        'name_prefix' => 'projectname.wiki.',
-        // ...
-    ),
-];
-
-// create the route factory
-$route_factory = new \Aura\Router\RouteFactory;
-
-// create a router with attached route groups
-$router = new \Aura\Router\Router($route_factory, $attach);
+        'default' => array(
+            'format' => '.html',
+        ),
+    ));
+    $router->add('edit', '/{id}/edit{format}', array(
+        'require' => array(
+            'id' => '\d+',
+            'format' => '(\.json|\.atom)?'
+        ),
+        'default' => array(
+            'format' => '.html',
+        ),
+    ));
+});
 ?>
 ```
+    
+Each of the route names will be prefixed with 'blog.', and of the route paths
+will be prefixed with `/blog`, so the effective route names and paths become:
 
-This technique can be very effective with modular application packages. Each
-package can return an array for its own route group specification, and a
-system-specific configuration mechanism can collect each spec into a common
-array for the router. For example:
+- `blog.browse  =>  /blog`
+- `blog.read    =>  /blog/{id}{format}`
+- `blog.edit    =>  /blog/{id}/edit`
+
+You can set other route specification values as part of the attachment
+specification; these will be used as the defaults for each attached route, so
+you don't need to repeat common information. (Setting these values will
+not affect routes outside the attached group.)
 
 ```php
 <?php
-// get a routes array from each application packages
-$attach = array(
-    '/blog'  => require 'projectname/blog/routes.php',
-    '/forum' => require 'projectname/forum/routes.php',
-    '/wiki'  => require 'projectname/wiki/routes.php',
-);
+$name_prefix = 'blog.';
+$path_prefix = '/blog';
 
-// create the route factory
-$route_factory = new \Aura\Router\RouteFactory;
-
-// create a router with attached route groups
-$router = new \Aura\Router\Router($route_factory, $attach);
+$router->attach($name_prefix, $path_prefix, function ($router) {
+    $router->setRequire(array(
+        'id'     => '\d+',
+        'format' => '(\.json|\.atom)?'
+    ));
+    
+    $router->setDefault(array(
+        'format' => '.html',
+    ));
+    
+    $router->add('browse', '');
+    $router->add('read', '/{id}{format}');
+    $router->add('edit', '/{id}/edit');
+});
 ?>
 ```
-
 
 ### Caching
 
@@ -667,7 +678,6 @@ if (file_exists($cache)) {
 
 Note that if there are closures in the route definitions, you will not be able
 to cache the routes; this is because closures cannot be represented
-properly for caching. Use traditional callbacks instead of closures if you
-wish to pursue a cache strategy.
+properly for caching.
 
 [Aura.Dispatcher]: https://github.com/auraphp/Aura.Dispatcher
