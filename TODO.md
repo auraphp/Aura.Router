@@ -32,17 +32,21 @@ class Router
 // http://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 $router->setResourceCallable(function ($router, $name, $path) {
     
+    // controller is the resource name, including prefix
     $router->setDefault(array(
         'controller' => $name,
     ));
     
+    // the optional .format extension; note that ID is undefined
     $router->setRequire(array(
         'format' => '(\.[^/]+)?',
     ));
     
+    // get rid of trailing slash, if any
     $path = rtrim($path, '/');
     
-    $router->setNameParam('action');
+    // use the route name as the action param
+    $router->useNameAsParam('action');
     
     // browse the resources, optionally in a format.
     // can double for search when a query string is passed.

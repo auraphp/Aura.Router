@@ -23,24 +23,6 @@ class Router
 {
     /**
      * 
-     * A RouteFactory for creating route objects.
-     * 
-     * @var RouteFactory
-     * 
-     */
-    protected $route_factory;
-
-    /**
-     * 
-     * Route objects created from the definitons.
-     * 
-     * @var array
-     * 
-     */
-    protected $routes = array();
-
-    /**
-     * 
      * Logging information about which routes were attempted to match.
      * 
      * @var array
@@ -79,6 +61,24 @@ class Router
      */
     protected $path_prefix;
     
+    /**
+     * 
+     * A RouteFactory for creating route objects.
+     * 
+     * @var RouteFactory
+     * 
+     */
+    protected $route_factory;
+
+    /**
+     * 
+     * Route objects created from the definitons.
+     * 
+     * @var array
+     * 
+     */
+    protected $routes = array();
+
     /**
 	 * 
 	 * An array of default route specifications.
@@ -164,7 +164,7 @@ class Router
      * @return null
      * 
      */
-    public function setNameParam($name_param)
+    public function useNameAsParam($name_param)
     {
         $this->name_param = $name_param;
     }

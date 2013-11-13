@@ -23,13 +23,53 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     
     public function testBeforeAndAfterAttach()
     {
-        $this->markTestIncomplete();
-        // add a route before attach
-        // attach a route with set*()
-        // add a route after attach
-        // check that before and after do not have the set*() values
-        // check that attach does have the set*() values
+        $this->router->add('before', '/foo');
+        $this->router->attach('during:', '/during', function ($router) {
+            $router->useNameAsParam('action');
+            $router->setRequire(array('id' => '\d+'));
+            $router->setDefault(array('controller' => 'foo'));
+            $router->setSecure(true);
+            $router->setWildcard('other');
+            $router->setRoutable(false);
+            $router->setIsMatchCallable(function () { });
+            $router->setGenerateCallable(function () { });
+            $router->add('bar', '/bar');
+        });
+        $this->router->add('after', '/baz');
+        
+        $routes = $this->router->getRoutes();
+        
+        $before = $routes['before'];
+        $this->assertIsRoute($before);
+        $this->assertSame(array(), $before->require);
+        $this->assertSame(array(), $before->default);
+        $this->assertSame(null, $before->secure);
+        $this->assertSame(null, $before->wildcard);
+        $this->assertSame(true, $before->routable);
+        $this->assertSame(null, $before->is_match);
+        $this->assertSame(null, $before->generate);
+        
+        $during = $routes['during:bar'];
+        $this->assertIsRoute($during);
+        $this->assertSame(array('id' => '\d+'), $during->require);
+        $this->assertSame(array('controller' => 'foo', 'action' => 'bar'), $during->default);
+        $this->assertSame(true, $during->secure);
+        $this->assertSame('other', $during->wildcard);
+        $this->assertSame(false, $during->routable);
+        $this->assertInstanceOf('Closure', $during->is_match);
+        $this->assertInstanceOf('Closure', $during->generate);
+        
+        $after = $routes['after'];
+        $this->assertIsRoute($after);
+        $this->assertSame(array(), $after->require);
+        $this->assertSame(array(), $after->default);
+        $this->assertSame(null, $after->secure);
+        $this->assertSame(null, $after->wildcard);
+        $this->assertSame(true, $after->routable);
+        $this->assertSame(null, $after->is_match);
+        $this->assertSame(null, $after->generate);
     }
+    
     
     public function testAddAndGenerate()
     {
@@ -43,7 +83,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'resource',
             ));
             
-            $router->setNameParam('action');
+            $router->useNameAsParam('action');
             
             $router->addGet(null, '/', array(
                 'default' => array(
