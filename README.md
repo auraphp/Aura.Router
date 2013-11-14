@@ -309,18 +309,18 @@ methods; the values will apply to all routes added thereafter.
 
 ```php
 <?php
-// set the default 'tokens' expressions
-$router->setTokens(array(
+// add to the default 'tokens' expressions; setTokens() is also available
+$router->addTokens(array(
     'id' => '\d+',
 ));
 
-// set the default 'server' expressions
-$router->setServer(array(
+// add to the default 'server' expressions; setServer() is also available
+$router->addServer(array(
     'REQUEST_METHOD' => 'PUT|PATCH',
 ));
 
-// set the default param values
-$router->setValues(array(
+// add to the default param values; ; setValues() is also available
+$router->addValues(array(
     'format' => null,
 ));
 
@@ -607,7 +607,7 @@ create them.
 ```php
 <?php
 $router->setResourceCallable(function ($router) {
-    $router->setTokens('resource' => $router->getNamePrefix());
+    $router->addTokens('resource' => $router->getNamePrefix());
     $router->setNameParam('method');
     $router->addGet('get', '');
     $router->addPost('post', '/{id}');

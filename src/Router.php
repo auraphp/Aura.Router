@@ -19,7 +19,7 @@ use Aura\Router\Exception;
  * @package Aura.Router
  * 
  */
-class Router
+class Router extends AbstractSpec
 {
     /**
      * 
@@ -56,8 +56,6 @@ class Router
 	 * 
 	 */
 	protected $spec = array(
-	    'name'        => null,
-	    'path'        => null,
 	    'tokens'      => array(),
 	    'server'      => array(),
 	    'values'      => array(),
@@ -70,6 +68,7 @@ class Router
 	    'name_delim'  => '.',
 	    'name_prefix' => null,
 	    'path_prefix' => null,
+	    'resource'    => null,
 	);
 	
     /**
@@ -83,78 +82,6 @@ class Router
     {
         $this->route_factory = $route_factory;
         $this->setResourceCallable(array($this, 'resourceCallable'));
-    }
-    
-    public function setResourceCallable($resource)
-    {
-        $this->resource = $resource;
-    }
-    
-    /**
-     * 
-     * Sets the array of route objects to use.
-     * 
-     * @param array $routes Use this array of route objects.
-     * 
-     * @return null
-     * 
-     * @see getRoutes()
-     * 
-     */
-    public function setRoutes(array $routes)
-    {
-        $this->routes = $routes;
-    }
-
-    /**
-     * 
-     * Gets the array of route objects in this router, likely for caching and
-     * re-setting via `setRoutes()`.
-     * 
-     * @return array
-     * 
-     * @see setRoutes()
-     * 
-     */
-    public function getRoutes()
-    {
-        return $this->routes;
-    }
-
-    /**
-     * 
-     * Gets the log of attempted route matches.
-     * 
-     * @return array
-     * 
-     */
-    public function getLog()
-    {
-        return $this->log;
-    }
-
-    /**
-     * 
-     * Gets the current name prefix for routes.
-     * 
-     * @return string
-     * 
-     */
-    public function getNamePrefix()
-    {
-        return $this->spec['name_prefix'];
-    }
-    
-    /**
-     * 
-     * Returns the curent path prefix for routes.
-     * 
-     * @return string
-     * 
-     */
-    public function getPathPrefix()
-    {
-        return $this->spec['path_prefix'];
     }
     
     /**
@@ -369,152 +296,7 @@ class Router
      */
     public function attachResource($name, $path)
     {
-        $this->attach($name, $path, $this->resource);
-    }
-    
-    /**
-     * 
-     * Sets the regular expressions for param tokens.
-     * 
-     * @param array $tokens The regular expressions for param tokens.
-     * 
-     * @return null
-     * 
-     */
-    public function setTokens(array $tokens)
-    {
-        $this->spec['tokens'] = $tokens;
-    }
-    
-    /**
-     * 
-     * Sets the regular expressions for server values.
-     * 
-     * @param array $server The regular expressions for server values.
-     * 
-     * @return null
-     * 
-     */
-    public function setServer(array $server)
-    {
-        $this->spec['server'] = $server;
-    }
-    
-    /**
-     * 
-     * Sets the default values for params.
-     * 
-     * @param array $values Default values for params.
-     * 
-     * @return null
-     * 
-     */
-    public function setValues(array $values)
-    {
-        $this->spec['values'] = $values;
-    }
-    
-    /**
-     * 
-     * Sets whether or not the route must be secure.
-     * 
-     * @param bool $secure If true, the server must indicate an HTTPS request;
-     * if false, it must *not* be HTTPS; if null, it doesn't matter.
-     * 
-     * @return null
-     * 
-     */
-    public function setSecure($secure = true)
-    {
-        $this->spec['secure'] = ($secure === null) ? null : (bool) $secure;
-    }
-    
-    /**
-     * 
-     * Sets the name of the wildcard param.
-     * 
-     * @param string $wildcard The name of the wildcard param, if any.
-     * 
-     * @return null
-     * 
-     */
-    public function setWildcard($wildcard)
-    {
-        $this->spec['wildcard'] = $wildcard;
-    }
-    
-    /**
-     * 
-     * Sets whether or not this route should be used for matching.
-     * 
-     * @param bool $routable If true, this route can be matched; if not, it
-     * can be used only to generate a path.
-     * 
-     * @return null
-     * 
-     */
-    public function setRoutable($routable = true)
-    {
-        $this->spec['routable'] = (bool) $routable;
-    }
-    
-    /**
-     * 
-     * Sets a custom callable to evaluate the route for matching.
-     * 
-     * @param callable $is_match A custom callable to evaluate the route.
-     * 
-     * @return null
-     * 
-     */
-    public function setIsMatchCallable($is_match)
-    {
-        $this->spec['is_match'] = $is_match;
-    }
-    
-    /**
-     * 
-     * Sets a custom callable to modify data for `generate()`.
-     * 
-     * @param callable $generate A custom callable to modify data for
-     * `generate()`.
-     * 
-     * @return null
-     * 
-     */
-    public function setGenerateCallable($generate)
-    {
-        $this->spec['generate'] = $generate;
-    }
-    
-    /**
-     * 
-     * Sets the param into which the un-prefixed route name should be
-     * captured.
-     * 
-     * @param string $name_param The param into which the name should be
-     * captured.
-     * 
-     * @return null
-     * 
-     */
-    public function setNameParam($name_param)
-    {
-        $this->spec['name_param'] = $name_param;
-    }
-    
-    /**
-     * 
-     * Sets the delmiter between the route name prefix and the route name.
-     * 
-     * @param string $name_delim The delimiter to use.
-     * 
-     * @return null
-     * 
-     */
-    public function setNameDelim($name_delim)
-    {
-        $this->spec['name_delim'] = $name_delim;
+        $this->attach($name, $path, $this->spec['resource']);
     }
     
     /**
@@ -565,6 +347,121 @@ class Router
         }
         
         return $this->routes[$name]->generate($data);
+    }
+    
+    /**
+     * 
+     * Sets the array of route objects to use.
+     * 
+     * @param array $routes Use this array of route objects.
+     * 
+     * @return $this
+     * 
+     * @see getRoutes()
+     * 
+     */
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
+        return $this;
+    }
+
+    /**
+     * 
+     * Gets the array of route objects in this router, likely for caching and
+     * re-setting via `setRoutes()`.
+     * 
+     * @return array
+     * 
+     * @see setRoutes()
+     * 
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     * 
+     * Gets the log of attempted route matches.
+     * 
+     * @return array
+     * 
+     */
+    public function getLog()
+    {
+        return $this->log;
+    }
+
+    /**
+     * 
+     * Gets the current name prefix for routes.
+     * 
+     * @return string
+     * 
+     */
+    public function getNamePrefix()
+    {
+        return $this->spec['name_prefix'];
+    }
+    
+    /**
+     * 
+     * Returns the curent path prefix for routes.
+     * 
+     * @return string
+     * 
+     */
+    public function getPathPrefix()
+    {
+        return $this->spec['path_prefix'];
+    }
+    
+    /**
+     * 
+     * Sets the param into which the un-prefixed route name should be
+     * captured.
+     * 
+     * @param string $name_param The param into which the name should be
+     * captured.
+     * 
+     * @return $this
+     * 
+     */
+    public function setNameParam($name_param)
+    {
+        $this->spec['name_param'] = $name_param;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets the delmiter between the route name prefix and the route name.
+     * 
+     * @param string $name_delim The delimiter to use.
+     * 
+     * @return $this
+     * 
+     */
+    public function setNameDelim($name_delim)
+    {
+        $this->spec['name_delim'] = $name_delim;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets the callable for attaching resource routes.
+     * 
+     * @param callable $resource The resource callable.
+     * 
+     * @return $this
+     * 
+     */
+    public function setResourceCallable($resource)
+    {
+        $this->spec['resource'] = $resource;
+        return $this;
     }
     
     /**

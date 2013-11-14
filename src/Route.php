@@ -23,7 +23,7 @@ use Closure;
  * @package Aura.Router
  * 
  */
-class Route
+class Route extends AbstractSpec
 {
     /**
      * 
@@ -45,91 +45,12 @@ class Route
 
     /**
      * 
-     * A map of param token names to regex subpatterns.
-     * 
-     * @var array
-     * 
-     */
-    protected $tokens = array();
-
-    /**
-     * 
-     * A map of `$_SERVER` key names to regex subpatterns.
-     * 
-     * @var array
-     * 
-     */
-    protected $server = array();
-
-    /**
-     * 
-     * Defalt param values.
-     * 
-     * @var array
-     * 
-     */
-    protected $values = array();
-    
-    /**
-     * 
      * Matched param values.
      * 
      * @var array
      * 
      */
     protected $params = array();
-
-    /**
-     * 
-     * When true, the `HTTPS` value must be `on`, or the `SERVER_PORT` must be
-     * 443.  When false, neither of those values may be present.  When null, 
-     * it is ignored.
-     * 
-     * @var bool
-     * 
-     */
-    protected $secure = null;
-
-    /**
-     * 
-     * A callable to provide custom matching logic against the 
-     * server values and matched params from this Route. The signature must be 
-     * `function(array $server, \ArrayObject $matches)` and must return a 
-     * boolean: true to accept this Route match, or false to deny the match. 
-     * Note that this allows a wide range of manipulations, and further allows 
-     * the developer to modify the matched params as needed.
-     * 
-     * @var callable
-     * 
-     * @see isMatch()
-     * 
-     */
-    protected $is_match;
-
-    /**
-     * 
-     * A callable to modify path-generation values. The signature must be
-     * `function (\Aura\Router\Route $route, array $data)`. Its return value
-     * is an array  of data to be used in the path. The `$route` is this Route
-     * object, and  `$data` is the set of key-value pairs to be interpolated
-     * into the path as provided by the caller.
-     * 
-     * @var callable
-     * 
-     * @see generate()
-     * 
-     */
-    protected $generate;
-
-    /**
-     * 
-     * If routable, this route should be used in matching.  If not, it should
-     * be used only to generate a path.
-     * 
-     * @var bool
-     * 
-     */
-    protected $routable = true;
 
     /**
      * 
@@ -143,15 +64,15 @@ class Route
 
     /**
      * 
-     * All param matches found in the path during the `isMatch()` process,
-     * both in the path and in `$_SERVER`.
+     * All params found during the `isMatch()` process, both from the path
+     * tokens and from matched server values.
      * 
      * @var array
      * 
      * @see isMatch()
      * 
      */
-    protected $matches;
+    protected $matches = array();
 
     /**
      * 
@@ -162,15 +83,6 @@ class Route
      */
     protected $debug;
 
-    /**
-     * 
-     * The name of the wildcard param, if any.
-     * 
-     * @var array
-     * 
-     */
-    protected $wildcard;
-    
     /**
      * 
      * Constructor.
@@ -189,7 +101,7 @@ class Route
 
     /**
      * 
-     * Magic read-only for all properties.
+     * Magic read-only for all properties and spec keys.
      * 
      * @param string $key The property to read from.
      * 
@@ -198,6 +110,10 @@ class Route
      */
     public function __get($key)
     {
+        if (array_key_exists($key, $this->spec)) {
+            return $this->spec[$key];
+        }
+        
         return $this->$key;
     }
 
@@ -212,181 +128,9 @@ class Route
      */
     public function __isset($key)
     {
-        return isset($this->$key);
+        return isset($this->spec[$key]) || isset($this->$key);
     }
 
-    /**
-     * 
-     * Sets the regular expressions for param tokens, replacing all
-     * previous values.
-     * 
-     * @param array $tokens Regular expressions for param tokens.
-     * 
-     * @return $this
-     * 
-     */
-    public function setTokens(array $tokens)
-    {
-        $this->tokens = $tokens;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Merges with the existing regular expressions for param tokens.
-     * 
-     * @param array $tokens Regular expressions for param tokens.
-     * 
-     * @return $this
-     * 
-     */
-    public function addTokens(array $tokens)
-    {
-        $this->tokens = $this->merge($this->tokens, $tokens);
-        $this->regex = null;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets the regular expressions for server values, replacing all
-     * previous values.
-     * 
-     * @param array $server Regular expressions for server values.
-     * 
-     * @return $this
-     * 
-     */
-    public function setServer(array $server)
-    {
-        $this->server = $server;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Merges with the existing regular expressions for server values.
-     * 
-     * @param array $server Regular expressions for server values.
-     * 
-     * @return $this
-     * 
-     */
-    public function addServer(array $server)
-    {
-        $this->server = $this->merge($this->server, $server);
-        $this->regex = null;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets the default values for params, replacing all previous values.
-     * 
-     * @param array $values Default values for params.
-     * 
-     * @return $this
-     * 
-     */
-    public function setValues(array $values)
-    {
-        $this->values = $values;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Merges with the existing default values for params.
-     * 
-     * @param array $values Default values for params.
-     * 
-     * @return $this
-     * 
-     */
-    public function addValues(array $values)
-    {
-        $this->values = $this->merge($this->values, $values);
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets whether or not the route must be secure.
-     * 
-     * @param bool $secure If true, the server must indicate an HTTPS request;
-     * if false, it must *not* be HTTPS; if null, it doesn't matter.
-     * 
-     * @return $this
-     * 
-     */
-    public function setSecure($secure = true)
-    {
-        $this->secure = ($secure === null) ? null : (bool) $secure;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets the name of the wildcard param.
-     * 
-     * @param string $wildcard The name of the wildcard param, if any.
-     * 
-     * @return $this
-     * 
-     */
-    public function setWildcard($wildcard)
-    {
-        $this->wildcard = $wildcard;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets whether or not this route should be used for matching.
-     * 
-     * @param bool $routable If true, this Route can be matched; if not, it
-     * can be used only to generate a path.
-     * 
-     * @return $this
-     * 
-     */
-    public function setRoutable($routable = true)
-    {
-        $this->routable = (bool) $routable;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets a custom callable to evaluate the route for matching.
-     * 
-     * @param callable $is_match A custom callable to evaluate the route.
-     * 
-     * @return $this
-     * 
-     */
-    public function setIsMatchCallable($is_match)
-    {
-        $this->is_match = $is_match;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets a custom callable to modify data for `generate()`.
-     * 
-     * @param callable $generate A custom callable to modify data for
-     * `generate()`.
-     * 
-     * @return $this
-     * 
-     */
-    public function setGenerateCallable($generate)
-    {
-        $this->generate = $generate;
-        return $this;
-    }
-    
     /**
      * 
      * Checks if a given path and server values are a match for this
@@ -407,7 +151,7 @@ class Route
         $this->params = array();
         
         // routable?
-        if (! $this->routable) {
+        if (! $this->spec['routable']) {
             $this->debug[] = 'Not routable.';
             return false;
         }
@@ -448,12 +192,13 @@ class Route
         // the base link template
         $link = $this->path;
         
-        // the data for replacements
-        $data = array_merge($this->values, $data);
+        // the data for replacements. do not use $this->merge(), as we do not
+        // want to unset elements with null values.
+        $data = array_merge($this->spec['values'], $data);
         
         // use a callable to modify the data?
-        if ($this->generate) {
-            $data = call_user_func($this->generate, $this, (array) $data);
+        if ($this->spec['generate']) {
+            $data = call_user_func($this->spec['generate'], $this, (array) $data);
         }
         
         // replacements for single tokens
@@ -493,9 +238,10 @@ class Route
         $link = strtr($link, $repl);
         
         // add wildcard data
-        if ($this->wildcard && isset($data[$this->wildcard])) {
+        $wildcard = $this->spec['wildcard'];
+        if ($wildcard && isset($data[$wildcard])) {
             $link = rtrim($link, '/');
-            foreach ($data[$this->wildcard] as $val) {
+            foreach ($data[$wildcard] as $val) {
                 // encode the wildcard value
                 if (is_scalar($val)) {
                     $link .= '/' . rawurlencode($val);
@@ -564,8 +310,8 @@ class Route
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! isset($this->values[$name])) {
-                $this->values[$name] = null;
+            if (! isset($this->spec['values'][$name])) {
+                $this->spec['values'][$name] = null;
             }
         }
     }
@@ -579,12 +325,12 @@ class Route
      */
     protected function setRegexWildcard()
     {
-        if (! $this->wildcard) {
+        if (! $this->spec['wildcard']) {
             return;
         }
         
         $this->regex = rtrim($this->regex, '/')
-                     . "(/(?P<{$this->wildcard}>.*))?";
+                     . "(/(?P<{$this->spec['wildcard']}>.*))?";
     }
     
     /**
@@ -599,8 +345,8 @@ class Route
     protected function getSubpattern($name)
     {
         // is there a custom subpattern for the name?
-        if (isset($this->tokens[$name])) {
-            return "(?P<{$name}>{$this->tokens[$name]})";
+        if (isset($this->spec['tokens'][$name])) {
+            return "(?P<{$name}>{$this->spec['tokens'][$name]})";
         }
         
         // use a default subpattern
@@ -637,7 +383,7 @@ class Route
      */
     protected function isServerMatch($server)
     {
-        foreach ($this->server as $name => $regex) {
+        foreach ($this->spec['server'] as $name => $regex) {
             
             // get the corresponding server value
             $value = isset($server[$name]) ? $server[$name] : '';
@@ -671,17 +417,17 @@ class Route
      */
     protected function isSecureMatch($server)
     {
-        if ($this->secure !== null) {
+        if ($this->spec['secure'] !== null) {
 
             $is_secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
                       || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
 
-            if ($this->secure == true && ! $is_secure) {
+            if ($this->spec['secure'] == true && ! $is_secure) {
                 $this->debug[] = 'Secure required, but not secure.';
                 return false;
             }
 
-            if ($this->secure == false && $is_secure) {
+            if ($this->spec['secure'] == false && $is_secure) {
                 $this->debug[] = 'Non-secure required, but is secure.';
                 return false;
             }
@@ -701,14 +447,14 @@ class Route
      */
     protected function isCustomMatch($server)
     {
-        if (! $this->is_match) {
+        if (! $this->spec['is_match']) {
             return true;
         }
 
         // pass the matches as an object, not as an array, so we can avoid
         // tricky hacks for references
         $matches = new ArrayObject($this->matches);
-        $result = call_user_func($this->is_match, $server, $matches);
+        $result = call_user_func($this->spec['is_match'], $server, $matches);
 
         // convert back to array
         $this->matches = $matches->getArrayCopy();
@@ -730,7 +476,7 @@ class Route
      */
     protected function setParams()
     {
-        $this->params = $this->values;
+        $this->params = $this->spec['values'];
         
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
@@ -742,42 +488,19 @@ class Route
         }
 
         // is a wildcard param specified?
-        if ($this->wildcard) {
+        if ($this->spec['wildcard']) {
+            $wildcard = $this->spec['wildcard'];
             // are there are actual wildcard values?
-            if (empty($this->params[$this->wildcard])) {
+            if (empty($this->params[$wildcard])) {
                 // no, set a blank array
-                $this->params[$this->wildcard] = array();
+                $this->params[$wildcard] = array();
             } else {
                 // yes, retain and rawurldecode them
-                $this->params[$this->wildcard] = array_map(
+                $this->params[$wildcard] = array_map(
                     'rawurldecode',
-                    explode('/', $this->params[$this->wildcard])
+                    explode('/', $this->params[$wildcard])
                 );
             }
         }
     }
-    
-    /**
-     * 
-     * A custom array merge function; if the new value is null, unset the old
-     * array element entirely.
-     * 
-     * @param array $old The old array.
-     * 
-     * @param array $new The new array to be merged in.
-     * 
-     * @return array The old array with new merged elements.
-     * 
-     */
-    protected function merge($old, $new)
-    {
-        // replace old values with new ones; a null unsets the old element
-        foreach ($new as $key => $val) {
-            $old[$key] = $val;
-            if ($val === null) {
-                unset($old[$key]);
-            }
-        }
-        return $old;
-    }    
 }
