@@ -51,7 +51,7 @@ class Route
      * @var array
      * 
      */
-    protected $require = array();
+    protected $tokens = array();
 
     /**
      * 
@@ -126,7 +126,7 @@ class Route
     /**
      * 
      * The `$path` property converted to a regular expression, using the
-     * `$require` subpatterns.
+     * `$tokens` subpatterns.
      * 
      * @var string
      * 
@@ -209,32 +209,32 @@ class Route
 
     /**
      * 
-     * Sets the regular expressions that params must match, replacing all
+     * Sets the regular expressions for param tokens, replacing all
      * previous values.
      * 
-     * @param array $require Params are required to match these expressions.
+     * @param array $tokens Regular expressions for param tokens.
      * 
      * @return $this
      * 
      */
-    public function setRequire(array $require)
+    public function setTokens(array $tokens)
     {
-        $this->require = array();
-        return $this->addRequire($require);
+        $this->tokens = array();
+        return $this->addTokens($tokens);
     }
     
     /**
      * 
-     * Merges with the existing regular expressions that params must match.
+     * Merges with the existing regular expressions for param tokens.
      * 
-     * @param array $require Params are required to match these expressions.
+     * @param array $tokens Regular expressions for param tokens.
      * 
      * @return $this
      * 
      */
-    public function addRequire(array $require)
+    public function addTokens(array $tokens)
     {
-        $this->require = array_merge($this->require, $require);
+        $this->tokens = array_merge($this->tokens, $tokens);
         $this->regex = null;
         return $this;
     }
@@ -559,8 +559,8 @@ class Route
     protected function getSubpattern($name)
     {
         // is there a custom subpattern for the name?
-        if (isset($this->require[$name])) {
-            return "(?P<{$name}>{$this->require[$name]})";
+        if (isset($this->tokens[$name])) {
+            return "(?P<{$name}>{$this->tokens[$name]})";
         }
         
         // use a default subpattern
@@ -597,7 +597,7 @@ class Route
      */
     protected function isServerMatch($server)
     {
-        foreach ($this->require as $name => $regex) {
+        foreach ($this->tokens as $name => $regex) {
             
             // only honor all caps as $_SERVER keys
             if ($name !== strtoupper($name)) {

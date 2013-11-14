@@ -1,5 +1,4 @@
-- move $_SERVER matching requirements to a 'server' key? then rename 'require'
-  to 'tokens'.
+- move $_SERVER matching requirements to a 'server' key?
 
 - make generate() use ArrayObject in the callable, like is_match, and not
   return a replacement $data array?
@@ -41,7 +40,7 @@ $router->setResourceCallable(function ($router, $name, $path) {
     ));
     
     // the optional .format extension; note that ID is undefined
-    $router->setRequire(array(
+    $router->setTokens(array(
         'format' => '(\.[^/]+)?',
     ));
     
@@ -72,7 +71,7 @@ $router->setResourceCallable(function ($router, $name, $path) {
     
     // update an existing resource by ID
     $router->add('update', '/{id}', array(
-        'require' => array(
+        'tokens' => array(
             'REQUEST_METHOD' => 'PUT|PATCH'
         ),
     ));

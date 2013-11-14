@@ -26,7 +26,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router->add('before', '/foo');
         $this->router->attach('during:', '/during', function ($router) {
             $router->setNameParam('action');
-            $router->setRequire(array('id' => '\d+'));
+            $router->setTokens(array('id' => '\d+'));
             $router->setDefault(array('controller' => 'foo'));
             $router->setSecure(true);
             $router->setWildcard('other');
@@ -41,7 +41,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $before = $routes['before'];
         $this->assertIsRoute($before);
-        $this->assertSame(array(), $before->require);
+        $this->assertSame(array(), $before->tokens);
         $this->assertSame(array(), $before->default);
         $this->assertSame(null, $before->secure);
         $this->assertSame(null, $before->wildcard);
@@ -51,7 +51,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $during = $routes['during:bar'];
         $this->assertIsRoute($during);
-        $this->assertSame(array('id' => '\d+'), $during->require);
+        $this->assertSame(array('id' => '\d+'), $during->tokens);
         $this->assertSame(array('controller' => 'foo', 'action' => 'bar'), $during->default);
         $this->assertSame(true, $during->secure);
         $this->assertSame('other', $during->wildcard);
@@ -61,7 +61,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $after = $routes['after'];
         $this->assertIsRoute($after);
-        $this->assertSame(array(), $after->require);
+        $this->assertSame(array(), $after->tokens);
         $this->assertSame(array(), $after->default);
         $this->assertSame(null, $after->secure);
         $this->assertSame(null, $after->wildcard);
@@ -75,7 +75,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         $this->router->attach('resource:', '/resource', function ($router) {
             
-            $router->setRequire(array(
+            $router->setTokens(array(
                 'id' => '(\d+)',
             ));
             
@@ -199,7 +199,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         $this->router->attach('page:', '/page', function ($router) {
             
-            $router->setRequire(array(
+            $router->setTokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
             ));
@@ -222,7 +222,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testGetAndSetRoutes()
     {
         $this->router->attach('page:', '/page', function ($router) {
-            $router->setRequire(array(
+            $router->setTokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
             ));

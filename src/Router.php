@@ -89,7 +89,7 @@ class Router
 	protected $spec = array(
 	    'name'        => null,
 	    'path'        => null,
-	    'require'     => array(),
+	    'tokens'     => array(),
 	    'default'     => array(),
 	    'secure'      => null,
 	    'wildcard'    => null,
@@ -177,7 +177,7 @@ class Router
         $route = $this->route_factory->newInstance($full_path, $full_name);
         
         // set default specs
-        $route->setRequire($this->spec['require']);
+        $route->setTokens($this->spec['tokens']);
         $route->setDefault($this->spec['default']);
         $route->setSecure($this->spec['secure']);
         $route->setWildcard($this->spec['wildcard']);
@@ -216,7 +216,7 @@ class Router
     public function addGet($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addRequire(array('REQUEST_METHOD' => 'GET'));
+        $route->addTokens(array('REQUEST_METHOD' => 'GET'));
         return $route;
     }
     
@@ -234,7 +234,7 @@ class Router
     public function addDelete($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addRequire(array('REQUEST_METHOD' => 'DELETE'));
+        $route->addTokens(array('REQUEST_METHOD' => 'DELETE'));
         return $route;
     }
     
@@ -252,7 +252,7 @@ class Router
     public function addOptions($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addRequire(array('REQUEST_METHOD' => 'OPTIONS'));
+        $route->addTokens(array('REQUEST_METHOD' => 'OPTIONS'));
         return $route;
     }
     
@@ -270,7 +270,7 @@ class Router
     public function addPatch($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addRequire(array('REQUEST_METHOD' => 'PATCH'));
+        $route->addTokens(array('REQUEST_METHOD' => 'PATCH'));
         return $route;
     }
     
@@ -288,7 +288,7 @@ class Router
     public function addPost($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addRequire(array('REQUEST_METHOD' => 'POST'));
+        $route->addTokens(array('REQUEST_METHOD' => 'POST'));
         return $route;
     }
     
@@ -306,7 +306,7 @@ class Router
     public function addPut($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addRequire(array('REQUEST_METHOD' => 'PUT'));
+        $route->addTokens(array('REQUEST_METHOD' => 'PUT'));
         return $route;
     }
     
@@ -352,16 +352,16 @@ class Router
     
     /**
      * 
-     * Sets the regular expressions that params must match.
+     * Sets the regular expressions for param tokens.
      * 
-     * @param array $require Params are required to match these expressions.
+     * @param array $tokens The regular expressions for param tokens.
      * 
      * @return null
      * 
      */
-    public function setRequire(array $require)
+    public function setTokens(array $tokens)
     {
-        $this->spec['require'] = $require;
+        $this->spec['tokens'] = $tokens;
     }
     
     /**

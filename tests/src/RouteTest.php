@@ -56,7 +56,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnDynamicPath()
     {
         $route = $this->factory->newInstance('/{controller}/{action}/{id}{format}')
-            ->setRequire(array(
+            ->setTokens(array(
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'id' => '([0-9]+)',
@@ -83,7 +83,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
          * try one REQUEST_METHOD
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
-            ->setRequire(array(
+            ->setTokens(array(
                 'REQUEST_METHOD' => 'POST',
             ));
     
@@ -109,7 +109,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
          * try many REQUEST_METHOD
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
-            ->setRequire(array(
+            ->setTokens(array(
                 'REQUEST_METHOD' => 'GET|POST',
             ));
     
@@ -303,7 +303,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateControllerAsClosureIssue19()
     {
         $route = $this->factory->newInstance('/blog/{id}/edit')
-            ->setRequire(array(
+            ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
             ->setDefault(array(
@@ -322,7 +322,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerate()
     {
         $route = $this->factory->newInstance('/blog/{id}/edit')
-            ->setRequire(array(
+            ->setTokens(array(
                 'id' => '([0-9]+)',
             ));
         
@@ -333,7 +333,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithClosure()
     {
         $route = $this->factory->newInstance('/blog/{id}/edit')
-            ->setRequire(array(
+            ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
             ->setGenerateCallable(function($route, $data) {
@@ -348,7 +348,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithCallback()
     {
         $route = $this->factory->newInstance('/blog/{id}/edit')
-            ->setRequire(array(
+            ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
             ->setGenerateCallable(array($this, 'callbackForGenerate'));
@@ -360,7 +360,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithWildcard()
     {
         $route = $this->factory->newInstance('/blog/{id}')
-            ->setRequire(array(
+            ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
             ->setWildcard('other');
@@ -399,7 +399,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
         $route = $this->factory->newInstance('/{controller}/{action}/{id}{format}')
-            ->setRequire(array(
+            ->setTokens(array(
                 'action' => '(browse|read|edit|add|delete)',
                 'id' => '(\d+)',
                 'format' => '(\.[^/]+)?',
@@ -500,7 +500,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         
         $route = $this->factory->newInstance('/blog/read/{id}{format}')
-            ->setRequire(array(
+            ->setTokens(array(
                 'id' => '(\d+)',
                 'format' => '(\.json|\.html)?',
             ))
@@ -574,7 +574,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testCaptureServerParams()
     {
         $route = $this->factory->newInstance('/foo')
-            ->setRequire(array(
+            ->setTokens(array(
                 'HTTP_ACCEPT' => '(application/xml(;q=(1\.0|0\.[1-9]))?)|(application/json(;q=(1\.0|0\.[1-9]))?)',
             ));
         

@@ -82,7 +82,7 @@ $router->add(null, '/{controller}/{action}/{id}');
 
 // add a named route with an extended specification
 $router->add('read', '/blog/read/{id}{format}')
-    ->addRequire(array(
+    ->addTokens(array(
         'id'     => '\d+',
         'format' => '(\.[^/]+)?',
     ))
@@ -210,15 +210,15 @@ data keys without matching params, those values will not be added to the path.
 
 You can extend a route specification with the following methods:
 
-- `addRequire()` -- Adds regular expression subpatterns that params must
+- `addTokens()` -- Adds regular expression subpatterns that params must
   match; these include `$_SERVER` values. For example:
         
-        addRequire(array(
+        addTokens(array(
             'id' => '\d+',
             'REQUEST_METHOD' => 'GET|POST',
         ))
     
-    Note that `setRequire()` is also available, but this will replace any
+    Note that `setTokens()` is also available, but this will replace any
     previous subpatterns entirely, instead of merging with the existing
     subpatterns.
         
@@ -260,7 +260,7 @@ Here is a full extended route specification named `read`:
 ```php
 <?php
 $route = $router->add('read', '/blog/read/{id}{format}');
-$route->addRequire(array(
+$route->addTokens(array(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
         'REQUEST_METHOD' => 'GET|POST',
@@ -299,8 +299,8 @@ methods; the values will apply to all routes added thereafter.
 
 ```php
 <?php
-// set the default 'require' expressions
-$router->setRequire(array(
+// set the default 'tokens' expressions
+$router->setTokens(array(
     'id' => '\d+',
 ));
 
@@ -365,7 +365,7 @@ following extended route:
 ```php
 <?php
 $router->add('archive', '/archive/{year}/{month}/{day}')
-    ->addRequire(array(
+    ->addTokens(array(
         'year'  => '[^/]+',
         'month' => '[^/]+',
         'day'   => '[^/]+',
@@ -384,7 +384,7 @@ path. For example:
 ```php
 <?php
 $router->add('archive', '/archive{/year,month,day}')
-    ->addRequire(array(
+    ->addTokens(array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
@@ -419,7 +419,7 @@ first missing one:
 ```php
 <?php
 $router->add('archive', '/archive{/year,month,day}')
-    ->addRequire(array(
+    ->addTokens(array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
@@ -494,7 +494,7 @@ $path_prefix = '/blog';
 $router->attach($name_prefix, $path_prefix, function ($router) {
     
     $router->add('browse', '{format}')
-        ->addRequire(array(
+        ->addTokens(array(
             'format' => '(\.json|\.atom|\.html)?'
         ))
         ->addDefault(array(
@@ -502,7 +502,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
         ));
     
     $router->add('read', '/{id}{format}', array(
-        ->addRequire(array(
+        ->addTokens(array(
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
         )),
@@ -511,7 +511,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
         ));
     
     $router->add('edit', '/{id}/edit{format}', array(
-        ->addRequire(array(
+        ->addTokens(array(
             'id' => '\d+',
             'format' => '(\.json|\.atom)?'
         ))
@@ -541,7 +541,7 @@ $path_prefix = '/blog';
 
 $router->attach($name_prefix, $path_prefix, function ($router) {
     
-    $router->setRequire(array(
+    $router->setTokens(array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?'
     ));
@@ -606,7 +606,7 @@ param to dispatch it.
 ```php
 <?php
 $router->add('read', '/blog/read/{id}{format}')
-    ->addRequire(array(
+    ->addTokens(array(
 		'id' => '\d+',
         'format' => '(\.[^/]+)?',
 	))
