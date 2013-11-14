@@ -13,7 +13,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
     protected function newRouter($attach = null)
     {
-        return new Router(new RouteFactory);
+        return new Router(new RouteCollection(new RouteFactory));
     }
     
     protected function assertIsRoute($actual)
@@ -52,7 +52,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'tokens' => array(),
             'server' => array(),
-            'values' => array('action' => 'before'),
+            'values' => array('controller' => null, 'action' => 'before'),
             'secure' => null,
             'wildcard' => null,
             'routable' => true,
@@ -61,7 +61,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertRoute($expect, $routes['before']);
         
-        $expect['values'] = array('action' => 'after');
+        $expect['values']['action'] = 'after';
         $this->assertRoute($expect, $routes['after']);
         
         $actual = $routes['during.bar'];
@@ -233,7 +233,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         });
         
         $actual = $this->router->getRoutes();
-        $this->assertTrue(is_array($actual));
+        $this->assertInstanceOf('Aura\Router\RouteCollection', $actual);
         $this->assertTrue(count($actual) == 2);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
@@ -248,7 +248,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $router = $this->newRouter();
         $router->setRoutes($restored);
         $actual = $router->getRoutes();
-        $this->assertTrue(is_array($actual));
+        $this->assertInstanceOf('Aura\Router\RouteCollection', $actual);
         $this->assertTrue(count($actual) == 2);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);

@@ -63,7 +63,7 @@ class AbstractSpec
      */
     public function addTokens(array $tokens)
     {
-        $this->spec['tokens'] = $this->merge($this->spec['tokens'], $tokens);
+        $this->spec['tokens'] = array_merge($this->spec['tokens'], $tokens);
         $this->regex = null;
         return $this;
     }
@@ -94,7 +94,7 @@ class AbstractSpec
      */
     public function addServer(array $server)
     {
-        $this->spec['server'] = $this->merge($this->spec['server'], $server);
+        $this->spec['server'] = array_merge($this->spec['server'], $server);
         $this->regex = null;
         return $this;
     }
@@ -125,7 +125,7 @@ class AbstractSpec
      */
     public function addValues(array $values)
     {
-        $this->spec['values'] = $this->merge($this->spec['values'], $values);
+        $this->spec['values'] = array_merge($this->spec['values'], $values);
         return $this;
     }
     
@@ -206,28 +206,4 @@ class AbstractSpec
         $this->spec['generate'] = $generate;
         return $this;
     }
-    
-    /**
-     * 
-     * A custom array merge function; if the new value is null, unset the old
-     * array element entirely.
-     * 
-     * @param array $old The old array.
-     * 
-     * @param array $new The new array to be merged in.
-     * 
-     * @return array The old array with new merged elements.
-     * 
-     */
-    protected function merge($old, $new)
-    {
-        // replace old values with new ones; a null unsets the old element
-        foreach ($new as $key => $val) {
-            $old[$key] = $val;
-            if ($val === null) {
-                unset($old[$key]);
-            }
-        }
-        return $old;
-    }    
 }
