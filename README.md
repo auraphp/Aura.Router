@@ -55,9 +55,10 @@ Instantiate a _Router_ like so:
 ```php
 <?php
 use Aura\Router\Router;
+use Aura\Router\RouteCollection;
 use Aura\Router\RouteFactory;
 
-$router = new Router(new RouteFactory);
+$router = new Router(new RouteCollection(new RouteFactory));
 ?>
 ```
 
