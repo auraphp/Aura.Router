@@ -585,18 +585,19 @@ $router->attachResource('blog', '/blog');
 
 That method call will result in the following routes being added:
 
-| Route Name    | HTTP Method   | Route Path            | Route Values                      |
-| ------------- | ------------- | --------------------- | --------------------------------- |
-| blog.browse   | GET           | /blog{format}         | controller=>blog, action=>browse  |
-| blog.read     | GET           | /blog/{id}{format}    | controller=>blog, action=>read    |
-| blog.edit     | GET           | /blog/{id}/edit       | controller=>blog, action=>edit    |
-| blog.add      | GET           | /blog/add             | controller=>blog, action=>add     |
-| blog.delete   | DELETE        | /blog/{id}            | controller=>blog, action=>delete  |
-| blog.create   | POST          | /blog                 | controller=>blog, action=>create  |
-| blog.update   | PUT or PATCH  | /blog/{id}            | controller=>blog, action=>update  |
+| Route Name    | HTTP Method   | Route Path            | Route Values                      | Purpose
+| ------------- | ------------- | --------------------- | --------------------------------- | -------
+| blog.browse   | GET           | /blog{format}         | controller=>blog, action=>browse  | Browse multiple resources
+| blog.read     | GET           | /blog/{id}{format}    | controller=>blog, action=>read    | Read a single resource
+| blog.edit     | GET           | /blog/{id}/edit       | controller=>blog, action=>edit    | The form for editing a resource
+| blog.add      | GET           | /blog/add             | controller=>blog, action=>add     | The form for adding a resource
+| blog.delete   | DELETE        | /blog/{id}            | controller=>blog, action=>delete  | Delete a single resource
+| blog.create   | POST          | /blog                 | controller=>blog, action=>create  | Create a new resource
+| blog.update   | PUT or PATCH  | /blog/{id}            | controller=>blog, action=>update  | Update an existing resource
 
 The `{id}` token is any series of non-slash characters, and the `{format}`
 token is an optional dot-format file extension (including the dot itself).
+
 
 If you want calls to `attachResource()` to create REST routes in a different
 way, use the `setResourceCallable()` method to your own callable:
