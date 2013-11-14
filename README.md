@@ -295,7 +295,7 @@ $route->addTokens(array(
         return true;
         
     })
-    ->setGenerate(\ArrayObject $data) {
+    ->setGenerate(function (\ArrayObject $data) {
         $data['foo'] = 'bar';
     });
 ?>
