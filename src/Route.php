@@ -170,6 +170,8 @@ class Route
      * @param string $path The path for this Route with param token
      * placeholders.
      * 
+     * @param string $name The name for this route.
+     * 
      */
     public function __construct($path, $name = null)
     {
@@ -207,7 +209,8 @@ class Route
 
     /**
      * 
-     * Sets the regular expressions that params must match.
+     * Sets the regular expressions that params must match, replacing all
+     * previous values.
      * 
      * @param array $require Params are required to match these expressions.
      * 
@@ -220,6 +223,15 @@ class Route
         return $this->addRequire($require);
     }
     
+    /**
+     * 
+     * Merges with the existing regular expressions that params must match.
+     * 
+     * @param array $require Params are required to match these expressions.
+     * 
+     * @return $this
+     * 
+     */
     public function addRequire(array $require)
     {
         $this->require = array_merge($this->require, $require);
@@ -229,7 +241,7 @@ class Route
     
     /**
      * 
-     * Sets the default values for params.
+     * Sets the default values for params, replacing all previous values.
      * 
      * @param array $default Default values for params.
      * 
@@ -242,6 +254,15 @@ class Route
         return $this->addDefault($default);
     }
     
+    /**
+     * 
+     * Merges with the existing default values for params.
+     * 
+     * @param array $default Default values for params.
+     * 
+     * @return $this
+     * 
+     */
     public function addDefault(array $default)
     {
         $this->default = array_merge($this->default, $default);

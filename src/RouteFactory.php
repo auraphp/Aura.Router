@@ -44,7 +44,9 @@ class RouteFactory
      * 
      * Returns a new Route instance.
      * 
-     * @param array $spec The Route specification.
+     * @param string $path The path for the route.
+     * 
+     * @param string $name The name for the route.
      * 
      * @return Route
      * 
