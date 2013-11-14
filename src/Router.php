@@ -64,7 +64,7 @@ class Router extends AbstractSpec
      */
     public function __call($func, $args)
     {
-        return call_user_func_array([$this->routes, $func], $args);
+        return call_user_func_array(array($this->routes, $func), $args);
     }
     
     /**
