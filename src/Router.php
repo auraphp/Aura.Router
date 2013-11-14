@@ -123,7 +123,7 @@ class Router extends AbstractSpec
      * 
      * @param array $routes Use this array of route objects.
      * 
-     * @return $this
+     * @return null
      * 
      * @see getRoutes()
      * 
@@ -137,7 +137,7 @@ class Router extends AbstractSpec
      * 
      * Gets the route collection.
      * 
-     * @return array
+     * @return RouteCollection
      * 
      * @see setRoutes()
      * 
