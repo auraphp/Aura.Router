@@ -572,14 +572,14 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
 ?>
 ```
 
-### Attaching REST Resources
+### Attaching REST Resource Routes
 
-The router can attach a series of REST resources for you with the
+The router can attach a series of REST resource routes for you with the
 `attachResource()` method:
 
 ```php
 <?php
-$router->attach('blog', '/blog');
+$router->attachResource('blog', '/blog');
 ?>
 ```
 
