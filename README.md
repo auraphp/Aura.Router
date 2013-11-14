@@ -605,16 +605,18 @@ create them.
 ```php
 <?php
 $router->setResourceCallable(function ($router) {
-    $router->addPost('create', '');
-    $router->addGet('read', '/{id}');
-    $router->addPost('update', '/{id}');
-    $router->addPost('delete', '/{id}');
+    $router->setNameParam('method_name');
+    $router->addGet('get', '');
+    $router->addPost('post', '/{id}');
+    $router->addPut('put', '/{id}');
+    $router->addPatch('patch', '/{id}');
+    $router->addPatch('delete', '/{id}');
 });
 ?>
 ```
 
-That example will cause only 4 routes to be added for the resource when you
-call `attachResource()`, and will not set default controller or action values.
+That example will cause 5 routes to be added for the resource when you call
+`attachResource()`, and will set the `method_name` param to the route name.
 
 
 ### Caching Route Information
