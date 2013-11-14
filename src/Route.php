@@ -198,7 +198,13 @@ class Route extends AbstractSpec
         
         // use a callable to modify the data?
         if ($this->spec['generate']) {
-            $data = call_user_func($this->spec['generate'], $this, (array) $data);
+            // pass the data as an object, not as an array, so we can avoid
+            // tricky hacks for references
+            $arrobj = new ArrayObject($data);
+            // modify
+            call_user_func($this->spec['generate'], $arrobj);
+            // convert back to array
+            $data = $arrobj->getArrayCopy();
         }
         
         // replacements for single tokens
@@ -453,11 +459,13 @@ class Route extends AbstractSpec
 
         // pass the matches as an object, not as an array, so we can avoid
         // tricky hacks for references
-        $matches = new ArrayObject($this->matches);
-        $result = call_user_func($this->spec['is_match'], $server, $matches);
+        $arrobj = new ArrayObject($this->matches);
+        
+        // attempt the match
+        $result = call_user_func($this->spec['is_match'], $server, $arrobj);
 
         // convert back to array
-        $this->matches = $matches->getArrayCopy();
+        $this->matches = $arrobj->getArrayCopy();
 
         // did it match?
         if (! $result) {

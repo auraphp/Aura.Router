@@ -262,8 +262,8 @@ You can extend a route specification with the following methods:
   path.
 
 - `setGenerateCallable()` -- A custom callable with the signature
-  `function(\Aura\Router\Route $route, array $data)` that returns a modified
-  `$data` array to be used when generating the path.
+  `function(\ArrayObject $data)`. This allows developers to modify the data
+  for path interpolation.
 
 Here is a full extended route specification named `read`:
 

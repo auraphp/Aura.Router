@@ -336,9 +336,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
-            ->setGenerateCallable(function($route, $data) {
+            ->setGenerateCallable(function(ArrayObject $data) {
                 $data['id'] = 99;
-                return $data;
             });
         
         $url = $route->generate(array('id' => 42, 'foo' => 'bar'));
@@ -390,10 +389,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/archive/foo/1979/11', $url);
     }
     
-    public function callbackForGenerate(\Aura\Router\Route $route, array $data)
+    public function callbackForGenerate(ArrayObject $data)
     {
         $data['id'] = 99;
-        return $data;
     }
     
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
