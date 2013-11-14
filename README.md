@@ -598,9 +598,9 @@ That method call will result in the following routes being added:
 The `{id}` token is any series of non-slash characters, and the `{format}`
 token is an optional dot-format file extension (including the dot itself).
 
-
-If you want calls to `attachResource()` to create REST routes in a different
-way, use the `setResourceCallable()` method to your own callable:
+If you want calls to `attachResource()` to create a different series of REST
+routes, use the `setResourceCallable()` method to set your own callable to
+create them.
 
 ```php
 <?php
