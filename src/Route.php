@@ -227,8 +227,8 @@ class Route
      */
     public function setTokens(array $tokens)
     {
-        $this->tokens = array();
-        return $this->addTokens($tokens);
+        $this->tokens = $tokens;
+        return $this;
     }
     
     /**
@@ -242,7 +242,7 @@ class Route
      */
     public function addTokens(array $tokens)
     {
-        $this->tokens = array_merge($this->tokens, $tokens);
+        $this->tokens = $this->merge($this->tokens, $tokens);
         $this->regex = null;
         return $this;
     }
@@ -259,8 +259,8 @@ class Route
      */
     public function setServer(array $server)
     {
-        $this->server = array();
-        return $this->addServer($server);
+        $this->server = $server;
+        return $this;
     }
     
     /**
@@ -274,7 +274,7 @@ class Route
      */
     public function addServer(array $server)
     {
-        $this->server = array_merge($this->server, $server);
+        $this->server = $this->merge($this->server, $server);
         $this->regex = null;
         return $this;
     }
@@ -290,8 +290,8 @@ class Route
      */
     public function setValues(array $values)
     {
-        $this->values = array();
-        return $this->addValues($values);
+        $this->values = $values;
+        return $this;
     }
     
     /**
@@ -305,7 +305,7 @@ class Route
      */
     public function addValues(array $values)
     {
-        $this->values = array_merge($this->values, $values);
+        $this->values = $this->merge($this->values, $values);
         return $this;
     }
     
@@ -756,4 +756,28 @@ class Route
             }
         }
     }
+    
+    /**
+     * 
+     * A custom array merge function; if the new value is null, unset the old
+     * array element entirely.
+     * 
+     * @param array $old The old array.
+     * 
+     * @param array $new The new array to be merged in.
+     * 
+     * @return array The old array with new merged elements.
+     * 
+     */
+    protected function merge($old, $new)
+    {
+        // replace old values with new ones; a null unsets the old element
+        foreach ($new as $key => $val) {
+            $old[$key] = $val;
+            if ($val === null) {
+                unset($old[$key]);
+            }
+        }
+        return $old;
+    }    
 }

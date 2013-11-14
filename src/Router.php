@@ -32,37 +32,6 @@ class Router
 
     /**
      * 
-     * Prefix route names with this name.
-     * 
-     * @var string
-     * 
-     * @see attach()
-     * 
-     */
-    protected $name_prefix;
-    
-    /**
-     * 
-     * Capture the un-prefixed route name as a default value for this param.
-     * 
-     * @var string
-     * 
-     */
-    protected $name_param;
-    
-    /**
-     * 
-     * Prefix route paths with this path.
-     * 
-     * @var string
-     * 
-     * @see attach()
-     * 
-     */
-    protected $path_prefix;
-    
-    /**
-     * 
      * A RouteFactory for creating route objects.
      * 
      * @var RouteFactory
@@ -91,13 +60,16 @@ class Router
 	    'path'        => null,
 	    'tokens'      => array(),
 	    'server'      => array(),
-	    'values'     => array(),
+	    'values'      => array(),
 	    'secure'      => null,
 	    'wildcard'    => null,
 	    'routable'    => true,
 	    'is_match'    => null,
 	    'generate'    => null,
 	    'name_param'  => null,
+	    'name_delim'  => '.',
+	    'name_prefix' => null,
+	    'path_prefix' => null,
 	);
 	
     /**
@@ -110,8 +82,14 @@ class Router
     public function __construct(RouteFactory $route_factory)
     {
         $this->route_factory = $route_factory;
+        $this->setResourceCallable(array($this, 'resourceCallable'));
     }
-
+    
+    public function setResourceCallable($resource)
+    {
+        $this->resource = $resource;
+    }
+    
     /**
      * 
      * Sets the array of route objects to use.
@@ -157,6 +135,30 @@ class Router
 
     /**
      * 
+     * Gets the current name prefix for routes.
+     * 
+     * @return string
+     * 
+     */
+    public function getNamePrefix()
+    {
+        return $this->spec['name_prefix'];
+    }
+    
+    /**
+     * 
+     * Returns the curent path prefix for routes.
+     * 
+     * @return string
+     * 
+     */
+    public function getPathPrefix()
+    {
+        return $this->spec['path_prefix'];
+    }
+    
+    /**
+     * 
      * Adds a route.
      * 
      * @param string $name The route name.
@@ -169,10 +171,12 @@ class Router
     public function add($name, $path)
     {
         // build a full name with prefix, but only if name is given
-        $full_name = ($name) ? $this->name_prefix . $name : $name;
+        $full_name = ($this->spec['name_prefix'] && $name)
+                   ? $this->spec['name_prefix'] . $this->spec['name_delim'] . $name
+                   : $name;
         
         // build a full path with prefix
-        $full_path = $this->path_prefix . $path;
+        $full_path = $this->getPathPrefix() . $path;
         
         // create the route with the full path and name
         $route = $this->route_factory->newInstance($full_path, $full_name);
@@ -314,13 +318,13 @@ class Router
     
     /**
      * 
-     * Attaches routes to a specific path prefix and prefixes the attached 
+     * Attaches routes to a specific path prefix, and prefixes the attached 
      * route names.
      * 
-     * @param string $name_prefix The prefix for all route names being
+     * @param string $name The prefix for all route names being
      * attached.
      * 
-     * @param string $path_prefix The prefix for all route paths being
+     * @param string $path The prefix for all route paths being
      * attached.
      * 
      * @param callable $callable A callable that uses the Router to add new
@@ -330,24 +334,42 @@ class Router
      * @return null
      * 
      */
-    public function attach($name_prefix, $path_prefix, $callable)
+    public function attach($name, $path, $callable)
     {
-        // save previous values
-        $old_name_prefix = $this->name_prefix;
-        $old_path_prefix = $this->path_prefix;
-        $old_spec        = $this->spec;
+        // save current spec
+        $old_spec = $this->spec;
         
-        // append to the current prefixes
-        $this->name_prefix .= $name_prefix;
-        $this->path_prefix .= $path_prefix;
+        // append to the name prefix, with delmiter if needed
+        if ($this->spec['name_prefix']) {
+            $this->spec['name_prefix'] .= $this->spec['name_delim'];
+        }
+        $this->spec['name_prefix'] .= $name;
+        
+        // append to the path prefix
+        $this->spec['path_prefix'] .= $path;
         
         // invoke the callable, passing this Router as the only param
         call_user_func($callable, $this);
         
-        // restore previous values which the callable may have modified
-        $this->name_prefix = $old_name_prefix;
-        $this->path_prefix = $old_path_prefix;
-        $this->spec        = $old_spec;
+        // restore previous spec
+        $this->spec = $old_spec;
+    }
+    
+    /**
+     * 
+     * Use the `$resourceCallable` to attach a resource.
+     * 
+     * @param string $name The resource name; used as a route name prefix.
+     * 
+     * @param string $path The path to the resource; used as a route path
+     * prefix.
+     * 
+     * @return null
+     * 
+     */
+    public function attachResource($name, $path)
+    {
+        $this->attach($name, $path, $this->resource);
     }
     
     /**
@@ -483,6 +505,20 @@ class Router
     
     /**
      * 
+     * Sets the delmiter between the route name prefix and the route name.
+     * 
+     * @param string $name_delim The delimiter to use.
+     * 
+     * @return null
+     * 
+     */
+    public function setNameDelim($name_delim)
+    {
+        $this->spec['name_delim'] = $name_delim;
+    }
+    
+    /**
+     * 
      * Gets a route that matches a given path and other server conditions.
      * 
      * @param string $path The path to match against.
@@ -529,5 +565,78 @@ class Router
         }
         
         return $this->routes[$name]->generate($data);
+    }
+    
+    /**
+     * 
+     * Callable for `attachResource()` that adds resource routes.
+     * 
+     * @param Router $router A Router instance, probably $this.
+     * 
+     * @return null
+     * 
+     */
+    protected function resourceCallable(Router $router)
+    {
+        // use the route name as the action param
+        $router->setNameParam('action');
+
+        // browse the resources, optionally in a format.
+        // can double for search when a query string is passed.
+        $router->addGet('browse', '{format}')
+            ->addTokens(array(
+                'format' => '(\.[^/]+)?',
+            ))
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ));
+
+        // get a single resource by ID, optionally in a format
+        $router->addGet('read', '/{id}{format}')
+            ->addTokens(array(
+                'format' => '(\.[^/]+)?',
+            ))
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ));
+
+        // add a new resource and get back its location
+        $router->addPost('add', '')
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ));
+
+        // get the form for an existing resource by ID, optionally in a format
+        $router->addGet('edit', '/{id}/edit{format}')
+            ->addTokens(array(
+                'format' => '(\.[^/]+)?',
+            ))
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ));
+
+        // delete a resource by ID
+        $router->addDelete('delete', '/{id}')
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ));
+
+        // get the form for a new resource
+        $router->addGet('new', '/new')
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ));
+
+        // update an existing resource by ID
+        $router->add('update', '/{id}')
+            ->addValues(array(
+                'controller' => $router->getNamePrefix(),
+            ))
+            ->addServer(array(
+                'REQUEST_METHOD' => 'PUT|PATCH'
+            ));
+        
+        // done!
+        return;
     }
 }

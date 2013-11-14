@@ -77,5 +77,35 @@ $router->setResourceCallable(function ($router, $name, $path) {
 
 $router->addResource('blogs', '/api/v1/blogs');
 $router->addResource('blogs_comments', '/api/v1/blogs/{blog_id}/comments');
+
+$router->attachResource('blogs', '/api/v1/blogs');
+
+$router->setResourceRoutes(array(
+    function ($router) {
+        $router->addGet('browse', '{format}');
+    },
+    function ($router) {
+        $router->addGet('read', '/{id}{format}');
+    },
+    function ($router) {
+        $router->addPost('add', '');
+    },
+    function ($router) {
+        $router->addGet('edit', '/{id}/edit{format}');
+    },
+    function ($router) {
+        $router->addDelete('delete', '/{id}');
+    },
+    function ($router) {
+        $router->addGet('new', '/new');
+    },
+    function ($router) {
+        $router->add('update', '/{id}')
+            ->addServer(array(
+                'tokens' => array(
+                    'REQUEST_METHOD' => 'PUT|PATCH'
+            ));
+    },
+));
 ?>
 ```
