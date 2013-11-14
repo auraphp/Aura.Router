@@ -96,6 +96,7 @@ class Router
 	    'routable'    => true,
 	    'is_match'    => null,
 	    'generate'    => null,
+	    'name_param'  => null,
 	);
 	
     /**
@@ -155,22 +156,6 @@ class Router
 
     /**
      * 
-     * Sets the param into which the un-prefixed route name should be
-     * captured.
-     * 
-     * @param string $name_param The param into which the name should be
-     * captured.
-     * 
-     * @return null
-     * 
-     */
-    public function useNameAsParam($name_param)
-    {
-        $this->name_param = $name_param;
-    }
-    
-    /**
-     * 
      * Adds a route.
      * 
      * @param string $name The route name.
@@ -180,26 +165,31 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function add($name, $path, array $spec = array())
+    public function add($name, $path)
     {
-        // merge with default route spec
-        $spec = array_merge_recursive($this->spec, $spec);
+        // build a full name with prefix, but only if name is given
+        $full_name = ($name) ? $this->name_prefix . $name : $name;
         
-        // add the name prefix, but only if a name is given
-        $spec['name'] = ($name) ? $this->name_prefix . $name : $name;
+        // build a full path with prefix
+        $full_path = $this->path_prefix . $path;
         
-        // always add the path prefix
-        $spec['path'] = $this->path_prefix . $path;
+        // create the route with the full path and name
+        $route = $this->route_factory->newInstance($full_path, $full_name);
         
-        // capture the un-prefixed name as a default param value
-        $capture = $this->name_param
-                && ! isset($spec['default'][$this->name_param]);
-        if ($capture) {
-            $spec['default'][$this->name_param] = $name;
+        // set default specs
+        $route->setRequire($this->spec['require']);
+        $route->setDefault($this->spec['default']);
+        $route->setSecure($this->spec['secure']);
+        $route->setWildcard($this->spec['wildcard']);
+        $route->setRoutable($this->spec['routable']);
+        $route->setIsMatchCallable($this->spec['is_match']);
+        $route->setGenerateCallable($this->spec['generate']);
+        
+        // capture the un-prefixed name as a default param value?
+        $name_param = $this->spec['name_param'];
+        if ($name_param && ! isset($route->default[$name_param])) {
+            $route->addDefault(array($name_param => $name));
         }
-        
-        // create the route
-        $route = $this->route_factory->newInstance($spec);
         
         // add the route under its full name
         if (! $route->name) {
@@ -223,10 +213,11 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function addGet($name, $path, array $spec = array())
+    public function addGet($name, $path)
     {
-        $spec['require']['REQUEST_METHOD'] = 'GET';
-        return $this->add($name, $path, $spec);
+        $route = $this->add($name, $path);
+        $route->addRequire(array('REQUEST_METHOD' => 'GET'));
+        return $route;
     }
     
     /**
@@ -240,10 +231,11 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function addDelete($name, $path, array $spec = array())
+    public function addDelete($name, $path)
     {
-        $spec['require']['REQUEST_METHOD'] = 'DELETE';
-        return $this->add($name, $path, $spec);
+        $route = $this->add($name, $path);
+        $route->addRequire(array('REQUEST_METHOD' => 'DELETE'));
+        return $route;
     }
     
     /**
@@ -257,10 +249,11 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function addOptions($name, $path, array $spec = array())
+    public function addOptions($name, $path)
     {
-        $spec['require']['REQUEST_METHOD'] = 'OPTIONS';
-        return $this->add($name, $path, $spec);
+        $route = $this->add($name, $path);
+        $route->addRequire(array('REQUEST_METHOD' => 'OPTIONS'));
+        return $route;
     }
     
     /**
@@ -274,10 +267,11 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function addPatch($name, $path, array $spec = array())
+    public function addPatch($name, $path)
     {
-        $spec['require']['REQUEST_METHOD'] = 'PATCH';
-        return $this->add($name, $path, $spec);
+        $route = $this->add($name, $path);
+        $route->addRequire(array('REQUEST_METHOD' => 'PATCH'));
+        return $route;
     }
     
     /**
@@ -291,10 +285,11 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function addPost($name, $path, array $spec = array())
+    public function addPost($name, $path)
     {
-        $spec['require']['REQUEST_METHOD'] = 'POST';
-        return $this->add($name, $path, $spec);
+        $route = $this->add($name, $path);
+        $route->addRequire(array('REQUEST_METHOD' => 'POST'));
+        return $route;
     }
     
     /**
@@ -308,10 +303,11 @@ class Router
      * @return Route The newly-added route object.
      * 
      */
-    public function addPut($name, $path, array $spec = array())
+    public function addPut($name, $path)
     {
-        $spec['require']['REQUEST_METHOD'] = 'PUT';
-        return $this->add($name, $path, $spec);
+        $route = $this->add($name, $path);
+        $route->addRequire(array('REQUEST_METHOD' => 'PUT'));
+        return $route;
     }
     
     /**
@@ -453,6 +449,22 @@ class Router
     public function setGenerateCallable($generate)
     {
         $this->spec['generate'] = $generate;
+    }
+    
+    /**
+     * 
+     * Sets the param into which the un-prefixed route name should be
+     * captured.
+     * 
+     * @param string $name_param The param into which the name should be
+     * captured.
+     * 
+     * @return null
+     * 
+     */
+    public function setNameParam($name_param)
+    {
+        $this->spec['name_param'] = $name_param;
     }
     
     /**

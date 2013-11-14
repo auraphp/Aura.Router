@@ -28,25 +28,6 @@ class RouteFactory
      */
     protected $class = 'Aura\Router\Route';
     
-    /**
-	 * 
-	 * A default specification array.
-	 * 
-	 * @var array
-	 * 
-	 */
-	protected $spec = array(
-	    'name'        => null,
-	    'path'        => null,
-	    'require'     => array(),
-	    'default'     => array(),
-	    'secure'      => null,
-	    'wildcard'    => null,
-	    'routable'    => true,
-	    'is_match'    => null,
-	    'generate'    => null,
-	);
-	
 	/**
 	 * 
 	 * Constructor.
@@ -68,18 +49,9 @@ class RouteFactory
      * @return Route
      * 
      */
-    public function newInstance(array $spec = array())
+    public function newInstance($path, $name = null)
     {
-        $spec = array_merge($this->spec, $spec);
         $class = $this->class;
-        $route = new $class($spec['name'], $spec['path']);
-        $route->setRequire((array) $spec['require'])
-              ->setDefault((array) $spec['default'])
-              ->setSecure($spec['secure'])
-              ->setWildcard($spec['wildcard'])
-              ->setRoutable($spec['routable'])
-              ->setIsMatchCallable($spec['is_match'])
-              ->setGenerateCallable($spec['generate']);
-        return $route;
+        return new $class($path, $name);
     }
 }

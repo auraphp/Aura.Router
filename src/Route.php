@@ -121,7 +121,7 @@ class Route
      * @var bool
      * 
      */
-    protected $routable;
+    protected $routable = true;
 
     /**
      * 
@@ -171,10 +171,10 @@ class Route
      * placeholders.
      * 
      */
-    public function __construct($name, $path)
+    public function __construct($path, $name = null)
     {
-        $this->name = $name;
         $this->path = $path;
+        $this->name = $name;
     }
 
     /**

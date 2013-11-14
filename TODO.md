@@ -1,9 +1,8 @@
-- get rid of array keys in Route and use only methods
+- move $_SERVER matching requirements to a 'server' key? then rename 'require'
+  to 'tokens'.
 
 - make generate() use ArrayObject in the callable, like is_match, and not
   return a replacement $data array?
-
-- move $_SERVER matching requirements to a 'server' key?
 
 - addResource() and setResourceCallable() method
 
@@ -50,7 +49,7 @@ $router->setResourceCallable(function ($router, $name, $path) {
     $path = rtrim($path, '/');
     
     // use the route name as the action param
-    $router->useNameAsParam('action');
+    $router->setNameParam('action');
     
     // browse the resources, optionally in a format.
     // can double for search when a query string is passed.

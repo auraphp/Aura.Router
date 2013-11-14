@@ -25,7 +25,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         $this->router->add('before', '/foo');
         $this->router->attach('during:', '/during', function ($router) {
-            $router->useNameAsParam('action');
+            $router->setNameParam('action');
             $router->setRequire(array('id' => '\d+'));
             $router->setDefault(array('controller' => 'foo'));
             $router->setSecure(true);
@@ -83,13 +83,13 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'resource',
             ));
             
-            $router->useNameAsParam('action');
+            $router->setNameParam('action');
             
-            $router->addGet(null, '/', array(
-                'default' => array(
-                    'action' => 'browse',
-                ),
-            ));
+            $router->addGet(null, '/')
+                ->addDefault(array(
+                    'action' => 'browse'
+                ));
+                
             $router->addGet('read', '/{id}');
             $router->addPost('edit', '/{id}');
             $router->addPut('add', '/{id}');

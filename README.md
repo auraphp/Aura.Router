@@ -80,18 +80,17 @@ $router->add('home', '/');
 // add a simple unnamed route with params
 $router->add(null, '/{controller}/{action}/{id}');
 
-// add a complex named route
-$router->add('read', '/blog/read/{id}{format}', array(
-    'require' => array(
+// add a named route with an extended specification
+$router->add('read', '/blog/read/{id}{format}')
+    ->addRequire(array(
         'id'     => '\d+',
         'format' => '(\.[^/]+)?',
-    ),
-    'default' => array(
+    ))
+    ->addDefault(array(
         'controller' => 'blog',
         'action'     => 'read',
         'format'     => '.html',
-    ),
-));
+    ));
 ?>
 ```
 
@@ -207,146 +206,66 @@ data keys without matching params, those values will not be added to the path.
 
 ## Advanced Usage
 
-### As a Micro-Framework
+### Extended Route Specification
 
-Sometimes you may wish to use the _Router_ as a micro-framework. This is 
-possible by assigning a `callable` as a default param value, then calling that
-param to dispatch it.
+You can extend a route specification with the following methods:
 
-```php
-<?php
-$router->add('read', '/blog/read/{id}{format}', array(
-	'require' => array(
-		'id' => '\d+',
-        'format' => '(\.[^/]+)?',
-	),
-	'default' => array(
-		'controller' => function ($params) {
-		    if ($params['format'] == '.json') {
-    			$id = (int) $params['id'];
-		        header('Content-Type: application/json');
-		        echo json_encode(['id' => $id]);
-		    } else {
-    			$id = (int) $params['id'];
-		        header('Content-Type: text/plain');
-    			echo "Reading blog ID {$id}";
-		    }
-		},
-		'format' => '.html',
-	),
-));
-?>
-```
-
-A naive micro-framework dispatcher might work like this:
-
-```php
-<?php
-// get the route params
-$params = $route->params;
-
-// extract the controller callable from the params
-$controller = $params['controller'];
-unset($params['controller']);
-
-// invoke the callable
-$controller($params);
-?>
-```
-
-With the above example controller, the URL `/blog/read/1.json` will send JSON
-ouput, but for `/blog/read/1` it will send plain text output.
-
-### Complex Route Specification
-
-When you add a complex route specification, you describe extra information
-related to the path as an array with one or more of the following recognized
-keys:
-
-- `require` -- The regular expression subpatterns that params must match;
-  these include `$_SERVER` values. For example:
+- `addRequire()` -- Adds regular expression subpatterns that params must
+  match; these include `$_SERVER` values. For example:
         
-        'require' => array(
+        addRequire(array(
             'id' => '\d+',
             'REQUEST_METHOD' => 'GET|POST',
-        )
+        ))
+    
+    Note that `setRequire()` is also available, but this will replace any
+    previous subpatterns entirely, instead of merging with the existing
+    subpatterns.
         
-- `default` -- The default values for the params. These will be overwritten by
-  matching params.
+- `addDefault()` -- Adds default values for the params.
 
-        'default' => array(
+        addDefault(array(
             'controller' => 'blog',
             'action' => 'read',
             'id' => 1,
-        )
+        ))
         
-- `secure` -- When `true` the `$server['HTTPS']` value must be on, or the
+    Note that `setDefault()` is also available, but this will replace any
+    previous default values entirely, instead of merging with the existing
+    default value.
+
+- `setSecure()` -- When `true` the `$server['HTTPS']` value must be on, or the
   request must be on port 443; when `false`, neither of those must be in
   place.
 
-- `routable` -- When `false` the route will be used only for generating paths,
-  not for matching.
+- `setWildcard()` -- Sets the name of a wildcard param; this is where
+  arbitrary slash-separated values appearing after the route path will be
+  stored.
+  
+- `setRoutable()` -- When `false` the route will be used only for generating
+  paths, not for matching (`true` by default).
 
-- `is_match` -- A custom callable with the signature
+- `setIsMatchCallable()` -- A custom callable with the signature
   `function(array $server, \ArrayObject $matches)` that returns true on a
   match, or false if not. This allows developers to build any kind of matching
   logic for the route, and to change the `$matches` for param values from the
   path.
 
-- `generate` -- A custom callable with the signature
+- `setGenerateCallable()` -- A custom callable with the signature
   `function(\Aura\Router\Route $route, array $data)` that returns a modified
   `$data` array to be used when generating the path.
 
-Here is a full route specification named `read` with all keys in place:
-
-```php
-<?php
-$router->add('read', '/blog/read/{id}{format}', array(
-    'require' => array(
-        'id' => '\d+',
-        'format' => '(\.[^/]+)?',
-        'REQUEST_METHOD' => 'GET|POST',
-    ),
-    'default' => array(
-        'controller' => 'blog',
-        'action' => 'read',
-        'id' => 1,
-        'format' => '.html',
-    ),
-    'secure' => false,
-    'routable' => true,
-    'is_match' => function(array $server, \ArrayObject $matches) {
-        
-        // disallow matching if referred from example.com
-        if ($server['HTTP_REFERER'] == 'http://example.com') {
-            return false;
-        }
-        
-        // add the referer from $server to the match values
-        $matches['referer'] = $server['HTTP_REFERER'];
-        return true;
-        
-    },
-    'generate' => function(\Aura\Router\Route $route, array $data) {
-        $data['foo'] = 'bar';
-        return $data;
-    }
-));
-?>
-```
-
-Instead of using array keys, you can use fluent methods on the _Route_ object
-that is returned from `$router->add()`. Here is the same setup as above:
+Here is a full extended route specification named `read`:
 
 ```php
 <?php
 $route = $router->add('read', '/blog/read/{id}{format}');
-$route->setRequire(array(
+$route->addRequire(array(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
         'REQUEST_METHOD' => 'GET|POST',
     ))
-    ->setDefault(array(
+    ->addDefault(array(
         'controller' => 'blog',
         'action' => 'read',
         'id' => 1,
@@ -399,10 +318,10 @@ $router->setWildcard('other');
 // set the default 'routable' flag
 $router->setRoutable(false);
 
-// set the default 'is_match' callable
+// set the default 'isMatch()' callable
 $router->setIsMatchCallable(function (...) { ... });
 
-// set the default 'generate' callable
+// set the default 'generate()' callable
 $router->setGenerateCallable(function (...) { ... });
 ?>
 ```
@@ -415,17 +334,23 @@ if that param does not already have a default value:
 ```php
 <?php
 // use the route name as the 'action' param
-$router->useNameAsParam('action');
+$router->setNameParam('action');
 
 // the default value for the 'action' param on this route will be 'foo'
-$route->add('foo', '/path/to/foo');
+// because it has not been set otherwise
+$router->add('foo', '/path/to/foo');
+
+// the default value for the 'action' param on this route will be 'zim'
+// because we explicitly set it in the router
+$router->setDefault(array('action' => 'zim'));
+$route->add('baz', '/path/to/baz');
 ?>
 ```
 
 ### Simple Routes
 
-You don't need to specify a complex route specification. If you omit the final
-array parameter ...
+You don't need to specify an extended route specification. With the following
+simple route ...
 
 ```php
 <?php
@@ -433,49 +358,41 @@ $router->add('archive', '/archive/{year}/{month}/{day}');
 ?>
 ```
 
-... then the _Router_ will use a default subpattern that matches everything
-except slashes for the path params, and use the route name as the default
-value for `action`. Thus, the above short-form route is equivalent to the
-following long-form route:
+... the _Router_ will use a default subpattern that matches everything except
+slashes for the path params. Thus, the above simple route is equivalent to the
+following extended route:
 
 ```php
 <?php
-$router->add('archive', '/archive/{year}/{month}/{day}', array(
-    'require' => array(
+$router->add('archive', '/archive/{year}/{month}/{day}')
+    ->addRequire(array(
         'year'  => '[^/]+',
         'month' => '[^/]+',
         'day'   => '[^/]+',
-    ),
-    'default' => array(
-        'action' => 'archive',
-    ),
-));
+    ));
 ?>
 ```
 
 ### Optional Params
 
-Sometimes it is useful to have a route with optional named params; that is,
-none, some, or all of the optional params may be present, and the route will
-still match.
+Sometimes it is useful to have a route with optional named params. None, some,
+or all of the optional params may be present, and the route will still match.
 
 To specify optional params, use the notation `{/param1,param2,param3}` in the
 path. For example:
 
 ```php
 <?php
-$router->add('archive', '/archive{/year,month,day}', array(
-    'require' => array(
+$router->add('archive', '/archive{/year,month,day}')
+    ->addRequire(array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
-    ),
-));
+    ));
 ?>
 ```
 
-> N.b.: Note that the leading slash separator is inside the params token, not
-> outside it.
+> N.b.: The leading slash separator is inside the params token, not outside.
 
 With that, the following routes will all match the 'archive' route, and will
 set the appropriate values:
@@ -485,7 +402,7 @@ set the appropriate values:
     /archive/1979/11
     /archive/1979/11/07
 
-Optional params are "sequentially" optional. This means that, in the above
+Optional params are *sequentially* optional. This means that, in the above
 example, you cannot have a "day" without a "month", and you cannot have a
 "month" without a "year".
 
@@ -501,13 +418,12 @@ first missing one:
 
 ```php
 <?php
-$router->add('archive', '/archive{/year,month,day}', array(
-    'require' => array(
+$router->add('archive', '/archive{/year,month,day}')
+    ->addRequire(array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
-    ),
-));
+    ));
 
 $link = $router->generate('archive', array(
     'year' => '1979',
@@ -525,9 +441,8 @@ which the arbitrary trailing param values will be placed in the route values.
 
 ```php
 <?php
-$router->add('wild_post', '/post/{id}', array(
-    'wildcard' => 'other',
-));
+$router->add('wild_post', '/post/{id}')
+    ->setWildcard('other');
 
 // this matches, with the following values
 $route = $router->match('/post/88/foo/bar/baz', $_SERVER);
@@ -551,9 +466,8 @@ will be used for the trailing arbitrary param values:
 
 ```php
 <?php
-$router->add('wild_post', '/post/{id}', array(
-    'wildcard' => 'other',
-));
+$router->add('wild_post', '/post/{id}')
+    ->setWildcard('other');
 
 $link = $router->generate('wild_post', array(
     'id' => '88',
@@ -578,32 +492,32 @@ $name_prefix = 'blog.';
 $path_prefix = '/blog';
 
 $router->attach($name_prefix, $path_prefix, function ($router) {
-    $router->add('browse', '{format}', array(
-        'require' => array(
+    
+    $router->add('browse', '{format}')
+        ->addRequire(array(
             'format' => '(\.json|\.atom|\.html)?'
-        ),
-        'default' => array(
+        ))
+        ->addDefault(array(
             'format' => '.html',
-        ),
-    );
+        ));
+    
     $router->add('read', '/{id}{format}', array(
-        'require' => array(
+        ->addRequire(array(
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
-        ),
-        'default' => array(
+        )),
+        ->addDefault(array(
             'format' => '.html',
-        ),
-    ));
+        ));
+    
     $router->add('edit', '/{id}/edit{format}', array(
-        'require' => array(
+        ->addRequire(array(
             'id' => '\d+',
             'format' => '(\.json|\.atom)?'
-        ),
-        'default' => array(
+        ))
+        ->addDefault(array(
             'format' => '.html',
-        ),
-    ));
+        ));
 });
 ?>
 ```
@@ -626,6 +540,7 @@ $name_prefix = 'blog.';
 $path_prefix = '/blog';
 
 $router->attach($name_prefix, $path_prefix, function ($router) {
+    
     $router->setRequire(array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?'
@@ -642,7 +557,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
 ?>
 ```
 
-### Caching
+### Caching Route Information
 
 You may wish to cache the router for production deployments so that the
 router does not have to build the route objects from definitions on each page
@@ -681,3 +596,53 @@ to cache the routes; this is because closures cannot be represented
 properly for caching.
 
 [Aura.Dispatcher]: https://github.com/auraphp/Aura.Dispatcher
+
+### As a Micro-Framework
+
+Sometimes you may wish to use the _Router_ as a micro-framework. This is 
+possible by assigning a `callable` as a default param value, then calling that
+param to dispatch it.
+
+```php
+<?php
+$router->add('read', '/blog/read/{id}{format}')
+    ->addRequire(array(
+		'id' => '\d+',
+        'format' => '(\.[^/]+)?',
+	))
+	->addDefault(array(
+		'controller' => function ($params) {
+		    if ($params['format'] == '.json') {
+    			$id = (int) $params['id'];
+		        header('Content-Type: application/json');
+		        echo json_encode(['id' => $id]);
+		    } else {
+    			$id = (int) $params['id'];
+		        header('Content-Type: text/plain');
+    			echo "Reading blog ID {$id}";
+		    }
+		},
+		'format' => '.html',
+    ));
+?>
+```
+
+A naive micro-framework dispatcher might work like this:
+
+```php
+<?php
+// get the route params
+$params = $route->params;
+
+// extract the controller callable from the params
+$controller = $params['controller'];
+unset($params['controller']);
+
+// invoke the callable
+$controller($params);
+?>
+```
+
+With the above example controller, the URL `/blog/read/1.json` will send JSON
+ouput, but for `/blog/read/1` it will send plain text output.
+
