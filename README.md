@@ -597,6 +597,8 @@ That method call will result in the following routes being added:
 
 The `{id}` token is any series of non-slash characters, and the `{format}`
 token is an optional dot-format file extension (including the dot itself).
+The `controller` value comes from the route name prefix, and the `action`
+value comes from the route name.
 
 If you want calls to `attachResource()` to create a different series of REST
 routes, use the `setResourceCallable()` method to set your own callable to
@@ -605,7 +607,8 @@ create them.
 ```php
 <?php
 $router->setResourceCallable(function ($router) {
-    $router->setNameParam('method_name');
+    $router->setTokens('resource' => $router->getNamePrefix());
+    $router->setNameParam('method');
     $router->addGet('get', '');
     $router->addPost('post', '/{id}');
     $router->addPut('put', '/{id}');
@@ -616,7 +619,8 @@ $router->setResourceCallable(function ($router) {
 ```
 
 That example will cause 5 routes to be added for the resource when you call
-`attachResource()`, and will set the `method_name` param to the route name.
+`attachResource()`, will set the `method` param to the route name, and the
+`resource` param to the route name prefix.
 
 
 ### Caching Route Information
