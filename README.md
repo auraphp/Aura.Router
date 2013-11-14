@@ -610,7 +610,7 @@ $router->setResourceCallable(function ($router) {
     $router->addPost('post', '/{id}');
     $router->addPut('put', '/{id}');
     $router->addPatch('patch', '/{id}');
-    $router->addPatch('delete', '/{id}');
+    $router->addDelete('delete', '/{id}');
 });
 ?>
 ```
