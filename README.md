@@ -450,9 +450,9 @@ $link = $router->generate('archive', array(
 ### Wildcard Params
 
 Sometimes it is useful to allow the trailing part of the path be anything at
-all. To specify that a route allows arbitrary trailing portions, pass a
-'wildcard' key in the route definition; that key will be the param name under
-which the arbitrary trailing param values will be placed in the route values.
+all. To allow arbitrary trailing params on a route, extend the route
+definition with `setWildcard()` to specify param name under which the
+arbitrary trailing param values will be stored.
 
 ```php
 <?php
@@ -528,7 +528,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
     $router->add('edit', '/{id}/edit{format}', array(
         ->addTokens(array(
             'id' => '\d+',
-            'format' => '(\.json|\.atom)?'
+            'format' => '(\.json|\.atom|\.html)?'
         ))
         ->addValues(array(
             'format' => '.html',
@@ -540,9 +540,9 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
 Each of the route names will be prefixed with 'blog.', and of the route paths
 will be prefixed with `/blog`, so the effective route names and paths become:
 
-- `blog.browse  =>  /blog`
+- `blog.browse  =>  /blog{format}`
 - `blog.read    =>  /blog/{id}{format}`
-- `blog.edit    =>  /blog/{id}/edit`
+- `blog.edit    =>  /blog/{id}/edit{format}`
 
 You can set other route specification values as part of the attachment
 specification; these will be used as the defaults for each attached route, so
@@ -606,9 +606,10 @@ if (file_exists($cache)) {
 ?>
 ```
 
-Note that if there are closures in the route definitions, you will not be able
-to cache the routes; this is because closures cannot be represented
-properly for caching.
+Note that if there are closures in the _Route_ objects (e.g. for `isMatch()`
+or `generate()`), you will not be able to cache the routes; this is because
+closures cannot be serialized properly for caching. Consider using non-closure
+callables instead.
 
 [Aura.Dispatcher]: https://github.com/auraphp/Aura.Dispatcher
 
