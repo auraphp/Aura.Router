@@ -1,4 +1,4 @@
-- move $_SERVER matching requirements to a 'server' key?
+- rename Default to Values (again)
 
 - make generate() use ArrayObject in the callable, like is_match, and not
   return a replacement $data array?

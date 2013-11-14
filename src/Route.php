@@ -45,13 +45,21 @@ class Route
 
     /**
      * 
-     * A map of params to regex subpatterns; all-caps param names are treated
-     * as `$_SERVER` keys to be checked.
+     * A map of param token names to regex subpatterns.
      * 
      * @var array
      * 
      */
     protected $tokens = array();
+
+    /**
+     * 
+     * A map of `$_SERVER` key names to regex subpatterns.
+     * 
+     * @var array
+     * 
+     */
+    protected $server = array();
 
     /**
      * 
@@ -235,6 +243,38 @@ class Route
     public function addTokens(array $tokens)
     {
         $this->tokens = array_merge($this->tokens, $tokens);
+        $this->regex = null;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Sets the regular expressions for server values, replacing all
+     * previous values.
+     * 
+     * @param array $server Regular expressions for server values.
+     * 
+     * @return $this
+     * 
+     */
+    public function setServer(array $server)
+    {
+        $this->server = array();
+        return $this->addServer($server);
+    }
+    
+    /**
+     * 
+     * Merges with the existing regular expressions for server values.
+     * 
+     * @param array $server Regular expressions for server values.
+     * 
+     * @return $this
+     * 
+     */
+    public function addServer(array $server)
+    {
+        $this->server = array_merge($this->server, $server);
         $this->regex = null;
         return $this;
     }
@@ -588,21 +628,16 @@ class Route
 
     /**
      * 
-     * Checks that $_SERVER values match requirements.
+     * Checks that $_SERVER values match their related regular expressions.
      * 
      * @param array $server A copy of $_SERVER.
      * 
-     * @return bool True if, false if not.
+     * @return bool True if they all match, false if not.
      * 
      */
     protected function isServerMatch($server)
     {
-        foreach ($this->tokens as $name => $regex) {
-            
-            // only honor all caps as $_SERVER keys
-            if ($name !== strtoupper($name)) {
-                continue;
-            }
+        foreach ($this->server as $name => $regex) {
             
             // get the corresponding server value
             $value = isset($server[$name]) ? $server[$name] : '';

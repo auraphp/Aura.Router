@@ -89,7 +89,8 @@ class Router
 	protected $spec = array(
 	    'name'        => null,
 	    'path'        => null,
-	    'tokens'     => array(),
+	    'tokens'      => array(),
+	    'server'      => array(),
 	    'default'     => array(),
 	    'secure'      => null,
 	    'wildcard'    => null,
@@ -177,8 +178,9 @@ class Router
         $route = $this->route_factory->newInstance($full_path, $full_name);
         
         // set default specs
-        $route->setTokens($this->spec['tokens']);
-        $route->setDefault($this->spec['default']);
+        $route->addTokens($this->spec['tokens']);
+        $route->addServer($this->spec['server']);
+        $route->addDefault($this->spec['default']);
         $route->setSecure($this->spec['secure']);
         $route->setWildcard($this->spec['wildcard']);
         $route->setRoutable($this->spec['routable']);
@@ -216,7 +218,7 @@ class Router
     public function addGet($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addTokens(array('REQUEST_METHOD' => 'GET'));
+        $route->addServer(array('REQUEST_METHOD' => 'GET'));
         return $route;
     }
     
@@ -234,7 +236,7 @@ class Router
     public function addDelete($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addTokens(array('REQUEST_METHOD' => 'DELETE'));
+        $route->addServer(array('REQUEST_METHOD' => 'DELETE'));
         return $route;
     }
     
@@ -252,7 +254,7 @@ class Router
     public function addOptions($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addTokens(array('REQUEST_METHOD' => 'OPTIONS'));
+        $route->addServer(array('REQUEST_METHOD' => 'OPTIONS'));
         return $route;
     }
     
@@ -270,7 +272,7 @@ class Router
     public function addPatch($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addTokens(array('REQUEST_METHOD' => 'PATCH'));
+        $route->addServer(array('REQUEST_METHOD' => 'PATCH'));
         return $route;
     }
     
@@ -288,7 +290,7 @@ class Router
     public function addPost($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addTokens(array('REQUEST_METHOD' => 'POST'));
+        $route->addServer(array('REQUEST_METHOD' => 'POST'));
         return $route;
     }
     
@@ -306,7 +308,7 @@ class Router
     public function addPut($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addTokens(array('REQUEST_METHOD' => 'PUT'));
+        $route->addServer(array('REQUEST_METHOD' => 'PUT'));
         return $route;
     }
     
@@ -334,7 +336,6 @@ class Router
         $old_name_prefix = $this->name_prefix;
         $old_path_prefix = $this->path_prefix;
         $old_spec        = $this->spec;
-        $old_name_param  = $this->name_param;
         
         // append to the current prefixes
         $this->name_prefix .= $name_prefix;
@@ -347,7 +348,6 @@ class Router
         $this->name_prefix = $old_name_prefix;
         $this->path_prefix = $old_path_prefix;
         $this->spec        = $old_spec;
-        $this->name_param  = $old_name_param;
     }
     
     /**
@@ -362,6 +362,20 @@ class Router
     public function setTokens(array $tokens)
     {
         $this->spec['tokens'] = $tokens;
+    }
+    
+    /**
+     * 
+     * Sets the regular expressions for server values.
+     * 
+     * @param array $server The regular expressions for server values.
+     * 
+     * @return null
+     * 
+     */
+    public function setServer(array $server)
+    {
+        $this->spec['server'] = $server;
     }
     
     /**

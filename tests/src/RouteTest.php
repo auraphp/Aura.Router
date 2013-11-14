@@ -77,13 +77,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $route->params);
     }
     
-    public function testIsMethodMatch()
+    public function testIsServerMatch()
     {
         /**
          * try one REQUEST_METHOD
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
-            ->setTokens(array(
+            ->setServer(array(
                 'REQUEST_METHOD' => 'POST',
             ));
     
@@ -109,7 +109,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
          * try many REQUEST_METHOD
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
-            ->setTokens(array(
+            ->setServer(array(
                 'REQUEST_METHOD' => 'GET|POST',
             ));
     
@@ -574,7 +574,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testCaptureServerParams()
     {
         $route = $this->factory->newInstance('/foo')
-            ->setTokens(array(
+            ->setServer(array(
                 'HTTP_ACCEPT' => '(application/xml(;q=(1\.0|0\.[1-9]))?)|(application/json(;q=(1\.0|0\.[1-9]))?)',
             ));
         

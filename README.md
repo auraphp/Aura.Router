@@ -211,16 +211,26 @@ data keys without matching params, those values will not be added to the path.
 You can extend a route specification with the following methods:
 
 - `addTokens()` -- Adds regular expression subpatterns that params must
-  match; these include `$_SERVER` values. For example:
+  match.
         
         addTokens(array(
             'id' => '\d+',
-            'REQUEST_METHOD' => 'GET|POST',
         ))
     
     Note that `setTokens()` is also available, but this will replace any
     previous subpatterns entirely, instead of merging with the existing
     subpatterns.
+        
+- `addServer()` -- Adds regular expressions that server values must
+  match.
+        
+        addServer(array(
+            'REQUEST_METHOD' => 'PUT|PATCH',
+        ))
+    
+    Note that `setServer()` is also available, but this will replace any
+    previous expressions entirely, instead of merging with the existing
+    expressions.
         
 - `addDefault()` -- Adds default values for the params.
 
@@ -302,6 +312,11 @@ methods; the values will apply to all routes added thereafter.
 // set the default 'tokens' expressions
 $router->setTokens(array(
     'id' => '\d+',
+));
+
+// set the default 'server' expressions
+$router->setServer(array(
+    'REQUEST_METHOD' => 'PUT|PATCH',
 ));
 
 // set the default param values
@@ -645,4 +660,3 @@ $controller($params);
 
 With the above example controller, the URL `/blog/read/1.json` will send JSON
 ouput, but for `/blog/read/1` it will send plain text output.
-
