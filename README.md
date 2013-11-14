@@ -295,9 +295,8 @@ $route->addTokens(array(
         return true;
         
     })
-    ->setGenerate(function(\Aura\Router\Route $route, array $data) {
+    ->setGenerate(\ArrayObject $data) {
         $data['foo'] = 'bar';
-        return $data;
     });
 ?>
 ```
