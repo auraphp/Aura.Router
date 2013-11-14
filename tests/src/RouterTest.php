@@ -32,9 +32,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testBeforeAndAfterAttach()
     {
         $this->router->add('before', '/foo');
+        
         $this->router->attach('during', '/during', function ($router) {
-            $router->setNameDelim(':');
-            $router->setNameParam('action');
             $router->setTokens(array('id' => '\d+'));
             $router->setServer(array('HTTP_REQUEST' => 'GET'));
             $router->setValues(array('controller' => 'foo'));
@@ -45,6 +44,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             $router->setGenerateCallable(function () { });
             $router->add('bar', '/bar');
         });
+        
         $this->router->add('after', '/baz');
         
         $routes = $this->router->getRoutes();
@@ -52,7 +52,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'tokens' => array(),
             'server' => array(),
-            'values' => array(),
+            'values' => array('action' => 'before'),
             'secure' => null,
             'wildcard' => null,
             'routable' => true,
@@ -60,9 +60,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'generate' => null,
         );
         $this->assertRoute($expect, $routes['before']);
+        
+        $expect['values'] = array('action' => 'after');
         $this->assertRoute($expect, $routes['after']);
         
-        $actual = $routes['during:bar'];
+        $actual = $routes['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
             'server' => array('HTTP_REQUEST' => 'GET'),
@@ -102,8 +104,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             $router->setValues(array(
                 'controller' => 'resource',
             ));
-            
-            $router->setNameParam('action');
             
             $router->addGet(null, '/')
                 ->addValues(array(
@@ -277,8 +277,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'GET',
             ),
             'values' => array(
-                'action' => 'browse',
                 'controller' => 'blog',
+                'action' => 'browse',
             ),
         );
         $this->assertRoute($expect, $routes['blog.browse']);
@@ -293,8 +293,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'GET',
             ),
             'values' => array(
-                'action' => 'read',
                 'controller' => 'blog',
+                'action' => 'read',
             ),
         );
         $this->assertRoute($expect, $routes['blog.read']);
@@ -307,8 +307,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'GET',
             ),
             'values' => array(
-                'action' => 'add',
                 'controller' => 'blog',
+                'action' => 'add',
             ),
         );
         $this->assertRoute($expect, $routes['blog.add']);
@@ -323,8 +323,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'GET',
             ),
             'values' => array(
-                'action' => 'edit',
                 'controller' => 'blog',
+                'action' => 'edit',
             ),
         );
         $this->assertRoute($expect, $routes['blog.edit']);
@@ -337,8 +337,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'DELETE',
             ),
             'values' => array(
-                'action' => 'delete',
                 'controller' => 'blog',
+                'action' => 'delete',
             ),
         );
         $this->assertRoute($expect, $routes['blog.delete']);
@@ -351,8 +351,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'POST',
             ),
             'values' => array(
-                'action' => 'create',
                 'controller' => 'blog',
+                'action' => 'create',
             ),
         );
         $this->assertRoute($expect, $routes['blog.create']);
@@ -362,14 +362,28 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'path' => '/api/v1/blog/{id}',
             'tokens' => array(),
             'server' => array(
-                'REQUEST_METHOD' => 'PUT|PATCH',
+                'REQUEST_METHOD' => 'PATCH',
             ),
             'values' => array(
-                'action' => 'update',
                 'controller' => 'blog',
+                'action' => 'update',
             ),
         );
         $this->assertRoute($expect, $routes['blog.update']);
+        
+        $expect = array(
+            'name' => 'blog.replace',
+            'path' => '/api/v1/blog/{id}',
+            'tokens' => array(),
+            'server' => array(
+                'REQUEST_METHOD' => 'PUT',
+            ),
+            'values' => array(
+                'controller' => 'blog',
+                'action' => 'replace',
+            ),
+        );
+        $this->assertRoute($expect, $routes['blog.replace']);
         
     }
 }

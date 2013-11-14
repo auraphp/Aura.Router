@@ -64,8 +64,6 @@ class Router extends AbstractSpec
 	    'routable'    => true,
 	    'is_match'    => null,
 	    'generate'    => null,
-	    'name_param'  => null,
-	    'name_delim'  => '.',
 	    'name_prefix' => null,
 	    'path_prefix' => null,
 	    'resource'    => null,
@@ -99,16 +97,23 @@ class Router extends AbstractSpec
     {
         // build a full name with prefix, but only if name is given
         $full_name = ($this->spec['name_prefix'] && $name)
-                   ? $this->spec['name_prefix'] . $this->spec['name_delim'] . $name
+                   ? $this->spec['name_prefix'] . '.' . $name
                    : $name;
         
         // build a full path with prefix
-        $full_path = $this->getPathPrefix() . $path;
+        $full_path = $this->spec['path_prefix'] . $path;
         
         // create the route with the full path and name
         $route = $this->route_factory->newInstance($full_path, $full_name);
         
-        // set default specs
+        // add controller and action values
+        $route->addValues(array(
+            'controller' => $this->spec['name_prefix'],
+            'action' => $name,
+        ));
+        
+        // set default specs from router, which override the automatic
+        // controller and action values
         $route->addTokens($this->spec['tokens']);
         $route->addServer($this->spec['server']);
         $route->addValues($this->spec['values']);
@@ -117,12 +122,6 @@ class Router extends AbstractSpec
         $route->setRoutable($this->spec['routable']);
         $route->setIsMatchCallable($this->spec['is_match']);
         $route->setGenerateCallable($this->spec['generate']);
-        
-        // capture the un-prefixed name as a default param value?
-        $name_param = $this->spec['name_param'];
-        if ($name_param && ! isset($route->values[$name_param])) {
-            $route->addValues(array($name_param => $name));
-        }
         
         // add the route under its full name
         if (! $route->name) {
@@ -268,7 +267,7 @@ class Router extends AbstractSpec
         
         // append to the name prefix, with delmiter if needed
         if ($this->spec['name_prefix']) {
-            $this->spec['name_prefix'] .= $this->spec['name_delim'];
+            $this->spec['name_prefix'] .= '.';
         }
         $this->spec['name_prefix'] .= $name;
         
@@ -395,62 +394,6 @@ class Router extends AbstractSpec
 
     /**
      * 
-     * Gets the current name prefix for routes.
-     * 
-     * @return string
-     * 
-     */
-    public function getNamePrefix()
-    {
-        return $this->spec['name_prefix'];
-    }
-    
-    /**
-     * 
-     * Returns the curent path prefix for routes.
-     * 
-     * @return string
-     * 
-     */
-    public function getPathPrefix()
-    {
-        return $this->spec['path_prefix'];
-    }
-    
-    /**
-     * 
-     * Sets the param into which the un-prefixed route name should be
-     * captured.
-     * 
-     * @param string $name_param The param into which the name should be
-     * captured.
-     * 
-     * @return $this
-     * 
-     */
-    public function setNameParam($name_param)
-    {
-        $this->spec['name_param'] = $name_param;
-        return $this;
-    }
-    
-    /**
-     * 
-     * Sets the delmiter between the route name prefix and the route name.
-     * 
-     * @param string $name_delim The delimiter to use.
-     * 
-     * @return $this
-     * 
-     */
-    public function setNameDelim($name_delim)
-    {
-        $this->spec['name_delim'] = $name_delim;
-        return $this;
-    }
-    
-    /**
-     * 
      * Sets the callable for attaching resource routes.
      * 
      * @param callable $resource The resource callable.
@@ -475,65 +418,38 @@ class Router extends AbstractSpec
      */
     protected function resourceCallable(Router $router)
     {
-        // use the route name as the action param
-        $router->setNameParam('action');
-
         // browse the resources, optionally in a format.
         // can double for search when a query string is passed.
         $router->addGet('browse', '{format}')
             ->addTokens(array(
                 'format' => '(\.[^/]+)?',
-            ))
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
             ));
 
         // get a single resource by ID, optionally in a format
         $router->addGet('read', '/{id}{format}')
             ->addTokens(array(
                 'format' => '(\.[^/]+)?',
-            ))
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
             ));
 
         // get the form to add new resource
-        $router->addGet('add', '/add')
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
-            ));
+        $router->addGet('add', '/add');
 
         // get the form for an existing resource by ID, optionally in a format
         $router->addGet('edit', '/{id}/edit{format}')
             ->addTokens(array(
                 'format' => '(\.[^/]+)?',
-            ))
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
             ));
 
         // delete a resource by ID
-        $router->addDelete('delete', '/{id}')
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
-            ));
+        $router->addDelete('delete', '/{id}');
 
         // create a resource and get back its location
-        $router->addPost('create', '')
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
-            ));
+        $router->addPost('create', '');
 
-        // update an existing resource by ID
-        $router->add('update', '/{id}')
-            ->addValues(array(
-                'controller' => $router->getNamePrefix(),
-            ))
-            ->addServer(array(
-                'REQUEST_METHOD' => 'PUT|PATCH'
-            ));
+        // update part or all an existing resource by ID
+        $router->addPatch('update', '/{id}');
         
-        // done!
-        return;
+        // replace an existing resource by ID
+        $router->addPut('replace', '/{id}');
     }
 }
