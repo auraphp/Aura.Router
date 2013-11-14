@@ -68,7 +68,7 @@ class Route
      * @var array
      * 
      */
-    protected $default = array();
+    protected $values = array();
     
     /**
      * 
@@ -283,29 +283,29 @@ class Route
      * 
      * Sets the default values for params, replacing all previous values.
      * 
-     * @param array $default Default values for params.
+     * @param array $values Default values for params.
      * 
      * @return $this
      * 
      */
-    public function setDefault(array $default)
+    public function setValues(array $values)
     {
-        $this->default = array();
-        return $this->addDefault($default);
+        $this->values = array();
+        return $this->addValues($values);
     }
     
     /**
      * 
      * Merges with the existing default values for params.
      * 
-     * @param array $default Default values for params.
+     * @param array $values Default values for params.
      * 
      * @return $this
      * 
      */
-    public function addDefault(array $default)
+    public function addValues(array $values)
     {
-        $this->default = array_merge($this->default, $default);
+        $this->values = array_merge($this->values, $values);
         return $this;
     }
     
@@ -449,7 +449,7 @@ class Route
         $link = $this->path;
         
         // the data for replacements
-        $data = array_merge($this->default, $data);
+        $data = array_merge($this->values, $data);
         
         // use a callable to modify the data?
         if ($this->generate) {
@@ -564,8 +564,8 @@ class Route
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! array_key_exists($name, $this->default)) {
-                $this->default[$name] = null;
+            if (! isset($this->values[$name])) {
+                $this->values[$name] = null;
             }
         }
     }
@@ -730,7 +730,7 @@ class Route
      */
     protected function setParams()
     {
-        $this->params = $this->default;
+        $this->params = $this->values;
         
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is

@@ -1,5 +1,3 @@
-- rename Default to Values (again)
-
 - make generate() use ArrayObject in the callable, like is_match, and not
   return a replacement $data array?
 
@@ -35,7 +33,7 @@ class Router
 $router->setResourceCallable(function ($router, $name, $path) {
     
     // controller is the resource name, including prefix
-    $router->setDefault(array(
+    $router->setValues(array(
         'controller' => $name,
     ));
     

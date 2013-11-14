@@ -91,7 +91,7 @@ class Router
 	    'path'        => null,
 	    'tokens'      => array(),
 	    'server'      => array(),
-	    'default'     => array(),
+	    'values'     => array(),
 	    'secure'      => null,
 	    'wildcard'    => null,
 	    'routable'    => true,
@@ -180,7 +180,7 @@ class Router
         // set default specs
         $route->addTokens($this->spec['tokens']);
         $route->addServer($this->spec['server']);
-        $route->addDefault($this->spec['default']);
+        $route->addValues($this->spec['values']);
         $route->setSecure($this->spec['secure']);
         $route->setWildcard($this->spec['wildcard']);
         $route->setRoutable($this->spec['routable']);
@@ -189,8 +189,8 @@ class Router
         
         // capture the un-prefixed name as a default param value?
         $name_param = $this->spec['name_param'];
-        if ($name_param && ! isset($route->default[$name_param])) {
-            $route->addDefault(array($name_param => $name));
+        if ($name_param && ! isset($route->values[$name_param])) {
+            $route->addValues(array($name_param => $name));
         }
         
         // add the route under its full name
@@ -382,14 +382,14 @@ class Router
      * 
      * Sets the default values for params.
      * 
-     * @param array $default Default values for params.
+     * @param array $values Default values for params.
      * 
      * @return null
      * 
      */
-    public function setDefault(array $default)
+    public function setValues(array $values)
     {
-        $this->spec['default'] = $default;
+        $this->spec['values'] = $values;
     }
     
     /**

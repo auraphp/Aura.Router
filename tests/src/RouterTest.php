@@ -27,7 +27,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router->attach('during:', '/during', function ($router) {
             $router->setNameParam('action');
             $router->setTokens(array('id' => '\d+'));
-            $router->setDefault(array('controller' => 'foo'));
+            $router->setValues(array('controller' => 'foo'));
             $router->setSecure(true);
             $router->setWildcard('other');
             $router->setRoutable(false);
@@ -42,7 +42,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $before = $routes['before'];
         $this->assertIsRoute($before);
         $this->assertSame(array(), $before->tokens);
-        $this->assertSame(array(), $before->default);
+        $this->assertSame(array(), $before->values);
         $this->assertSame(null, $before->secure);
         $this->assertSame(null, $before->wildcard);
         $this->assertSame(true, $before->routable);
@@ -52,7 +52,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $during = $routes['during:bar'];
         $this->assertIsRoute($during);
         $this->assertSame(array('id' => '\d+'), $during->tokens);
-        $this->assertSame(array('controller' => 'foo', 'action' => 'bar'), $during->default);
+        $this->assertSame(array('controller' => 'foo', 'action' => 'bar'), $during->values);
         $this->assertSame(true, $during->secure);
         $this->assertSame('other', $during->wildcard);
         $this->assertSame(false, $during->routable);
@@ -62,7 +62,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $after = $routes['after'];
         $this->assertIsRoute($after);
         $this->assertSame(array(), $after->tokens);
-        $this->assertSame(array(), $after->default);
+        $this->assertSame(array(), $after->values);
         $this->assertSame(null, $after->secure);
         $this->assertSame(null, $after->wildcard);
         $this->assertSame(true, $after->routable);
@@ -79,14 +79,14 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
             ));
             
-            $router->setDefault(array(
+            $router->setValues(array(
                 'controller' => 'resource',
             ));
             
             $router->setNameParam('action');
             
             $router->addGet(null, '/')
-                ->addDefault(array(
+                ->addValues(array(
                     'action' => 'browse'
                 ));
                 
@@ -204,7 +204,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'format'        => '(\.[^/]+)?',
             ));
             
-            $router->setDefault(array(
+            $router->setValues(array(
                 'controller' => 'page',
                 'format' => null,
             ));
@@ -227,7 +227,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'format'        => '(\.[^/]+)?',
             ));
             
-            $router->setDefault(array(
+            $router->setValues(array(
                 'controller' => 'page',
                 'format' => null,
             ));

@@ -86,7 +86,7 @@ $router->add('read', '/blog/read/{id}{format}')
         'id'     => '\d+',
         'format' => '(\.[^/]+)?',
     ))
-    ->addDefault(array(
+    ->addValues(array(
         'controller' => 'blog',
         'action'     => 'read',
         'format'     => '.html',
@@ -232,15 +232,15 @@ You can extend a route specification with the following methods:
     previous expressions entirely, instead of merging with the existing
     expressions.
         
-- `addDefault()` -- Adds default values for the params.
+- `addValues()` -- Adds default values for the params.
 
-        addDefault(array(
+        addValues(array(
             'controller' => 'blog',
             'action' => 'read',
             'id' => 1,
         ))
         
-    Note that `setDefault()` is also available, but this will replace any
+    Note that `setValues()` is also available, but this will replace any
     previous default values entirely, instead of merging with the existing
     default value.
 
@@ -275,7 +275,7 @@ $route->addTokens(array(
         'format' => '(\.[^/]+)?',
         'REQUEST_METHOD' => 'GET|POST',
     ))
-    ->addDefault(array(
+    ->addValues(array(
         'controller' => 'blog',
         'action' => 'read',
         'id' => 1,
@@ -320,7 +320,7 @@ $router->setServer(array(
 ));
 
 // set the default param values
-$router->setDefault(array(
+$router->setValues(array(
     'format' => null,
 ));
 
@@ -357,7 +357,7 @@ $router->add('foo', '/path/to/foo');
 
 // the default value for the 'action' param on this route will be 'zim'
 // because we explicitly set it in the router
-$router->setDefault(array('action' => 'zim'));
+$router->setValues(array('action' => 'zim'));
 $route->add('baz', '/path/to/baz');
 ?>
 ```
@@ -512,7 +512,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
         ->addTokens(array(
             'format' => '(\.json|\.atom|\.html)?'
         ))
-        ->addDefault(array(
+        ->addValues(array(
             'format' => '.html',
         ));
     
@@ -521,7 +521,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
         )),
-        ->addDefault(array(
+        ->addValues(array(
             'format' => '.html',
         ));
     
@@ -530,7 +530,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'id' => '\d+',
             'format' => '(\.json|\.atom)?'
         ))
-        ->addDefault(array(
+        ->addValues(array(
             'format' => '.html',
         ));
 });
@@ -561,7 +561,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
         'format' => '(\.json|\.atom)?'
     ));
     
-    $router->setDefault(array(
+    $router->setValues(array(
         'format' => '.html',
     ));
     
@@ -625,7 +625,7 @@ $router->add('read', '/blog/read/{id}{format}')
 		'id' => '\d+',
         'format' => '(\.[^/]+)?',
 	))
-	->addDefault(array(
+	->addValues(array(
 		'controller' => function ($params) {
 		    if ($params['format'] == '.json') {
     			$id = (int) $params['id'];

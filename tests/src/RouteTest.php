@@ -24,7 +24,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function test__isset()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setDefault(array(
+            ->setValues(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ));
@@ -36,7 +36,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnStaticPath()
     {
         $proto = $this->factory->newInstance('/foo/bar/baz')
-            ->setDefault(array(
+            ->setValues(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ));
@@ -62,7 +62,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '([0-9]+)',
                 'format' => '(\.[^/]+)?',
             ))
-            ->setDefault(array(
+            ->setValues(array(
                 'format' => '.html',
             ));
         
@@ -306,7 +306,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
-            ->setDefault(array(
+            ->setValues(array(
                 "controller" => function ($params) {
                     $id = (int) $params['id'];
                     return "Hello World";
@@ -419,7 +419,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsNotRoutable()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setDefault(array(
+            ->setValues(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ))
@@ -504,7 +504,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
                 'format' => '(\.json|\.html)?',
             ))
-            ->setDefault(array(
+            ->setValues(array(
                 'controller' => 'blog',
                 'action' => 'read',
                 'format' => '.html',
