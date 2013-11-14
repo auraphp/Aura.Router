@@ -600,8 +600,8 @@ class Router
                 'controller' => $router->getNamePrefix(),
             ));
 
-        // add a new resource and get back its location
-        $router->addPost('add', '')
+        // get the form to add new resource
+        $router->addGet('add', '/add')
             ->addValues(array(
                 'controller' => $router->getNamePrefix(),
             ));
@@ -621,8 +621,8 @@ class Router
                 'controller' => $router->getNamePrefix(),
             ));
 
-        // get the form for a new resource
-        $router->addGet('new', '/new')
+        // create a resource and get back its location
+        $router->addPost('create', '')
             ->addValues(array(
                 'controller' => $router->getNamePrefix(),
             ));

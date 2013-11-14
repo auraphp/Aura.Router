@@ -572,6 +572,50 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
 ?>
 ```
 
+### Attaching REST Resources
+
+The router can attach a series of REST resources for you with the
+`attachResource()` method:
+
+```php
+<?php
+$router->attach('blog', '/blog');
+?>
+```
+
+That method call will result in the following routes being added:
+
+| Route Name    | HTTP Method   | Route Path            | Route Values                      |
+| ------------- | ------------- | --------------------- | --------------------------------- |
+| blog.browse   | GET           | /blog{format}         | controller=>blog, action=>browse  |
+| blog.read     | GET           | /blog/{id}{format}    | controller=>blog, action=>read    |
+| blog.edit     | GET           | /blog/{id}/edit       | controller=>blog, action=>edit    |
+| blog.add      | GET           | /blog/add             | controller=>blog, action=>add     |
+| blog.delete   | DELETE        | /blog/{id}            | controller=>blog, action=>delete  |
+| blog.create   | POST          | /blog                 | controller=>blog, action=>create  |
+| blog.update   | PUT or PATCH  | /blog/{id}            | controller=>blog, action=>update  |
+
+The `{id}` token is any series of non-slash characters, and the `{format}`
+token is an optional dot-format file extension (including the dot itself).
+
+If you want calls to `attachResource()` to create REST routes in a different
+way, use the `setResourceCallable()` method to your own callable:
+
+```php
+<?php
+$router->setResourceCallable(function ($router) {
+    $router->addPost('create', '');
+    $router->addGet('read', '/{id}');
+    $router->addPost('update', '/{id}');
+    $router->addPost('delete', '/{id}');
+});
+?>
+```
+
+That example will cause only 4 routes to be added for the resource when you
+call `attachResource()`, and will not set default controller or action values.
+
+
 ### Caching Route Information
 
 You may wish to cache the router for production deployments so that the

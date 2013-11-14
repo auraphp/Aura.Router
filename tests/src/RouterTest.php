@@ -301,10 +301,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         
         $expect = array(
             'name' => 'blog.add',
-            'path' => '/api/v1/blog',
+            'path' => '/api/v1/blog/add',
             'tokens' => array(),
             'server' => array(
-                'REQUEST_METHOD' => 'POST',
+                'REQUEST_METHOD' => 'GET',
             ),
             'values' => array(
                 'action' => 'add',
@@ -344,18 +344,18 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertRoute($expect, $routes['blog.delete']);
         
         $expect = array(
-            'name' => 'blog.new',
-            'path' => '/api/v1/blog/new',
+            'name' => 'blog.create',
+            'path' => '/api/v1/blog',
             'tokens' => array(),
             'server' => array(
-                'REQUEST_METHOD' => 'GET',
+                'REQUEST_METHOD' => 'POST',
             ),
             'values' => array(
-                'action' => 'new',
+                'action' => 'create',
                 'controller' => 'blog',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.new']);
+        $this->assertRoute($expect, $routes['blog.create']);
         
         $expect = array(
             'name' => 'blog.update',
