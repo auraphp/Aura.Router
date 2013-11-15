@@ -8,7 +8,8 @@ This package does not provide a dispatching mechanism. Your application is
 expected to take the information provided by the matching route and dispatch
 to a controller on its own. For one possible dispatch system, please see
 [Aura.Dispatcher][].
-  
+
+
 ## Foreword
 
 ### Requirements
@@ -65,7 +66,6 @@ You will need to place the _Router_ where you can get to it from your
 application; e.g., in a registry, a service locator, or a dependency injection
 container. One such system is the [Aura.Di](https://github.com/auraphp/Aura.Di)
 package.
-
 
 ### Adding A Route
 
@@ -176,7 +176,6 @@ Again, note that the _Router_ will not dispatch for you; the above is provided
 as a naive example only to show how to use route values.  For a more complex
 dispatching system, try [Aura.Dispatcher][].
 
-
 ### Generating A Route Path
 
 To generate a URL path from a route so that you can create links, call
@@ -203,6 +202,7 @@ cause that data to be interpolated into the route path. This data array is
 optional. If there are path params without matching data keys, those params
 will *not* be replaced, leaving the `{param}` token in the path. If there are
 data keys without matching params, those values will not be added to the path.
+
 
 ## Advanced Usage
 
@@ -269,8 +269,8 @@ Here is a full extended route specification named `read`:
 
 ```php
 <?php
-$route = $router->add('read', '/blog/read/{id}{format}');
-$route->addTokens(array(
+$router->add('read', '/blog/read/{id}{format}')
+    ->addTokens(array(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
         'REQUEST_METHOD' => 'GET|POST',
@@ -318,7 +318,7 @@ $router->addServer(array(
     'REQUEST_METHOD' => 'PUT|PATCH',
 ));
 
-// add to the default param values; ; setValues() is also available
+// add to the default param values; setValues() is also available
 $router->addValues(array(
     'format' => null,
 ));
@@ -363,6 +363,34 @@ $router->add('archive', '/archive/{year}/{month}/{day}')
         'month' => '[^/]+',
         'day'   => '[^/]+',
     ));
+?>
+```
+
+### Automatic Params
+
+The _Router_ will automatically populate values for `controller` and `action`
+route params if those params do not already have values. The `controller`
+value defaults to the route name prefix (if one exists), and the `action`
+value defaults to the route name itself.
+
+```php
+<?php
+// the 'action' param value on this route will be 'foo'
+// because it has not been set otherwise
+$router->add('foo', '/path/to/foo');
+
+// the 'action' param value on this route will be 'baz'
+// because we explicitly set a default in the router
+$router->setValues(array('action' => 'baz'));
+$route->add('bar', '/path/to/bar');
+
+// the default value for the 'action' param on this route will be
+// 'zim' because we explicitly set it on the extended route spec
+$route->add('dib', '/path/to/dib')
+    ->setValues(array('action' => 'zim'));
+
+// the 'action' param here will be whatever the path value for {action} is
+$route->add('/path/to/{action}');
 ?>
 ```
 
@@ -425,6 +453,27 @@ $link = $router->generate('archive', array(
 ?>
 ```
 
+Similarly, optional params can be used as a generic catchall route:
+
+```php
+<?php
+$router->add('generic', '{/controller,action,id}')
+    ->setValues(array(
+        'controller' => 'index',
+        'action' => 'browse',
+        'id' => null,
+    );
+?>
+```
+
+That will match these paths, with these param values:
+
+    /           : 'controller' => 'index', 'action' => 'browse', 'id' => null
+    /foo        : 'controller' => 'foo',   'action' => 'browse', 'id' => null
+    /foo/bar    : 'controller' => 'foo',   'action' => 'bar',    'id' => null
+    /foo/bar/42 : 'controller' => 'foo',   'action' => 'bar',    'id' => '42'
+
+
 ### Wildcard Params
 
 Sometimes it is useful to allow the trailing part of the path be anything at
@@ -470,34 +519,6 @@ $link = $router->generate('wild_post', array(
         'baz',
     );
 )); // "/post/88/foo/bar/baz"
-?>
-```
-
-### Automatic Params
-
-The _Router_ will automatically populate values for `controller` and `action`
-route params if those param do not already have values. The `controller` value
-defaults to the route name prefix (if one exists), and the `action` value
-defaults to the route name itself.
-
-```php
-<?php
-// the 'action' param value on this route will be 'foo'
-// because it has not been set otherwise
-$router->add('foo', '/path/to/foo');
-
-// the 'action' param value on this route will be 'baz'
-// because we explicitly set a default in the router
-$router->setValues(array('action' => 'baz'));
-$route->add('bar', '/path/to/bar');
-
-// the default value for the 'action' param on this route will be
-// 'zim' because we explicitly set it on the extended route spec
-$route->add('dib', '/path/to/dib')
-    ->setValues(array('action' => 'zim'));
-
-// the 'action' param here will be whatever the path value for {action} is
-$route->add('/path/to/{action}');
 ?>
 ```
 
