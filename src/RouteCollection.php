@@ -14,7 +14,6 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use UnexpectedValueException;
 
 /**
  * 
@@ -113,7 +112,7 @@ class RouteCollection extends AbstractSpec implements
 	public function offsetSet($name, $route)
 	{
 	    if (! $route instanceof Route) {
-	        throw new UnexpectedValueException;
+	        throw new Exception\UnexpectedValue;
 	    }
 	    
 	    $this->routes[$name] = $route;
@@ -169,18 +168,6 @@ class RouteCollection extends AbstractSpec implements
 	public function getIterator()
 	{
 	    return new ArrayIterator($this->routes);
-	}
-	
-	/**
-	 * 
-	 * Return the array of route objects in this collection.
-	 * 
-	 * @return array
-	 * 
-	 */
-	public function toArray()
-	{
-	    return $this->routes;
 	}
 	
     /**

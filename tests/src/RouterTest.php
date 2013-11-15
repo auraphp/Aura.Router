@@ -386,4 +386,63 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertRoute($expect, $routes['blog.replace']);
         
     }
+    
+    public function testCatchAll()
+    {
+        $this->router->add(null, '{/controller,action,id}');
+        
+        $actual = $this->router->match('/', array());
+        $expect = array(
+            'params' => array(
+                'controller' => null,
+                'action' => null,
+                'id' => null,
+            ),
+        );
+        $this->assertRoute($expect, $actual);
+        
+        $actual = $this->router->match('/foo', array());
+        $expect = array(
+            'params' => array(
+                'controller' => 'foo',
+                'action' => null,
+                'id' => null,
+            ),
+        );
+        $this->assertRoute($expect, $actual);
+        
+        $actual = $this->router->match('/foo/bar', array());
+        $expect = array(
+            'params' => array(
+                'controller' => 'foo',
+                'action' => 'bar',
+                'id' => null,
+            ),
+        );
+        $this->assertRoute($expect, $actual);
+        
+        $actual = $this->router->match('/foo/bar/baz', array());
+        $expect = array(
+            'params' => array(
+                'controller' => 'foo',
+                'action' => 'bar',
+                'id' => 'baz',
+            ),
+        );
+        $this->assertRoute($expect, $actual);
+    }
+    
+    public function testArrayAccess()
+    {
+        $foo = $this->router->add('foo', '/foo');
+        
+        $this->router->offsetUnset('foo');
+        $this->assertFalse($this->router->offsetExists('foo'));
+        
+        $this->router->offsetSet('foo', $foo);
+        $this->assertTrue($this->router->offsetExists('foo'));
+        
+        $this->setExpectedException('Aura\Router\Exception\UnexpectedValue');
+        $this->router->offsetSet('bar', 'not a route');
+    }
 }

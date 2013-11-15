@@ -290,15 +290,28 @@ class Route extends AbstractSpec
             return;
         }
         
+        // the list of all tokens
         $list = explode(',', $matches[1]);
+        
+        // the subpattern parts
         $head = '';
         $tail = '';
+        
+        // if the optional set is the first part of the path. make sure there
+        // is a leading slash in the replacement before the optional param.
+        if (substr($this->regex, 0, 2) == '{/') {
+            $name = array_shift($list);
+            $head = "/({{$name}})?";
+        }
+        
+        // add remaining optional params
         foreach ($list as $name) {
             $head .= "(/{{$name}}";
             $tail .= ')?';
         }
-        $repl = $head . $tail;
-        $this->regex = str_replace($matches[0], $repl, $this->regex);
+        
+        // put together the regex replacement
+        $this->regex = str_replace($matches[0], $head . $tail, $this->regex);
     }
     
     /**
