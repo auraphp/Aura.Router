@@ -54,11 +54,10 @@ Instantiate a _Router_ like so:
 
 ```php
 <?php
-use Aura\Router\Router;
-use Aura\Router\RouteCollection;
-use Aura\Router\RouteFactory;
+use Aura\Router\RouterFactory;
 
-$router = new Router(new RouteCollection(new RouteFactory));
+$router_factory = new RouterFactory;
+$router = $router_factory->newInstance();
 ?>
 ```
 
@@ -341,27 +340,6 @@ $router->setGenerateCallable(function (...) { ... });
 ?>
 ```
   
-### Route Name As Param
-
-You can have the _Router_ use the route name as the default value for param,
-if that param does not already have a default value:
-
-```php
-<?php
-// use the route name as the 'action' param
-$router->setNameParam('action');
-
-// the default value for the 'action' param on this route will be 'foo'
-// because it has not been set otherwise
-$router->add('foo', '/path/to/foo');
-
-// the default value for the 'action' param on this route will be 'zim'
-// because we explicitly set it in the router
-$router->setValues(array('action' => 'zim'));
-$route->add('baz', '/path/to/baz');
-?>
-```
-
 ### Simple Routes
 
 You don't need to specify an extended route specification. With the following
@@ -492,6 +470,34 @@ $link = $router->generate('wild_post', array(
         'baz',
     );
 )); // "/post/88/foo/bar/baz"
+?>
+```
+
+### Automatic Params
+
+The _Router_ will automatically populate values for `controller` and `action`
+route params if those param do not already have values. The `controller` value
+defaults to the route name prefix (if one exists), and the `action` value
+defaults to the route name itself.
+
+```php
+<?php
+// the 'action' param value on this route will be 'foo'
+// because it has not been set otherwise
+$router->add('foo', '/path/to/foo');
+
+// the 'action' param value on this route will be 'baz'
+// because we explicitly set a default in the router
+$router->setValues(array('action' => 'baz'));
+$route->add('bar', '/path/to/bar');
+
+// the default value for the 'action' param on this route will be
+// 'zim' because we explicitly set it on the extended route spec
+$route->add('dib', '/path/to/dib')
+    ->setValues(array('action' => 'zim'));
+
+// the 'action' param here will be whatever the path value for {action} is
+$route->add('/path/to/{action}');
 ?>
 ```
 
