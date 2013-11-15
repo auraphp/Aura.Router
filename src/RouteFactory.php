@@ -12,7 +12,7 @@ namespace Aura\Router;
 
 /**
  * 
- * A factory to create Definition and Route objects.
+ * A factory to create Route objects.
  * 
  * @package Aura.Router
  * 
@@ -21,7 +21,7 @@ class RouteFactory
 {
     /**
      * 
-     * The class to create.
+     * The route class to create.
      * 
      * @param string
      * 
@@ -32,7 +32,7 @@ class RouteFactory
 	 * 
 	 * Constructor.
 	 * 
-	 * @param string $class The class to create.
+	 * @param string $class The route class to create.
 	 * 
 	 */
 	public function __construct($class = 'Aura\Router\Route')
@@ -42,7 +42,7 @@ class RouteFactory
 	
     /**
      * 
-     * Returns a new Route instance.
+     * Returns a new instance of the route class.
      * 
      * @param string $path The path for the route.
      * 
