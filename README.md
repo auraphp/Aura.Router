@@ -535,7 +535,7 @@ $path_prefix = '/blog';
 
 $router->attach($name_prefix, $path_prefix, function ($router) {
     
-    $router->add('.browse', '{format}')
+    $router->add('browse', '{format}')
         ->addTokens(array(
             'format' => '(\.json|\.atom|\.html)?'
         ))
@@ -543,7 +543,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'format' => '.html',
         ));
     
-    $router->add('.read', '/{id}{format}', array(
+    $router->add('read', '/{id}{format}', array(
         ->addTokens(array(
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
@@ -552,7 +552,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'format' => '.html',
         ));
     
-    $router->add('.edit', '/{id}/edit{format}', array(
+    $router->add('edit', '/{id}/edit{format}', array(
         ->addTokens(array(
             'id' => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
@@ -589,7 +589,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
     ));
     
     $router->setValues(array(
-        'format' => '.html',
+        'format' => 'html',
     ));
     
     $router->add('browse', '');
