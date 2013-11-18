@@ -283,7 +283,7 @@ $router->add('read', '/blog/read/{id}{format}')
     ))
     ->setSecure(false)
     ->setRoutable(false)
-    ->setIsMatch(function(array $server, \ArrayObject $matches) {
+    ->setIsMatchCallable(function(array $server, \ArrayObject $matches) {
             
         // disallow matching if referred from example.com
         if ($server['HTTP_REFERER'] == 'http://example.com') {
@@ -295,7 +295,7 @@ $router->add('read', '/blog/read/{id}{format}')
         return true;
         
     })
-    ->setGenerate(function (\ArrayObject $data) {
+    ->setGenerateCallable(function (\ArrayObject $data) {
         $data['foo'] = 'bar';
     });
 ?>
