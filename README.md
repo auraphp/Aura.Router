@@ -589,7 +589,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
     ));
     
     $router->setValues(array(
-        'format' => 'html',
+        'format' => '.html',
     ));
     
     $router->add('browse', '');
