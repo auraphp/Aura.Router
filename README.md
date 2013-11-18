@@ -634,21 +634,16 @@ create them.
 ```php
 <?php
 $router->setResourceCallable(function ($router) {
-    $router->addTokens('resource' => $router->getNamePrefix());
-    $router->setNameParam('method');
-    $router->addGet('get', '');
-    $router->addPost('post', '/{id}');
-    $router->addPut('put', '/{id}');
-    $router->addPatch('patch', '/{id}');
+    $router->addPost('create', '/{id}');
+    $router->addGet('read', '/{id}');
+    $router->addPatch('update', '/{id}');
     $router->addDelete('delete', '/{id}');
 });
 ?>
 ```
 
-That example will cause 5 routes to be added for the resource when you call
-`attachResource()`, will set the `method` param to the route name, and the
-`resource` param to the route name prefix.
-
+That example will cause only four CRUD routes to be added for the resource
+when you call `attachResource()`.
 
 ### Caching Route Information
 
