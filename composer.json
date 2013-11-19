@@ -20,6 +20,8 @@
         ]
     },
     "extra": {
-        "aura": "package"
+        "aura": {
+            "type": "library"
+        }
     }
 }
