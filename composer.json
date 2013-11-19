@@ -18,5 +18,8 @@
         "files": [
             "autoload.php"
         ]
+    },
+    "extra": {
+        "aura": "package"
     }
 }
