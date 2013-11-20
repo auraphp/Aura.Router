@@ -14,12 +14,12 @@ use Aura\Router\Exception;
 
 /**
  * 
- * A collection of routes to be matched.
+ * A wrapper for the collection of routes to be matched.
  * 
  * @package Aura.Router
  * 
  */
-class Router extends AbstractSpec
+class Router
 {
     /**
      * 
