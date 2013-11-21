@@ -28,7 +28,7 @@ class Router
      * @var array
      * 
      */
-    protected $log = array();
+    protected $debug = array();
 
     /**
      * 
@@ -81,11 +81,11 @@ class Router
      */
     public function match($path, array $server = array())
     {
-        $this->log = array();
+        $this->debug = array();
 
         foreach ($this->routes as $route) {
             $match = $route->isMatch($path, $server);
-            $this->log[] = $route;
+            $this->debug[] = $route;
             if ($match) {
                 return $route;
             }
@@ -149,13 +149,13 @@ class Router
 
     /**
      * 
-     * Gets the log of attempted route matches.
+     * Gets the attempted route matches.
      * 
-     * @return array
+     * @return array An array of routes from the last match() attempt.
      * 
      */
-    public function getLog()
+    public function getDebug()
     {
-        return $this->log;
+        return $this->debug;
     }
 }

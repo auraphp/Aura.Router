@@ -257,10 +257,17 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
     }
     
-    public function testGetLog()
+    public function testGetDebug()
     {
-        // this is weak. we should actually see if the log contains anything.
-        $this->assertSame(array(), $this->router->getLog());
+        $foo = $this->router->add(null, '/foo');
+        $bar = $this->router->add(null, '/bar');
+        $baz = $this->router->add(null, '/baz');
+        
+        $this->router->match('/bar');
+        
+        $actual = $this->router->getDebug();
+        $expect = array($foo, $bar);
+        $this->assertSame($expect, $actual);
     }
     
     public function testAttachResource()
