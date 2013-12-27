@@ -369,30 +369,35 @@ $router->add('archive', '/archive/{year}/{month}/{day}')
 ### Automatic Params
 
 The _Router_ will automatically populate values for `controller` and `action`
-route params if those params do not already have values. The `controller`
-value defaults to the route name prefix (if one exists), and the `action`
-value defaults to the route name itself.
+route params if those params do not already have values. The _Router_ combines
+the route name prefix (if one exists) with a dot and the route name; the
+portion before the last dot is the `controller` value, and the `action` value
+is the portion after the last dot.
 
 ```php
 <?php
-// the 'action' param value on this route will be 'foo'
-// because it has not been set otherwise
-$router->add('foo', '/path/to/foo');
+// controller = 'foo' and action = 'bar'
+// because they have not been set otherwise
+$router->add('foo.bar', '/path/to/bar');
 
 // the 'action' param value on this route will be 'baz'
-// because we explicitly set a default in the router
+// because we explicitly set a default in the router;
+// 'controller' is still 'foo'
 $router->setValues(array('action' => 'baz'));
-$route->add('bar', '/path/to/bar');
+$route->add('foo.bar', '/path/to/bar');
 
-// the default value for the 'action' param on this route will be
+// the value for the 'action' param on this route will be
 // 'zim' because we explicitly set it on the extended route spec
-$route->add('dib', '/path/to/dib')
+$route->add('foo.dib', '/path/to/dib')
     ->setValues(array('action' => 'zim'));
 
 // the 'action' param here will be whatever the path value for {action} is
 $route->add('/path/to/{action}');
 ?>
 ```
+
+> N.b. If there are no dots in the combined name, the `controller` value will
+> be null and the `action` value will be the name.
 
 ### Optional Params
 

@@ -195,9 +195,22 @@ class RouteCollection extends AbstractSpec implements
         $route = $this->route_factory->newInstance($full_path, $full_name);
         
         // add controller and action values
+        $controller_action = $this->spec['name_prefix'];
+        if ($this->spec['name_prefix'] && $name) {
+            $controller_action .= '.';
+        }
+        $controller_action .= $name;
+        $pos = strrpos($controller_action, '.');
+        if ($pos !== false) {
+            $controller = substr($controller_action, 0, $pos);
+            $action = substr($controller_action, $pos + 1);
+        } else {
+            $controller = $this->spec['name_prefix'];
+            $action = $name;
+        }
         $route->addValues(array(
-            'controller' => $this->spec['name_prefix'],
-            'action' => $name,
+            'controller' => $controller,
+            'action' => $action,
         ));
         
         // set default specs from router, which override the automatic
