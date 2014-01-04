@@ -63,7 +63,8 @@ class RouteCollection extends AbstractSpec implements
 	    'generate'    => null,
 	    'name_prefix' => null,
 	    'path_prefix' => null,
-	    'resource'    => null,
+	    'resource_callable'    => null,
+	    'route_callable' => null,
 	);
 	
 	/**
@@ -82,6 +83,7 @@ class RouteCollection extends AbstractSpec implements
 	    $this->route_factory = $route_factory;
         $this->routes = $routes;
         $this->setResourceCallable(array($this, 'resourceCallable'));
+        $this->setRouteCallable(array($this, 'routeCallable'));
 	}
 	
 	/**
@@ -191,30 +193,10 @@ class RouteCollection extends AbstractSpec implements
         // build a full path with prefix
         $full_path = $this->spec['path_prefix'] . $path;
         
-        // create the route with the full path and name
+        // create the route with the full path and name, and pre-modify
         $route = $this->route_factory->newInstance($full_path, $full_name);
         
-        // add controller and action values
-        $controller_action = $this->spec['name_prefix'];
-        if ($this->spec['name_prefix'] && $name) {
-            $controller_action .= '.';
-        }
-        $controller_action .= $name;
-        $pos = strrpos($controller_action, '.');
-        if ($pos !== false) {
-            $controller = substr($controller_action, 0, $pos);
-            $action = substr($controller_action, $pos + 1);
-        } else {
-            $controller = $this->spec['name_prefix'];
-            $action = $name;
-        }
-        $route->addValues(array(
-            'controller' => $controller,
-            'action' => $action,
-        ));
-        
-        // set default specs from router, which override the automatic
-        // controller and action values
+        // set default specification
         $route->addTokens($this->spec['tokens']);
         $route->addServer($this->spec['server']);
         $route->addValues($this->spec['values']);
@@ -231,7 +213,10 @@ class RouteCollection extends AbstractSpec implements
             $this->routes[$route->name] = $route;
         }
         
-        // done!
+        // modify newly-added route
+        call_user_func($this->spec['route_callable'], $route);
+        
+        // done; return for further modification
         return $route;
     }
 
@@ -345,6 +330,55 @@ class RouteCollection extends AbstractSpec implements
     
     /**
      * 
+     * Sets the callable for modifying a newly-added route before it is
+     * returned.
+     * 
+     * @param callable $callable The callable to modify the route.
+     * 
+     * @return $this
+     * 
+     */
+    public function setRouteCallable($callable)
+    {
+        $this->spec['route_callable'] = $callable;
+        return $this;
+    }
+    
+    /**
+     * 
+     * Modifies the newly-added route to set 'controller' and 'action' values
+     * if they are not already present.  Uses the route name to do so.
+     * 
+     * @param Route $route The newly-added route.
+     * 
+     * @return null
+     * 
+     */
+    protected function routeCallable(Route $route)
+    {
+        $action = $route->name;
+        if (! $action) {
+            return;
+        }
+        
+        $controller = null;
+        $pos = strrpos($action, '.');
+        if ($pos !== false) {
+            $controller = substr($action, 0, $pos);
+            $action = substr($action, $pos + 1);
+        }
+        
+        if (! isset($route->values['controller'])) {
+            $route->addValues(array('controller' => $controller));
+        }
+        
+        if (! isset($route->values['action'])) {
+            $route->addValues(array('action' => $action));
+        }
+    }
+    
+    /**
+     * 
      * Attaches routes to a specific path prefix, and prefixes the attached 
      * route names.
      * 
@@ -375,7 +409,7 @@ class RouteCollection extends AbstractSpec implements
         // append to the path prefix
         $this->spec['path_prefix'] .= $path;
         
-        // invoke the callable, passing this Router as the only param
+        // invoke the callable, passing this RouteCollection as the only param
         call_user_func($callable, $this);
         
         // restore previous spec
@@ -396,7 +430,7 @@ class RouteCollection extends AbstractSpec implements
      */
     public function attachResource($name, $path)
     {
-        $this->attach($name, $path, $this->spec['resource']);
+        $this->attach($name, $path, $this->spec['resource_callable']);
     }
 
     /**
@@ -410,7 +444,7 @@ class RouteCollection extends AbstractSpec implements
      */
     public function setResourceCallable($resource)
     {
-        $this->spec['resource'] = $resource;
+        $this->spec['resource_callable'] = $resource;
         return $this;
     }
     
