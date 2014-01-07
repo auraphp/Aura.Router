@@ -279,6 +279,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'name' => 'blog.browse',
             'path' => '/api/v1/blog{format}',
             'tokens' => array(
+                'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
             'server' => array(
@@ -295,6 +296,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'name' => 'blog.read',
             'path' => '/api/v1/blog/{id}{format}',
             'tokens' => array(
+                'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
             'server' => array(
@@ -310,7 +312,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'name' => 'blog.add',
             'path' => '/api/v1/blog/add',
-            'tokens' => array(),
+            'tokens' => array(
+                'id' => '\d+',
+                'format' => '(\.[^/]+)?',
+            ),
             'server' => array(
                 'REQUEST_METHOD' => 'GET',
             ),
@@ -325,6 +330,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'name' => 'blog.edit',
             'path' => '/api/v1/blog/{id}/edit{format}',
             'tokens' => array(
+                'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
             'server' => array(
@@ -340,7 +346,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'name' => 'blog.delete',
             'path' => '/api/v1/blog/{id}',
-            'tokens' => array(),
+            'tokens' => array(
+                'id' => '\d+',
+                'format' => '(\.[^/]+)?',
+            ),
             'server' => array(
                 'REQUEST_METHOD' => 'DELETE',
             ),
@@ -354,7 +363,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'name' => 'blog.create',
             'path' => '/api/v1/blog',
-            'tokens' => array(),
+            'tokens' => array(
+                'id' => '\d+',
+                'format' => '(\.[^/]+)?',
+            ),
             'server' => array(
                 'REQUEST_METHOD' => 'POST',
             ),
@@ -368,7 +380,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'name' => 'blog.update',
             'path' => '/api/v1/blog/{id}',
-            'tokens' => array(),
+            'tokens' => array(
+                'id' => '\d+',
+                'format' => '(\.[^/]+)?',
+            ),
             'server' => array(
                 'REQUEST_METHOD' => 'PATCH',
             ),
@@ -382,7 +397,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'name' => 'blog.replace',
             'path' => '/api/v1/blog/{id}',
-            'tokens' => array(),
+            'tokens' => array(
+                'id' => '\d+',
+                'format' => '(\.[^/]+)?',
+            ),
             'server' => array(
                 'REQUEST_METHOD' => 'PUT',
             ),

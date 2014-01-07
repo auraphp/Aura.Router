@@ -53,17 +53,17 @@ class RouteCollection extends AbstractSpec implements
 	 * 
 	 */
 	protected $spec = array(
-	    'tokens'      => array(),
-	    'server'      => array(),
-	    'values'      => array(),
-	    'secure'      => null,
-	    'wildcard'    => null,
-	    'routable'    => true,
-	    'is_match'    => null,
-	    'generate'    => null,
+	    'tokens' => array(),
+	    'server' => array(),
+	    'values' => array(),
+	    'secure' => null,
+	    'wildcard' => null,
+	    'routable' => true,
+	    'is_match' => null,
+	    'generate' => null,
 	    'name_prefix' => null,
 	    'path_prefix' => null,
-	    'resource_callable'    => null,
+	    'resource_callable' => null,
 	    'route_callable' => null,
 	);
 	
@@ -459,38 +459,26 @@ class RouteCollection extends AbstractSpec implements
      */
     protected function resourceCallable(RouteCollection $router)
     {
-        // browse the resources, optionally in a format.
-        // can double for search when a query string is passed.
-        $router->addGet('browse', '{format}')
-            ->addTokens(array(
-                'format' => '(\.[^/]+)?',
-            ));
-
-        // get a single resource by ID, optionally in a format
-        $router->addGet('read', '/{id}{format}')
-            ->addTokens(array(
-                'format' => '(\.[^/]+)?',
-            ));
-
-        // get the form to add new resource
-        $router->addGet('add', '/add');
-
-        // get the form for an existing resource by ID, optionally in a format
-        $router->addGet('edit', '/{id}/edit{format}')
-            ->addTokens(array(
-                'format' => '(\.[^/]+)?',
-            ));
-
-        // delete a resource by ID
-        $router->addDelete('delete', '/{id}');
-
-        // create a resource and get back its location
-        $router->addPost('create', '');
-
-        // update part or all an existing resource by ID
-        $router->addPatch('update', '/{id}');
+        // add 'id' and 'format' if not already defined
+        $tokens = array();
+        if (! isset($router->tokens['id'])) {
+            $tokens['id'] = '\d+';
+        }
+        if (! isset($router->tokens['format'])) {
+            $tokens['format'] = '(\.[^/]+)?';
+        }
+        if ($tokens) {
+            $router->addTokens($tokens);
+        }
         
-        // replace an existing resource by ID
+        // add the routes
+        $router->addGet('browse', '{format}');
+        $router->addGet('read', '/{id}{format}');
+        $router->addGet('edit', '/{id}/edit{format}');
+        $router->addGet('add', '/add');
+        $router->addDelete('delete', '/{id}');
+        $router->addPost('create', '');
+        $router->addPatch('update', '/{id}');
         $router->addPut('replace', '/{id}');
     }
 }

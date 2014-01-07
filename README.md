@@ -625,10 +625,15 @@ That method call will result in the following routes being added:
 | blog.add      | GET           | /blog/add             | controller=>blog, action=>add     | The form for adding a resource
 | blog.delete   | DELETE        | /blog/{id}            | controller=>blog, action=>delete  | Delete a single resource
 | blog.create   | POST          | /blog                 | controller=>blog, action=>create  | Create a new resource
-| blog.update   | PUT or PATCH  | /blog/{id}            | controller=>blog, action=>update  | Update an existing resource
+| blog.update   | PATCH         | /blog/{id}            | controller=>blog, action=>update  | Update part of an existing resource
+| blog.replace  | PUT           | /blog/{id}            | controller=>blog, action=>replace | Replace an entire existing resource
 
-The `{id}` token is any series of non-slash characters, and the `{format}`
-token is an optional dot-format file extension (including the dot itself).
+The `{id}` token is whatever has already been defined in the router; it not
+already defined, it will be any series of numeric digits. Likewise, the
+`{format}` token is whatever has already been defined in the router; if not
+already defined, it is an optional dot-format file extension (including the
+dot itself).
+
 The `controller` value comes from the route name prefix, and the `action`
 value comes from the route name.
 
@@ -639,6 +644,9 @@ create them.
 ```php
 <?php
 $router->setResourceCallable(function ($router) {
+    $router->setTokens(array(
+        'id' => '([a-f0-9]+)'
+    ));
     $router->addPost('create', '/{id}');
     $router->addGet('read', '/{id}');
     $router->addPatch('update', '/{id}');
@@ -647,8 +655,8 @@ $router->setResourceCallable(function ($router) {
 ?>
 ```
 
-That example will cause only four CRUD routes to be added for the resource
-when you call `attachResource()`.
+That example will cause only four CRUD routes, using hexadecimal resource IDs,
+to be added for the resource when you call `attachResource()`.
 
 ### Caching Route Information
 
