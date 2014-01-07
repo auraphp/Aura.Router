@@ -53,7 +53,7 @@ class Router
     
     /**
      * 
-     * Makes the Router object a facade for the RouteCollection.
+     * Makes the Router object a proxy for the RouteCollection.
      * 
      * @param string $func The method to call on the RouteCollection.
      * 
