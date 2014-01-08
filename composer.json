@@ -2,12 +2,16 @@
     "name": "aura/router",
     "type": "library",
     "description": "A web router implementation; given a URI path and a copy of $_SERVER, it will extract path-info parameter values for a specific route.",
-    "keywords": [ "route", "router", "routing" ],
-    "homepage": "http://auraphp.github.com/Aura.Router",
+    "keywords": [
+        "route",
+        "router",
+        "routing"
+    ],
+    "homepage": "https://github.com/auraphp/Aura.Router/releases",
     "license": "BSD-2-Clause",
     "authors": [
         {
-            "name": "Aura Contributors",
+            "name": "Aura.Router Contributors",
             "homepage": "https://github.com/auraphp/Aura.Router/contributors"
         }
     ],
