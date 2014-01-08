@@ -1,5 +1,0 @@
-- [DOC] Add PHP 5.5 to Travis build, update README and LICENSE.
-
-- [ADD] Route::__isset()
-
-- [CHG] Route::attach() now works with an empty path
