@@ -471,4 +471,5 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('Aura\Router\Exception\UnexpectedValue');
         $this->router->offsetSet('bar', 'not a route');
     }
+
 }
