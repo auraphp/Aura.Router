@@ -312,9 +312,9 @@ class Route extends AbstractSpec
         // ex: [/{language}] or [.{type}]
         preg_match_all('#\[([^\[{}])*({[^\[\[]+})+\]#', $this->regex, $matches);
         if (isset($matches[0]) && !empty($matches[0])) {
-            $this->regexOptionalParams = [];
+            $this->regexOptionalParams = array();
             // replacements for the regex
-            $replacements = [];
+            $replacements = array();
             foreach (array_keys($matches[0]) as $index) {
                 $replacement = '(';
                 // this is the prefix before the parameter
