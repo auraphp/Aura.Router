@@ -625,12 +625,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($foo->isMatch('/blog/archive/2014/01', array()));
 
         $this->assertEquals(
-            [
+            array(
                 'language' => 'en',
                 'type' => 'html',
                 'year' => '2014',
                 'month' => '01',
-            ],
+            ),
             $foo->params);
 
         // test generate with default language
