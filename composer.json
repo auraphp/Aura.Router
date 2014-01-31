@@ -19,9 +19,9 @@
         "php": ">=5.3.0"
     },
     "autoload": {
-        "files": [
-            "autoload.php"
-        ]
+        "psr-4": {
+            "Aura\\Router\\": "src/"
+        }
     },
     "extra": {
         "aura": {
