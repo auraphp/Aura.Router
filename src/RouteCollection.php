@@ -168,28 +168,14 @@ class RouteCollection extends AbstractSpec implements
      */
     public function add($name, $path)
     {
-        // build a full name with prefix, but only if name is given
-        $full_name = ($this->name_prefix && $name)
-                   ? $this->name_prefix . '.' . $name
-                   : $name;
+        // create the route with the full path, name, and spec
+        $route = $this->route_factory->newInstance(
+            $path,
+            $name,
+            $this->getSpec()
+        );
         
-        // build a full path with prefix
-        $full_path = $this->path_prefix . $path;
-        
-        // create the route with the full path and name, and pre-modify
-        $route = $this->route_factory->newInstance($full_path, $full_name);
-        
-        // set default specification
-        $route->addTokens($this->tokens);
-        $route->addServer($this->server);
-        $route->addValues($this->values);
-        $route->setSecure($this->secure);
-        $route->setWildcard($this->wildcard);
-        $route->setRoutable($this->routable);
-        $route->setIsMatchCallable($this->is_match);
-        $route->setGenerateCallable($this->generate);
-        
-        // add the route under its full name
+        // add the route
         if (! $route->name) {
             $this->routes[] = $route;
         } else {
