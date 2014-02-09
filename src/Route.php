@@ -110,10 +110,6 @@ class Route extends AbstractSpec
      */
     public function __get($key)
     {
-        if (array_key_exists($key, $this->spec)) {
-            return $this->spec[$key];
-        }
-        
         return $this->$key;
     }
 
@@ -128,7 +124,7 @@ class Route extends AbstractSpec
      */
     public function __isset($key)
     {
-        return isset($this->spec[$key]) || isset($this->$key);
+        return isset($this->$key);
     }
 
     /**
@@ -151,7 +147,7 @@ class Route extends AbstractSpec
         $this->params = array();
         
         // routable?
-        if (! $this->spec['routable']) {
+        if (! $this->routable) {
             $this->debug[] = 'Not routable.';
             return false;
         }
@@ -194,15 +190,15 @@ class Route extends AbstractSpec
         
         // the data for replacements. do not use $this->merge(), as we do not
         // want to unset elements with null values.
-        $data = array_merge($this->spec['values'], $data);
+        $data = array_merge($this->values, $data);
         
         // use a callable to modify the data?
-        if ($this->spec['generate']) {
+        if ($this->generate) {
             // pass the data as an object, not as an array, so we can avoid
             // tricky hacks for references
             $arrobj = new ArrayObject($data);
             // modify
-            call_user_func($this->spec['generate'], $arrobj);
+            call_user_func($this->generate, $arrobj);
             // convert back to array
             $data = $arrobj->getArrayCopy();
         }
@@ -244,7 +240,7 @@ class Route extends AbstractSpec
         $link = strtr($link, $repl);
         
         // add wildcard data
-        $wildcard = $this->spec['wildcard'];
+        $wildcard = $this->wildcard;
         if ($wildcard && isset($data[$wildcard])) {
             $link = rtrim($link, '/');
             foreach ($data[$wildcard] as $val) {
@@ -329,8 +325,8 @@ class Route extends AbstractSpec
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! isset($this->spec['values'][$name])) {
-                $this->spec['values'][$name] = null;
+            if (! isset($this->values[$name])) {
+                $this->values[$name] = null;
             }
         }
     }
@@ -344,12 +340,12 @@ class Route extends AbstractSpec
      */
     protected function setRegexWildcard()
     {
-        if (! $this->spec['wildcard']) {
+        if (! $this->wildcard) {
             return;
         }
         
         $this->regex = rtrim($this->regex, '/')
-                     . "(/(?P<{$this->spec['wildcard']}>.*))?";
+                     . "(/(?P<{$this->wildcard}>.*))?";
     }
     
     /**
@@ -364,8 +360,8 @@ class Route extends AbstractSpec
     protected function getSubpattern($name)
     {
         // is there a custom subpattern for the name?
-        if (isset($this->spec['tokens'][$name])) {
-            return "(?P<{$name}>{$this->spec['tokens'][$name]})";
+        if (isset($this->tokens[$name])) {
+            return "(?P<{$name}>{$this->tokens[$name]})";
         }
         
         // use a default subpattern
@@ -402,7 +398,7 @@ class Route extends AbstractSpec
      */
     protected function isServerMatch($server)
     {
-        foreach ($this->spec['server'] as $name => $regex) {
+        foreach ($this->server as $name => $regex) {
             
             // get the corresponding server value
             $value = isset($server[$name]) ? $server[$name] : '';
@@ -436,17 +432,17 @@ class Route extends AbstractSpec
      */
     protected function isSecureMatch($server)
     {
-        if ($this->spec['secure'] !== null) {
+        if ($this->secure !== null) {
 
             $is_secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
                       || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
 
-            if ($this->spec['secure'] == true && ! $is_secure) {
+            if ($this->secure == true && ! $is_secure) {
                 $this->debug[] = 'Secure required, but not secure.';
                 return false;
             }
 
-            if ($this->spec['secure'] == false && $is_secure) {
+            if ($this->secure == false && $is_secure) {
                 $this->debug[] = 'Non-secure required, but is secure.';
                 return false;
             }
@@ -466,7 +462,7 @@ class Route extends AbstractSpec
      */
     protected function isCustomMatch($server)
     {
-        if (! $this->spec['is_match']) {
+        if (! $this->is_match) {
             return true;
         }
 
@@ -475,7 +471,7 @@ class Route extends AbstractSpec
         $arrobj = new ArrayObject($this->matches);
         
         // attempt the match
-        $result = call_user_func($this->spec['is_match'], $server, $arrobj);
+        $result = call_user_func($this->is_match, $server, $arrobj);
 
         // convert back to array
         $this->matches = $arrobj->getArrayCopy();
@@ -497,7 +493,7 @@ class Route extends AbstractSpec
      */
     protected function setParams()
     {
-        $this->params = $this->spec['values'];
+        $this->params = $this->values;
         
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
@@ -509,8 +505,8 @@ class Route extends AbstractSpec
         }
 
         // is a wildcard param specified?
-        if ($this->spec['wildcard']) {
-            $wildcard = $this->spec['wildcard'];
+        if ($this->wildcard) {
+            $wildcard = $this->wildcard;
             // are there are actual wildcard values?
             if (empty($this->params[$wildcard])) {
                 // no, set a blank array

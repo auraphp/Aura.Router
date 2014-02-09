@@ -19,23 +19,14 @@ namespace Aura\Router;
  */
 class AbstractSpec
 {
-    /**
-	 * 
-	 * An array of default route specifications.
-	 * 
-	 * @var array
-	 * 
-	 */
-	protected $spec = array(
-	    'tokens'      => array(),
-	    'server'      => array(),
-	    'values'      => array(),
-	    'secure'      => null,
-	    'wildcard'    => null,
-	    'routable'    => true,
-	    'is_match'    => null,
-	    'generate'    => null,
-	);
+	protected $tokens      = array();
+	protected $server      = array();
+	protected $values      = array();
+	protected $secure      = null;
+	protected $wildcard    = null;
+	protected $routable    = true;
+	protected $is_match    = null;
+	protected $generate    = null;
 	
     /**
      * 
@@ -48,7 +39,7 @@ class AbstractSpec
      */
     public function setTokens(array $tokens)
     {
-        $this->spec['tokens'] = $tokens;
+        $this->tokens = $tokens;
         return $this;
     }
     
@@ -63,7 +54,7 @@ class AbstractSpec
      */
     public function addTokens(array $tokens)
     {
-        $this->spec['tokens'] = array_merge($this->spec['tokens'], $tokens);
+        $this->tokens = array_merge($this->tokens, $tokens);
         $this->regex = null;
         return $this;
     }
@@ -79,7 +70,7 @@ class AbstractSpec
      */
     public function setServer(array $server)
     {
-        $this->spec['server'] = $server;
+        $this->server = $server;
         return $this;
     }
     
@@ -94,7 +85,7 @@ class AbstractSpec
      */
     public function addServer(array $server)
     {
-        $this->spec['server'] = array_merge($this->spec['server'], $server);
+        $this->server = array_merge($this->server, $server);
         $this->regex = null;
         return $this;
     }
@@ -110,7 +101,7 @@ class AbstractSpec
      */
     public function setValues(array $values)
     {
-        $this->spec['values'] = $values;
+        $this->values = $values;
         return $this;
     }
     
@@ -125,7 +116,7 @@ class AbstractSpec
      */
     public function addValues(array $values)
     {
-        $this->spec['values'] = array_merge($this->spec['values'], $values);
+        $this->values = array_merge($this->values, $values);
         return $this;
     }
     
@@ -141,7 +132,7 @@ class AbstractSpec
      */
     public function setSecure($secure = true)
     {
-        $this->spec['secure'] = ($secure === null) ? null : (bool) $secure;
+        $this->secure = ($secure === null) ? null : (bool) $secure;
         return $this;
     }
     
@@ -156,7 +147,7 @@ class AbstractSpec
      */
     public function setWildcard($wildcard)
     {
-        $this->spec['wildcard'] = $wildcard;
+        $this->wildcard = $wildcard;
         return $this;
     }
     
@@ -172,7 +163,7 @@ class AbstractSpec
      */
     public function setRoutable($routable = true)
     {
-        $this->spec['routable'] = (bool) $routable;
+        $this->routable = (bool) $routable;
         return $this;
     }
     
@@ -187,7 +178,7 @@ class AbstractSpec
      */
     public function setIsMatchCallable($is_match)
     {
-        $this->spec['is_match'] = $is_match;
+        $this->is_match = $is_match;
         return $this;
     }
     
@@ -203,7 +194,7 @@ class AbstractSpec
      */
     public function setGenerateCallable($generate)
     {
-        $this->spec['generate'] = $generate;
+        $this->generate = $generate;
         return $this;
     }
 }

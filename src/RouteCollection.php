@@ -45,27 +45,10 @@ class RouteCollection extends AbstractSpec implements
      */
     protected $route_factory;
     
-    /**
-	 * 
-	 * An array of default route specifications.
-	 * 
-	 * @var array
-	 * 
-	 */
-	protected $spec = array(
-	    'tokens' => array(),
-	    'server' => array(),
-	    'values' => array(),
-	    'secure' => null,
-	    'wildcard' => null,
-	    'routable' => true,
-	    'is_match' => null,
-	    'generate' => null,
-	    'name_prefix' => null,
-	    'path_prefix' => null,
-	    'resource_callable' => null,
-	    'route_callable' => null,
-	);
+	protected $name_prefix = null;
+	protected $path_prefix = null;
+	protected $resource_callable = null;
+	protected $route_callable = null;
 	
 	/**
 	 * 
@@ -186,25 +169,25 @@ class RouteCollection extends AbstractSpec implements
     public function add($name, $path)
     {
         // build a full name with prefix, but only if name is given
-        $full_name = ($this->spec['name_prefix'] && $name)
-                   ? $this->spec['name_prefix'] . '.' . $name
+        $full_name = ($this->name_prefix && $name)
+                   ? $this->name_prefix . '.' . $name
                    : $name;
         
         // build a full path with prefix
-        $full_path = $this->spec['path_prefix'] . $path;
+        $full_path = $this->path_prefix . $path;
         
         // create the route with the full path and name, and pre-modify
         $route = $this->route_factory->newInstance($full_path, $full_name);
         
         // set default specification
-        $route->addTokens($this->spec['tokens']);
-        $route->addServer($this->spec['server']);
-        $route->addValues($this->spec['values']);
-        $route->setSecure($this->spec['secure']);
-        $route->setWildcard($this->spec['wildcard']);
-        $route->setRoutable($this->spec['routable']);
-        $route->setIsMatchCallable($this->spec['is_match']);
-        $route->setGenerateCallable($this->spec['generate']);
+        $route->addTokens($this->tokens);
+        $route->addServer($this->server);
+        $route->addValues($this->values);
+        $route->setSecure($this->secure);
+        $route->setWildcard($this->wildcard);
+        $route->setRoutable($this->routable);
+        $route->setIsMatchCallable($this->is_match);
+        $route->setGenerateCallable($this->generate);
         
         // add the route under its full name
         if (! $route->name) {
@@ -214,7 +197,7 @@ class RouteCollection extends AbstractSpec implements
         }
         
         // modify newly-added route
-        call_user_func($this->spec['route_callable'], $route);
+        call_user_func($this->route_callable, $route);
         
         // done; return for further modification
         return $route;
@@ -340,7 +323,7 @@ class RouteCollection extends AbstractSpec implements
      */
     public function setRouteCallable($callable)
     {
-        $this->spec['route_callable'] = $callable;
+        $this->route_callable = $callable;
         return $this;
     }
     
@@ -398,24 +381,55 @@ class RouteCollection extends AbstractSpec implements
     public function attach($name, $path, $callable)
     {
         // save current spec
-        $old_spec = $this->spec;
+        $spec = $this->getSpec();
         
         // append to the name prefix, with delmiter if needed
-        if ($this->spec['name_prefix']) {
-            $this->spec['name_prefix'] .= '.';
+        if ($this->name_prefix) {
+            $this->name_prefix .= '.';
         }
-        $this->spec['name_prefix'] .= $name;
+        $this->name_prefix .= $name;
         
         // append to the path prefix
-        $this->spec['path_prefix'] .= $path;
+        $this->path_prefix .= $path;
         
         // invoke the callable, passing this RouteCollection as the only param
         call_user_func($callable, $this);
         
         // restore previous spec
-        $this->spec = $old_spec;
+        $this->setSpec($spec);
     }
     
+    protected function getSpec()
+    {
+        $vars = array(
+            'tokens',
+            'server',
+            'values',
+            'secure',
+            'wildcard',
+            'routable',
+            'is_match',
+            'generate',
+            'name_prefix',
+            'path_prefix',
+            'resource_callable',
+            'route_callable',
+        );
+
+        $spec = array();
+        foreach ($vars as $var) {
+            $spec[$var] = $this->$var;
+        }
+
+        return $spec;
+    }
+
+    protected function setSpec($spec)
+    {
+        foreach ($spec as $key => $val) {
+            $this->$key = $val;
+        }
+    }
     /**
      * 
      * Use the `$resourceCallable` to attach a resource.
@@ -430,7 +444,7 @@ class RouteCollection extends AbstractSpec implements
      */
     public function attachResource($name, $path)
     {
-        $this->attach($name, $path, $this->spec['resource_callable']);
+        $this->attach($name, $path, $this->resource_callable);
     }
 
     /**
@@ -444,7 +458,7 @@ class RouteCollection extends AbstractSpec implements
      */
     public function setResourceCallable($resource)
     {
-        $this->spec['resource_callable'] = $resource;
+        $this->resource_callable = $resource;
         return $this;
     }
     
