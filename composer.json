@@ -21,7 +21,7 @@
     "autoload": {
         "psr-4": {
             "Aura\\Router\\": "src/",
-            "Aura\\Router\\_Config\\": "src/"
+            "Aura\\Router\\_Config\\": "config/"
         }
     },
     "extra": {
