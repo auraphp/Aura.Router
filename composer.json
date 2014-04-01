@@ -20,12 +20,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Aura\\Router\\": "src/"
+            "Aura\\Router\\": "src/",
+            "Aura\\Router\\_Config\\": "src/"
         }
     },
     "extra": {
         "aura": {
-            "type": "library"
+            "type": "library",
+            "config": {
+                "common": "Aura\\Router\\_Config\\Common"
+            }
         },
         "branch-alias": {
             "dev-develop-2": "2.0.x-dev"
