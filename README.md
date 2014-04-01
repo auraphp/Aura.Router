@@ -30,7 +30,7 @@ _autoload.php_ file.
 
 ### Tests
 
-[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=develop-2)](https://travis-ci.org/auraphp/Aura.Autoload)
+[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=develop-2)](https://travis-ci.org/auraphp/Aura.Router)
 
 This library has 100% code coverage with [PHPUnit][]. To run the tests at the
 command line, go to the _tests_ directory and issue `phpunit`.
