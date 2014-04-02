@@ -369,7 +369,7 @@ class RouteCollection extends AbstractSpec implements
         // save current spec
         $spec = $this->getSpec();
         
-        // append to the name prefix, with delmiter if needed
+        // append to the name prefix, with delimiter if needed
         if ($this->name_prefix) {
             $this->name_prefix .= '.';
         }
