@@ -608,4 +608,37 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
     }
+
+    public function testOptionalTokens() {
+        $foo = $this->factory->newInstance('[/{language}]/blog/archive[/{year}][/{month}][.{type}]')
+            ->addTokens(array(
+                'language' => '[a-z]{0,2}',
+                'year' => '\d+',
+                'month' => '\d+',
+            ))
+            ->addValues(array(
+                'language' => 'en',
+                'type' => 'html'
+            ));
+
+        $this->assertTrue($foo->isMatch('/fr/blog/archive/2014/01', array()));
+        $this->assertTrue($foo->isMatch('/blog/archive/2014/01', array()));
+
+        $this->assertEquals(
+            array(
+                'language' => 'en',
+                'type' => 'html',
+                'year' => '2014',
+                'month' => '01',
+            ),
+            $foo->params);
+
+        // test generate with default language
+        $url = $foo->generate(array('languge' => 'en', 'type' => 'xml', 'year' => 2014));
+        $this->assertEquals('/blog/archive/2014.xml', $url);
+
+        // test generate with default type
+        $url = $foo->generate(array('language' => 'fr', 'type' => 'html', 'year' => 2014));
+        $this->assertEquals('/fr/blog/archive/2014', $url);
+    }
 }

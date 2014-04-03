@@ -63,7 +63,18 @@ class Route extends AbstractSpec
     protected $regex;
 
     /**
-     * 
+     *
+     * The optional params that are defined with brackets.
+     * These params are cached for performance reasons (when using the generate() method)
+     *
+     * @var array
+     *
+     */
+    protected $regexOptionalParams = array();
+
+
+    /**
+     *
      * All params found during the `isMatch()` process, both from the path
      * tokens and from matched server values.
      * 
@@ -156,7 +167,7 @@ class Route extends AbstractSpec
         if (! $this->regex) {
             $this->setRegex();
         }
-        
+
         // check matches
         $is_match = $this->isRegexMatch($path)
                  && $this->isServerMatch($server)
@@ -211,7 +222,19 @@ class Route extends AbstractSpec
                 $repl["{{$key}}"] = rawurlencode($val);
             }
         }
-        
+
+        // replacements for bracketed optional parameters
+        foreach ($this->regexOptionalParams as $param => $bracketedString) {
+            // if the parameter has the default value,
+            // remove its corresponding part from the link
+            if ($data[$param] == $this->values[$param]) {
+                $link = str_replace($bracketedString, '', $link);
+            // otherwise, remove the brackets
+            } else {
+                $link = str_replace($bracketedString, trim($bracketedString, '[]'), $link);
+            }
+        }
+
         // replacements for optional params, if any
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $link, $matches);
         if ($matches) {
@@ -238,7 +261,7 @@ class Route extends AbstractSpec
         
         // replace params in the link, including optional params
         $link = strtr($link, $repl);
-        
+
         // add wildcard data
         $wildcard = $this->wildcard;
         if ($wildcard && isset($data[$wildcard])) {
@@ -281,6 +304,26 @@ class Route extends AbstractSpec
      */
     protected function setRegexOptionalParams()
     {
+        // optional parameters that use brackets
+        // ex: [/{language}] or [.{type}]
+        preg_match_all('#\[([^\[{}])*({[^\[\[]+})+\]#', $this->regex, $matches);
+        if (isset($matches[0]) && !empty($matches[0])) {
+            $this->regexOptionalParams = array();
+            // replacements for the regex
+            $replacements = array();
+            foreach (array_keys($matches[0]) as $index) {
+                $replacement = '(';
+                // this is the prefix before the parameter
+                $replacement .= $matches[1][$index] ? preg_quote($matches[1][$index], '/') : '';
+                $replacement .= $matches[2][$index];
+                $replacement .= ')?';
+                $replacements[$matches[0][$index]] = $replacement;
+                // cache the optional params
+                $this->regexOptionalParams[trim($matches[2][$index], '{}')] = $matches[0][$index];
+            }
+            $this->regex = strtr($this->regex, $replacements);
+        }
+
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
         if (! $matches) {
             return;
