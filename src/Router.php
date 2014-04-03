@@ -46,7 +46,7 @@ class Router
      * @var Route
      *
      */
-    protected $matchedRoute = null;
+    protected $matched_route = null;
 
 	/**
 	 *
@@ -95,12 +95,12 @@ class Router
             $match = $route->isMatch($path, $server);
             $this->debug[] = $route;
             if ($match) {
-                $this->matchedRoute = $route;
+                $this->matched_route = $route;
                 return $route;
             }
         }
 
-        $this->matchedRoute = false;
+        $this->matched_route = false;
         return false;
     }
 
@@ -116,7 +116,7 @@ class Router
      */
     public function getMatchedRoute()
     {
-        return $this->matchedRoute;
+        return $this->matched_route;
     }
 
     /**
