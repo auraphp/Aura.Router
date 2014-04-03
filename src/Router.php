@@ -39,6 +39,15 @@ class Router
      */
     protected $routes;
 
+    /**
+     *
+     * The Route object matched by the router.
+     *
+     * @var Route
+     *
+     */
+    protected $matchedRoute = null;
+
 	/**
 	 *
 	 * Constructor.
@@ -86,15 +95,32 @@ class Router
             $match = $route->isMatch($path, $server);
             $this->debug[] = $route;
             if ($match) {
+                $this->matchedRoute = $route;
                 return $route;
             }
         }
-        
+
+        $this->matchedRoute = false;
         return false;
     }
 
     /**
-     * 
+     *
+     * Returns the result of the call to match() again so you don't need to
+     * run the matching process again.
+     *
+     * @return Route|false|null Returns null if match() has not been called
+     * yet, false if it has and there was no match, or a Route object if there
+     * was a match.
+     *
+     */
+    public function getMatchedRoute()
+    {
+        return $this->matchedRoute;
+    }
+
+    /**
+     *
      * Looks up a route by name, and interpolates data into it to return
      * a URI path.
      * 
