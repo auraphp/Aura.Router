@@ -32,20 +32,19 @@ class Router
 
     /**
      * 
-     * Route objects created from the definitons.
+     * Route objects created from the definitions.
      * 
      * @var RouteCollection
      * 
      */
     protected $routes;
 
-    /**
-     * 
-     * Constructor.
-     * 
-     * @param RouteFactory $route_factory A factory for route objects.
-     * 
-     */
+	/**
+	 *
+	 * Constructor.
+	 *
+	 * @param RouteCollection $routes A route collection object.
+	 */
     public function __construct(RouteCollection $routes)
     {
         $this->routes = $routes;
@@ -121,7 +120,7 @@ class Router
      * 
      * Sets the array of route objects to use.
      * 
-     * @param array $routes Use this array of route objects.
+     * @param RouteCollection $routes Use this RouteCollection object.
      * 
      * @return null
      * 
