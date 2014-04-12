@@ -32,7 +32,7 @@ class Router
 
     /**
      * 
-     * Route objects created from the definitons.
+     * Route objects created from the definitions.
      * 
      * @var RouteCollection
      * 
@@ -40,12 +40,20 @@ class Router
     protected $routes;
 
     /**
-     * 
-     * Constructor.
-     * 
-     * @param RouteFactory $route_factory A factory for route objects.
-     * 
+     *
+     * The Route object matched by the router.
+     *
+     * @var Route
+     *
      */
+    protected $matched_route = null;
+
+	/**
+	 *
+	 * Constructor.
+	 *
+	 * @param RouteCollection $routes A route collection object.
+	 */
     public function __construct(RouteCollection $routes)
     {
         $this->routes = $routes;
@@ -87,15 +95,32 @@ class Router
             $match = $route->isMatch($path, $server);
             $this->debug[] = $route;
             if ($match) {
+                $this->matched_route = $route;
                 return $route;
             }
         }
-        
+
+        $this->matched_route = false;
         return false;
     }
 
     /**
-     * 
+     *
+     * Returns the result of the call to match() again so you don't need to
+     * run the matching process again.
+     *
+     * @return Route|false|null Returns null if match() has not been called
+     * yet, false if it has and there was no match, or a Route object if there
+     * was a match.
+     *
+     */
+    public function getMatchedRoute()
+    {
+        return $this->matched_route;
+    }
+
+    /**
+     *
      * Looks up a route by name, and interpolates data into it to return
      * a URI path.
      * 
@@ -121,7 +146,7 @@ class Router
      * 
      * Sets the array of route objects to use.
      * 
-     * @param array $routes Use this array of route objects.
+     * @param RouteCollection $routes Use this RouteCollection object.
      * 
      * @return null
      * 
