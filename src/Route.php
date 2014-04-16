@@ -443,22 +443,29 @@ class Route extends AbstractSpec
      */
     protected function isSecureMatch($server)
     {
-        if ($this->secure !== null) {
-
-            $is_secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-                      || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
-
-            if ($this->secure == true && ! $is_secure) {
-                $this->debug[] = 'Secure required, but not secure.';
-                return false;
-            }
-
-            if ($this->secure == false && $is_secure) {
-                $this->debug[] = 'Non-secure required, but is secure.';
-                return false;
-            }
+        if ($this->secure === null) {
+            return true;
         }
+
+        $server_is_secure = $this->serverIsSecure($server);
+
+        if ($this->secure == true && ! $server_is_secure) {
+            $this->debug[] = 'Secure required, but not secure.';
+            return false;
+        }
+
+        if ($this->secure == false && $server_is_secure) {
+            $this->debug[] = 'Non-secure required, but is secure.';
+            return false;
+        }
+
         return true;
+    }
+
+    protected function serverIsSecure($server)
+    {
+        return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
+            || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
     }
 
     /**
