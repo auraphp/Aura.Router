@@ -179,9 +179,17 @@ class Route extends AbstractSpec
      */
     public function generate(array $data = array())
     {
-        // the base link template
         $link = $this->path;
-        
+        $data = $this->generateData($data);
+        $repl = $this->generateTokenReplacements($data);
+        $repl = $this->generateParamReplacements($link, $repl, $data);
+        $link = strtr($link, $repl);
+        $link = $this->generateWildcard($link, $data);
+        return $link;
+    }
+
+    protected function generateData($data)
+    {
         // the data for replacements. do not use $this->merge(), as we do not
         // want to unset elements with null values.
         $data = array_merge($this->values, $data);
@@ -196,44 +204,53 @@ class Route extends AbstractSpec
             // convert back to array
             $data = $arrobj->getArrayCopy();
         }
-        
-        // replacements for single tokens
+
+        return $data;
+    }
+
+    protected function generateTokenReplacements($data)
+    {
         $repl = array();
         foreach ($data as $key => $val) {
-            // encode the single value
             if (is_scalar($val) || $val === null) {
                 $repl["{{$key}}"] = rawurlencode($val);
             }
         }
-        
+        return $repl;
+    }
+
+    protected function generateParamReplacements($link, $repl, $data)
+    {
         // replacements for optional params, if any
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $link, $matches);
-        if ($matches) {
-            // this is the full token to replace in the link
-            $key = $matches[0];
-            // start with an empty replacement
-            $repl[$key] = '';
-            // the optional param names in the token
-            $names = explode(',', $matches[1]);
-            // look for data for each of the param names
-            foreach ($names as $name) {
-                // is there data for this optional param?
-                if (! isset($data[$name])) {
-                    // options are *sequentially* optional, so if one is
-                    // missing, we're done
-                    break;
-                }
-                // encode the optional value
-                if (is_scalar($data[$name])) {
-                    $repl[$key] .= '/' . rawurlencode($data[$name]);
-                }
+        if (! $matches) {
+            return $repl;
+        }
+
+        // this is the full token to replace in the link
+        $key = $matches[0];
+        // start with an empty replacement
+        $repl[$key] = '';
+        // the optional param names in the token
+        $names = explode(',', $matches[1]);
+        // look for data for each of the param names
+        foreach ($names as $name) {
+            // is there data for this optional param?
+            if (! isset($data[$name])) {
+                // options are *sequentially* optional, so if one is
+                // missing, we're done
+                break;
+            }
+            // encode the optional value
+            if (is_scalar($data[$name])) {
+                $repl[$key] .= '/' . rawurlencode($data[$name]);
             }
         }
-        
-        // replace params in the link, including optional params
-        $link = strtr($link, $repl);
-        
-        // add wildcard data
+        return $repl;
+    }
+
+    protected function generateWildcard($link, $data)
+    {
         $wildcard = $this->wildcard;
         if ($wildcard && isset($data[$wildcard])) {
             $link = rtrim($link, '/');
@@ -244,8 +261,6 @@ class Route extends AbstractSpec
                 }
             }
         }
-        
-        // done!
         return $link;
     }
 
