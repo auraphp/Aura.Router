@@ -28,6 +28,9 @@ class RouterFactory
      */
     public function newInstance()
     {
-        return new Router(new RouteCollection(new RouteFactory));
+        return new Router(
+            new RouteCollection(new RouteFactory),
+            new Generator
+        );
     }
 }

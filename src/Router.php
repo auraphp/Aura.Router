@@ -48,15 +48,18 @@ class Router
      */
     protected $matched_route = null;
 
+    protected $generator;
+
 	/**
 	 *
 	 * Constructor.
 	 *
 	 * @param RouteCollection $routes A route collection object.
 	 */
-    public function __construct(RouteCollection $routes)
+    public function __construct(RouteCollection $routes, Generator $generator)
     {
         $this->routes = $routes;
+        $this->generator = $generator;
     }
     
     /**
@@ -139,7 +142,8 @@ class Router
             throw new Exception\RouteNotFound($name);
         }
         
-        return $this->routes->offsetGet($name)->generate($data);
+        $route = $this->routes->offsetGet($name);
+        return $this->generator->generate($route, $data);
     }
     
     /**

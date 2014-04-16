@@ -20,6 +20,7 @@ class Common extends Config
          */
         $di->params['Aura\Router\Router'] = array(
             'routes' => $di->lazyNew('Aura\Router\RouteCollection'),
+            'generator' => $di->lazyNew('Aura\Router\Generator'),
         );
     }
 }
