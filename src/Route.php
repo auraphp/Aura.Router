@@ -251,10 +251,9 @@ class Route extends AbstractSpec
 
     protected function generateWildcard($link, $data)
     {
-        $wildcard = $this->wildcard;
-        if ($wildcard && isset($data[$wildcard])) {
+        if ($this->wildcard && isset($data[$this->wildcard])) {
             $link = rtrim($link, '/');
-            foreach ($data[$wildcard] as $val) {
+            foreach ($data[$this->wildcard] as $val) {
                 // encode the wildcard value
                 if (is_scalar($val)) {
                     $link .= '/' . rawurlencode($val);
