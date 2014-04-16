@@ -22,6 +22,18 @@ use Closure;
  * 
  * @package Aura.Router
  * 
+ * @property-read string $name The route name.
+ * 
+ * @property-read string $path The route path.
+ * 
+ * @property-read array $params The matched params.
+ * 
+ * @property-read string $regex The regular expression for the route.
+ * 
+ * @property-read string $matches All params found during `isMatch()`.
+ * 
+ * @property-read array $debug Debugging messages.
+ * 
  */
 class Route extends AbstractSpec
 {
