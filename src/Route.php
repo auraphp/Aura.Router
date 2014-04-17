@@ -419,7 +419,13 @@ class Route extends AbstractSpec
     protected function setParams()
     {
         $this->params = $this->values;
-        
+        $this->setParamsWithMatches();
+        $this->setParamsWithWildcard();
+
+    }
+
+    protected function setParamsWithMatches()
+    {
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
         // to support optional ".format" param values.)
@@ -428,21 +434,22 @@ class Route extends AbstractSpec
                 $this->params[$key] = rawurldecode($val);
             }
         }
+    }
 
-        // is a wildcard param specified?
-        if ($this->wildcard) {
-            $wildcard = $this->wildcard;
-            // are there are actual wildcard values?
-            if (empty($this->params[$wildcard])) {
-                // no, set a blank array
-                $this->params[$wildcard] = array();
-            } else {
-                // yes, retain and rawurldecode them
-                $this->params[$wildcard] = array_map(
-                    'rawurldecode',
-                    explode('/', $this->params[$wildcard])
-                );
-            }
+    protected function setParamsWithWildcard()
+    {
+        if (! $this->wildcard) {
+            return;
         }
+
+        if (empty($this->params[$this->wildcard])) {
+            $this->params[$this->wildcard] = array();
+            return;
+        }
+
+        $this->params[$this->wildcard] = array_map(
+            'rawurldecode',
+            explode('/', $this->params[$this->wildcard])
+        );
     }
 }
