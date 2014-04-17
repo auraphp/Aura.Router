@@ -162,25 +162,11 @@ class Route extends AbstractSpec
     {
         $this->debug = array();
         $this->params = array();
-        
-        if (! $this->routable) {
-            $this->debug[] = 'Not routable.';
-            return false;
+        if ($this->isFullMatch($path, $server)) {
+            $this->setParams();
+            return true;
         }
-        
-        $this->setRegex();
-
-        $is_match = $this->isRegexMatch($path)
-                 && $this->isServerMatch($server)
-                 && $this->isSecureMatch($server)
-                 && $this->isCustomMatch($server);
-        if (! $is_match) {
-            return false;
-        }
-        
-        // set params from matches, and done!
-        $this->setParams();
-        return true;
+        return false;
     }
 
     /**
@@ -299,6 +285,24 @@ class Route extends AbstractSpec
         return "(?P<{$name}>[^/]+)";
     }
     
+    protected function isFullMatch($path, array $server)
+    {
+        return $this->isRoutableMatch()
+            && $this->isRegexMatch($path)
+            && $this->isServerMatch($server)
+            && $this->isSecureMatch($server)
+            && $this->isCustomMatch($server);
+    }
+
+    protected function isRoutableMatch()
+    {
+        if ($this->routable) {
+            return true;
+        }
+
+        $this->debug[] = 'Not routable.';
+        return false;
+    }
     /**
      * 
      * Checks that the path matches the Route regex.
@@ -310,6 +314,7 @@ class Route extends AbstractSpec
      */
     protected function isRegexMatch($path)
     {
+        $this->setRegex();
         $regex = "#^{$this->regex}$#";
         $match = preg_match($regex, $path, $this->matches);
         if (! $match) {
