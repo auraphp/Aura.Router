@@ -229,7 +229,7 @@ class Route extends AbstractSpec
         }
         return $head;
     }
-    
+
     /**
      * 
      * Expands param names in the regex to named subpatterns.
@@ -338,26 +338,25 @@ class Route extends AbstractSpec
     protected function isServerMatch($server)
     {
         foreach ($this->server as $name => $regex) {
-            
-            // get the corresponding server value
-            $value = isset($server[$name]) ? $server[$name] : '';
-            
-            // define the regex for that server value
-            $regex = "#(?P<{$name}>{$regex})#";
-            
-            // does the server value match the required regex?
-            $match = preg_match($regex, $value, $matches);
-            if (! $match) {
+            $matches = $this->isServerMatchRegex($server, $name, $regex);
+            if (! $matches) {
                 $this->debug[] = "Not a server match ($name).";
                 return false;
             }
-            
-            // retain the matched portion, not the entire server value
             $this->matches[$name] = $matches[$name];
         }
-        
-        // everything matched!
+
         return true;
+    }
+
+    protected function isServerMatchRegex($server, $name, $regex)
+    {
+        $value = isset($server[$name])
+               ? $server[$name]
+               : '';
+        $regex = "#(?P<{$name}>{$regex})#";
+        preg_match($regex, $value, $matches);
+        return $matches;
     }
 
     /**
