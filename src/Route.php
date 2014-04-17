@@ -361,15 +361,8 @@ class Route extends AbstractSpec
             return true;
         }
 
-        $server_is_secure = $this->serverIsSecure($server);
-
-        if ($this->secure == true && ! $server_is_secure) {
-            $this->debug[] = 'Secure required, but not secure.';
-            return false;
-        }
-
-        if ($this->secure == false && $server_is_secure) {
-            $this->debug[] = 'Non-secure required, but is secure.';
+        if ($this->secure != $this->serverIsSecure($server)) {
+            $this->debug[] = 'Not a secure match.';
             return false;
         }
 
