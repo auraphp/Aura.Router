@@ -17,7 +17,7 @@ class Generator
      * @return string
      * 
      */
-    public function generate(Route $route, array $data = array())
+    public function generate(Route $route, $data = array())
     {
         $link = $route->path;
         $data = $this->generateData($route, $data);

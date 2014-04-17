@@ -136,7 +136,7 @@ class Router
      * boolean false if not.
      * 
      */
-    public function generate($name, $data = null)
+    public function generate($name, $data = array())
     {
         if (! $this->routes->offsetExists($name)) {
             throw new Exception\RouteNotFound($name);
