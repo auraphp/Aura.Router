@@ -26,6 +26,8 @@ use Closure;
  * 
  * @property-read string $path The route path.
  * 
+ * @property-read array $values Default values for params.
+ * 
  * @property-read array $params The matched params.
  * 
  * @property-read string $regex The regular expression for the route.
@@ -33,6 +35,10 @@ use Closure;
  * @property-read string $matches All params found during `isMatch()`.
  * 
  * @property-read array $debug Debugging messages.
+ * 
+ * @property-read callable $generate A callable for generating a link.
+ * 
+ * @property-read string $wildcard The name of the wildcard param.
  * 
  */
 class Route extends AbstractSpec

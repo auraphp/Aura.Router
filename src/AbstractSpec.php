@@ -27,7 +27,8 @@ class AbstractSpec
 	protected $routable    = true;
 	protected $is_match    = null;
 	protected $generate    = null;
-	
+	protected $regex       = null;
+
     /**
      * 
      * Sets the regular expressions for param tokens.
