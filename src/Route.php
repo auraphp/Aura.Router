@@ -199,32 +199,35 @@ class Route extends AbstractSpec
     protected function setRegexOptionalParams()
     {
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
-        if (! $matches) {
-            return;
+        if ($matches) {
+            $repl = $this->getRegexOptionalParamsReplacement($matches[1]);
+            $this->regex = str_replace($matches[0], $repl, $this->regex);
         }
-        
-        // the list of all tokens
-        $list = explode(',', $matches[1]);
-        
-        // the subpattern parts
-        $head = '';
+    }
+    
+    protected function getRegexOptionalParamsReplacement($list)
+    {
+        $list = explode(',', $list);
+        $head = $this->getRegexOptionalParamsReplacementHead($list);
         $tail = '';
-        
-        // if the optional set is the first part of the path. make sure there
-        // is a leading slash in the replacement before the optional param.
-        if (substr($this->regex, 0, 2) == '{/') {
-            $name = array_shift($list);
-            $head = "/({{$name}})?";
-        }
-        
-        // add remaining optional params
         foreach ($list as $name) {
             $head .= "(/{{$name}}";
             $tail .= ')?';
         }
-        
-        // put together the regex replacement
-        $this->regex = str_replace($matches[0], $head . $tail, $this->regex);
+
+        return $head . $tail;
+    }
+
+    protected function getRegexOptionalParamsReplacementHead(&$list)
+    {
+        // if the optional set is the first part of the path, make sure there
+        // is a leading slash in the replacement before the optional param.
+        $head = '';
+        if (substr($this->regex, 0, 2) == '{/') {
+            $name = array_shift($list);
+            $head = "/({{$name}})?";
+        }
+        return $head;
     }
     
     /**
