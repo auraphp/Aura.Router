@@ -12,36 +12,26 @@ to a controller on its own. For one possible dispatch system, please see
 
 ## Foreword
 
-### Requirements
+### Installation
 
 This library requires PHP 5.3 or later, and has no userland dependencies.
 
-### Installation
+It is installable and autoloadable via Composer as [aura/router](https://packagist.org/packages/aura/router).
 
-This library is installable and autoloadable via Composer with the following
-`require` element in your `composer.json` file:
+Alternatively, [download a release](https://github.com/auraphp/Aura.Router/releases) or clone this repository, then require or include its _autoload.php_ file.
 
-    "require": {
-        "aura/router": "2.*@dev"
-    }
-    
-Alternatively, download or clone this repository, then require or include its
-_autoload.php_ file.
+### Quality
 
-### Tests
-
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/quality-score.png?s=094ea8e84ef4c5df2f798e28d5c9a526ecea31fd)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
+[![Code Coverage](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/coverage.png?s=e4ebd771ba626d2bbfafa0422ec3726b504365d6)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
 [![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=develop-2)](https://travis-ci.org/auraphp/Aura.Router)
 
-This library has 100% code coverage with [PHPUnit][]. To run the tests at the
-command line, go to the _tests_ directory and issue `phpunit`.
-
-[PHPUnit]: http://phpunit.de/manual/
-
-### PSR Compliance
+To run the [PHPUnit][] tests at the command line, go to the _tests_ directory and issue `phpunit`.
 
 This library attempts to comply with [PSR-1][], [PSR-2][], and [PSR-4][]. If
 you notice compliance oversights, please send a patch via pull request.
 
+[PHPUnit]: http://phpunit.de/manual/
 [PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
 [PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
