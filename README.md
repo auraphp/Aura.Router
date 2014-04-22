@@ -378,15 +378,15 @@ $router->add('foo.bar', '/path/to/bar');
 // because we explicitly set a default in the router;
 // 'controller' is still 'foo'
 $router->setValues(array('action' => 'baz'));
-$route->add('foo.bar', '/path/to/bar');
+$router->add('foo.bar', '/path/to/bar');
 
 // the value for the 'action' param on this route will be
 // 'zim' because we explicitly set it on the extended route spec
-$route->add('foo.dib', '/path/to/dib')
+$router->add('foo.dib', '/path/to/dib')
     ->setValues(array('action' => 'zim'));
 
 // the 'action' param here will be whatever the path value for {action} is
-$route->add('/path/to/{action}');
+$router->add('/path/to/{action}');
 ?>
 ```
 
