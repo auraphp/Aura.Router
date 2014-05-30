@@ -1,41 +1,41 @@
 <?php
 /**
- * 
+ *
  * This file is part of the Aura for PHP.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  * @license http://opensource.org/licenses/bsd-license.php BSD
- * 
+ *
  */
 namespace Aura\Router;
 
 use Aura\Router\Exception;
 
 /**
- * 
+ *
  * A wrapper for the collection of routes to be matched.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  */
 class Router
 {
     /**
-     * 
+     *
      * Logging information about which routes were attempted to match.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $debug = array();
 
     /**
-     * 
+     *
      * Route objects created from the definitions.
-     * 
+     *
      * @var RouteCollection
-     * 
+     *
      */
     protected $routes;
 
@@ -61,34 +61,34 @@ class Router
         $this->routes = $routes;
         $this->generator = $generator;
     }
-    
+
     /**
-     * 
+     *
      * Makes the Router object a proxy for the RouteCollection.
-     * 
+     *
      * @param string $func The method to call on the RouteCollection.
-     * 
+     *
      * @param array $args The parameters for the call.
-     * 
+     *
      * @return mixed
-     * 
+     *
      */
     public function __call($func, $args)
     {
         return call_user_func_array(array($this->routes, $func), $args);
     }
-    
+
     /**
-     * 
+     *
      * Gets a route that matches a given path and other server conditions.
-     * 
+     *
      * @param string $path The path to match against.
-     * 
+     *
      * @param array $server A copy of the $_SERVER superglobal.
-     * 
-     * @return Route|false Returns a route object when it finds a match, or 
+     *
+     * @return Route|false Returns a route object when it finds a match, or
      * boolean false if there is no match.
-     * 
+     *
      */
     public function match($path, array $server = array())
     {
@@ -126,36 +126,36 @@ class Router
      *
      * Looks up a route by name, and interpolates data into it to return
      * a URI path.
-     * 
+     *
      * @param string $name The route name to look up.
-     * 
+     *
      * @param array $data The data to interpolate into the URI; data keys
      * map to param tokens in the path.
-     * 
+     *
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
-     * 
+     *
      */
     public function generate($name, $data = array())
     {
         if (! $this->routes->offsetExists($name)) {
             throw new Exception\RouteNotFound($name);
         }
-        
+
         $route = $this->routes->offsetGet($name);
         return $this->generator->generate($route, $data);
     }
-    
+
     /**
-     * 
+     *
      * Sets the array of route objects to use.
-     * 
+     *
      * @param RouteCollection $routes Use this RouteCollection object.
-     * 
+     *
      * @return null
-     * 
+     *
      * @see getRoutes()
-     * 
+     *
      */
     public function setRoutes(RouteCollection $routes)
     {
@@ -163,13 +163,13 @@ class Router
     }
 
     /**
-     * 
+     *
      * Gets the route collection.
-     * 
+     *
      * @return RouteCollection
-     * 
+     *
      * @see setRoutes()
-     * 
+     *
      */
     public function getRoutes()
     {
@@ -177,11 +177,11 @@ class Router
     }
 
     /**
-     * 
+     *
      * Gets the attempted route matches.
-     * 
+     *
      * @return array An array of routes from the last match() attempt.
-     * 
+     *
      */
     public function getDebug()
     {

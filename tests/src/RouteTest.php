@@ -8,19 +8,19 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     protected $factory;
 
     protected $server;
-    
+
     protected function setUp()
     {
         parent::setUp();
         $this->factory = new RouteFactory;
         $this->server = $_SERVER;
     }
-    
+
     protected function tearDown()
     {
         parent::tearDown();
     }
-    
+
     public function test__isset()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
@@ -28,11 +28,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'zim',
                 'action' => 'dib',
             ));
-        
+
         $this->assertTrue(isset($route->path));
         $this->assertFalse(isset($route->no_such_property));
     }
-    
+
     public function testIsMatchOnStaticPath()
     {
         $proto = $this->factory->newInstance('/foo/bar/baz')
@@ -40,19 +40,19 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'zim',
                 'action' => 'dib',
             ));
-        
+
         // right path
         $route = clone $proto;
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
         $this->assertEquals('zim', $route->params['controller']);
         $this->assertEquals('dib', $route->params['action']);
-        
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
     }
-    
+
     public function testIsMatchOnDynamicPath()
     {
         $route = $this->factory->newInstance('/{controller}/{action}/{id}{format}')
@@ -65,7 +65,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ->setValues(array(
                 'format' => '.html',
             ));
-        
+
         $actual = $route->isMatch('/foo/bar/42', $this->server);
         $this->assertTrue($actual);
         $expect = array(
@@ -76,7 +76,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expect, $route->params);
     }
-    
+
     public function testIsServerMatch()
     {
         /**
@@ -86,25 +86,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ->setServer(array(
                 'REQUEST_METHOD' => 'POST',
             ));
-    
+
         // correct
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'POST',
         )));
-    
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'POST',
         )));
-    
+
         // wrong REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'GET',
         )));
-        
+
         /**
          * try many REQUEST_METHOD
          */
@@ -112,40 +112,40 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ->setServer(array(
                 'REQUEST_METHOD' => 'GET|POST',
             ));
-    
+
         // correct
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'GET',
         )));
-        
+
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'POST',
         )));
-    
+
         // wrong path, right REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'GET',
         )));
-        
+
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'REQUEST_METHOD' => 'POST',
         )));
-        
+
         // right path, wrong REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'REQUEST_METHOD' => 'PUT',
         )));
-        
+
         // no REQUEST_METHOD
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array()));
     }
-    
+
     public function testIsSecureMatch_https()
     {
         /**
@@ -153,50 +153,50 @@ class RouteTest extends \PHPUnit_Framework_TestCase
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
             ->setSecure(true);
-        
+
         // correct
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'on',
         )));
-        
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'HTTPS' => 'on',
         )));
-        
+
         // not secure
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'off',
         )));
-        
+
         /**
          * not-secure required
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
             ->setSecure(false);
-        
+
         // correct
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'off',
         )));
-        
+
         // secured when it should not be
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'HTTPS' => 'on',
         )));
-        
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'HTTPS' => 'off',
         )));
     }
-    
+
     public function testIsSecureMatch_serverPort()
     {
         /**
@@ -210,44 +210,44 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '443',
         )));
-        
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'SERVER_PORT' => '443',
         )));
-        
+
         // not secure
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '80',
         )));
-        
+
         /**
          * not-secure required
          */
         $proto = $this->factory->newInstance('/foo/bar/baz')
             ->setSecure(false);
-        
+
         // correct
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '80',
         )));
-        
+
         // secured when it should not be
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/foo/bar/baz', array(
             'SERVER_PORT' => '443',
         )));
-        
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', array(
             'SERVER_PORT' => '80',
         )));
     }
-    
+
     public function testIsCustomMatchWithClosure()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
@@ -255,48 +255,48 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 $matches['zim'] = 'gir';
                 return true;
             });
-        
+
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
         $this->assertEquals('gir', $route->params['zim']);
-        
+
         $route = $this->factory->newInstance('/foo/bar/baz')
             ->setIsMatchCallable(function($server, $matches) {
                 return false;
             });
-        
+
         // even though path is correct, should fail because of the closure
         $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
     }
-    
+
     public function testIsCustomMatchWithCallback()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
             ->setIsMatchCallable(array($this, 'callbackForIsMatchTrue'));
-        
+
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
         $this->assertEquals('gir', $route->params['zim']);
-        
+
         $route = $this->factory->newInstance('/foo/bar/baz')
             ->setIsMatchCallable(array($this, 'callbackForIsMatchFalse'));
-        
+
         // even though path is correct, should fail because of the closure
         $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
     }
-    
+
     public function callbackForIsMatchTrue(array $server, ArrayObject $matches)
     {
         $matches['zim'] = 'gir';
         return true;
     }
-    
+
     public function callbackForIsMatchFalse(array $server, ArrayObject $matches)
     {
         return false;
     }
-    
-    
+
+
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
         $route = $this->factory->newInstance('/{controller}/{action}/{id}{format}')
@@ -305,7 +305,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
                 'format' => '(\.[^/]+)?',
             ));
-        
+
         $actual = $route->isMatch('/any-value/read/42', $this->server);
         $this->assertTrue($actual);
         $expect = array(
@@ -316,7 +316,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertSame($expect, $route->params);
     }
-    
+
     public function testIsNotRoutable()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
@@ -325,19 +325,19 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'action' => 'dib',
             ))
             ->setRoutable(false);
-        
+
         // right path
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertFalse($actual);
-        
+
         // wrong path
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
     }
-    
+
     public function testIsMatchOnRFC3986Paths()
     {
         $route = $this->factory->newInstance('/{controller}/{action}/{param1}/{param2}');
-        
+
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
         $actual = $route->isMatch('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami', $this->server);
         $this->assertTrue($actual);
@@ -349,7 +349,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expect, $route->params);
     }
-   
+
    public function testGithubIssue7()
    {
         $server = array(
@@ -374,7 +374,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
             'REQUEST_TIME' => '1327369518.2441',
         );
-        
+
         $route = $this->factory->newInstance('/blog/read/{id}{format}')
             ->setTokens(array(
                 'id' => '(\d+)',
@@ -385,7 +385,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'action' => 'read',
                 'format' => '.html',
             ));
-         
+
         $actual = $route->isMatch('/blog/read/42.json', $server);
         $this->assertTrue($actual);
         $expect = array(
@@ -396,94 +396,94 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expect, $route->params);
     }
-    
+
     public function testIsMatchOnlWildcard()
     {
         $proto = $this->factory->newInstance('/foo/{zim}/')
             ->setWildcard('wild');
-        
+
         // right path with wildcard values
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
         $this->assertSame('bar', $route->params['zim']);
         $this->assertSame(array('baz', 'dib'), $route->params['wild']);
-        
+
         // right path with trailing slash but no wildcard values
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
         $this->assertSame('bar', $route->params['zim']);
         $this->assertSame(array(), $route->params['wild']);
-        
+
         // right path without trailing slash
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar', $this->server));
         $this->assertSame(array(), $route->params['wild']);
-        
+
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
     }
-    
+
     public function testIsMatchOnOptionalParams()
     {
         $route = $this->factory->newInstance('/foo/{bar}{/baz,dib,zim}');
-        
+
         // not enough params
         $actual = $route->isMatch('/foo', $this->server);
         $this->assertFalse($actual);
-        
+
         // just enough params
         $actual = $route->isMatch('/foo/bar', $this->server);
         $this->assertTrue($actual);
-        
+
         // optional param 1
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
-        
+
         // optional param 2
         $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
         $this->assertTrue($actual);
-        
+
         // optional param 3
         $actual = $route->isMatch('/foo/bar/baz/dib/zim', $this->server);
         $this->assertTrue($actual);
-        
+
         // too many params
         $actual = $route->isMatch('/foo/bar/baz/dib/zim/gir', $this->server);
         $this->assertFalse($actual);
     }
-    
+
     public function testCaptureServerParams()
     {
         $route = $this->factory->newInstance('/foo')
             ->setServer(array(
                 'HTTP_ACCEPT' => '(application/xml(;q=(1\.0|0\.[1-9]))?)|(application/json(;q=(1\.0|0\.[1-9]))?)',
             ));
-        
+
         $server = array('HTTP_ACCEPT' => 'application/json;q=0.9,text/csv;q=0.5,application/xml;q=0.7');
         $actual = $route->isMatch('/foo', $server);
         $this->assertTrue($actual);
-        
+
         $actual = $route->params;
         $expect = array(
             'HTTP_ACCEPT' => 'application/json;q=0.9',
         );
         $this->assertEquals($expect, $actual);
     }
-    
+
     public function testIsMatchOnOnlyOptionalParams()
     {
         $route = $this->factory->newInstance('{/foo,bar,baz}');
-        
+
         $actual = $route->isMatch('/', $this->server);
         $this->assertTrue($actual);
-        
+
         $actual = $route->isMatch('/foo', $this->server);
         $this->assertTrue($actual);
-        
+
         $actual = $route->isMatch('/foo/bar', $this->server);
         $this->assertTrue($actual);
-        
+
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
     }

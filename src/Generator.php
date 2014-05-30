@@ -6,16 +6,16 @@ use ArrayObject;
 class Generator
 {
     /**
-     * 
+     *
      * Gets the path for this Route with data replacements for param tokens.
-     * 
+     *
      * @param array $data An array of key-value pairs to interpolate into the
      * param tokens in the path for this Route. Keys that do not map to
      * params are discarded; param tokens that have no mapped key are left in
      * place.
-     * 
+     *
      * @return string
-     * 
+     *
      */
     public function generate(Route $route, $data = array())
     {
@@ -32,7 +32,7 @@ class Generator
     {
         // the data for replacements
         $data = array_merge($route->values, $data);
-        
+
         // use a callable to modify the data?
         if ($route->generate) {
             // pass the data as an object, not as an array, so we can avoid

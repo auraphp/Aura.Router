@@ -1,12 +1,12 @@
 <?php
 /**
- * 
+ *
  * This file is part of the Aura for PHP.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  * @license http://opensource.org/licenses/bsd-license.php BSD
- * 
+ *
  */
 namespace Aura\Router;
 
@@ -16,11 +16,11 @@ use Countable;
 use IteratorAggregate;
 
 /**
- * 
+ *
  * A collection of route objects.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  */
 class RouteCollection extends AbstractSpec implements
     ArrayAccess,
@@ -28,36 +28,36 @@ class RouteCollection extends AbstractSpec implements
     IteratorAggregate
 {
     /**
-     * 
+     *
      * An array of route objects.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $routes = array();
-    
+
     /**
-     * 
+     *
      * A factory to create route objects.
-     * 
+     *
      * @var RouteFactory
-     * 
+     *
      */
     protected $route_factory;
-    
+
 	protected $name_prefix = null;
 	protected $path_prefix = null;
 	protected $resource_callable = null;
 	protected $route_callable = null;
-	
+
 	/**
-	 * 
+	 *
 	 * Constructor.
-	 * 
+	 *
 	 * @param RouteFactory $route_factory A factory to create route objects.
-	 * 
+	 *
 	 * @param array $routes An array of route objects.
-	 * 
+	 *
 	 */
 	public function __construct(
 	    RouteFactory $route_factory,
@@ -68,103 +68,103 @@ class RouteCollection extends AbstractSpec implements
         $this->setResourceCallable(array($this, 'resourceCallable'));
         $this->setRouteCallable(array($this, 'routeCallable'));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * ArrayAccess: gets a route by name.
-	 * 
+	 *
 	 * @param string $name The route name.
-	 * 
+	 *
 	 * @return Route
-	 * 
+	 *
 	 */
 	public function offsetGet($name)
 	{
         return $this->routes[$name];
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * ArrayAccess: sets a route by name.
-	 * 
+	 *
 	 * @param string $name The route name.
-	 * 
+	 *
 	 * @param Route $route The route object.
-	 * 
+	 *
 	 * @return null
-	 * 
+	 *
 	 */
 	public function offsetSet($name, $route)
 	{
 	    if (! $route instanceof Route) {
 	        throw new Exception\UnexpectedValue;
 	    }
-	    
+
 	    $this->routes[$name] = $route;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * ArrayAccess: does a route name exist?
-	 * 
+	 *
 	 * @param string $name The route name.
-	 * 
+	 *
 	 * @return bool
-	 * 
+	 *
 	 */
 	public function offsetExists($name)
 	{
 	    return isset($this->routes[$name]);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * ArrayAccess: removes a route by name.
-	 * 
+	 *
 	 * @param string $name The route name to remove.
-	 * 
+	 *
 	 * @return null
-	 * 
+	 *
 	 */
 	public function offsetUnset($name)
 	{
 	    unset($this->routes[$name]);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Countable: returns the number of routes in the collection.
-	 * 
+	 *
 	 * @return int
-	 * 
+	 *
 	 */
 	public function count()
 	{
 	    return count($this->routes);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * IteratorAggregate: returns the iterator object.
-	 * 
+	 *
 	 * @return ArrayIterator
-	 * 
+	 *
 	 */
 	public function getIterator()
 	{
 	    return new ArrayIterator($this->routes);
 	}
-	
+
     /**
-     * 
+     *
      * Adds a route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function add($name, $path)
     {
@@ -174,31 +174,31 @@ class RouteCollection extends AbstractSpec implements
             $name,
             $this->getSpec()
         );
-        
+
         // add the route
         if (! $route->name) {
             $this->routes[] = $route;
         } else {
             $this->routes[$route->name] = $route;
         }
-        
+
         // modify newly-added route
         call_user_func($this->route_callable, $route);
-        
+
         // done; return for further modification
         return $route;
     }
 
     /**
-     * 
+     *
      * Adds a GET route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function addGet($name, $path)
     {
@@ -206,17 +206,17 @@ class RouteCollection extends AbstractSpec implements
         $route->addServer(array('REQUEST_METHOD' => 'GET'));
         return $route;
     }
-    
+
     /**
-     * 
+     *
      * Adds a DELETE route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function addDelete($name, $path)
     {
@@ -224,17 +224,17 @@ class RouteCollection extends AbstractSpec implements
         $route->addServer(array('REQUEST_METHOD' => 'DELETE'));
         return $route;
     }
-    
+
     /**
-     * 
+     *
      * Adds an Options route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function addOptions($name, $path)
     {
@@ -242,17 +242,17 @@ class RouteCollection extends AbstractSpec implements
         $route->addServer(array('REQUEST_METHOD' => 'OPTIONS'));
         return $route;
     }
-    
+
     /**
-     * 
+     *
      * Adds a PATCH route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function addPatch($name, $path)
     {
@@ -260,17 +260,17 @@ class RouteCollection extends AbstractSpec implements
         $route->addServer(array('REQUEST_METHOD' => 'PATCH'));
         return $route;
     }
-    
+
     /**
-     * 
+     *
      * Adds a POST route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function addPost($name, $path)
     {
@@ -278,17 +278,17 @@ class RouteCollection extends AbstractSpec implements
         $route->addServer(array('REQUEST_METHOD' => 'POST'));
         return $route;
     }
-    
+
     /**
-     * 
+     *
      * Adds a PUT route.
-     * 
+     *
      * @param string $name The route name.
-     * 
+     *
      * @param string $path The route path.
-     * 
+     *
      * @return Route The newly-added route object.
-     * 
+     *
      */
     public function addPut($name, $path)
     {
@@ -296,32 +296,32 @@ class RouteCollection extends AbstractSpec implements
         $route->addServer(array('REQUEST_METHOD' => 'PUT'));
         return $route;
     }
-    
+
     /**
-     * 
+     *
      * Sets the callable for modifying a newly-added route before it is
      * returned.
-     * 
+     *
      * @param callable $callable The callable to modify the route.
-     * 
+     *
      * @return $this
-     * 
+     *
      */
     public function setRouteCallable($callable)
     {
         $this->route_callable = $callable;
         return $this;
     }
-    
+
     /**
-     * 
+     *
      * Modifies the newly-added route to set 'controller' and 'action' values
      * if they are not already present.  Uses the route name to do so.
-     * 
+     *
      * @param Route $route The newly-added route.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function routeCallable(Route $route)
     {
@@ -329,62 +329,62 @@ class RouteCollection extends AbstractSpec implements
         if (! $action) {
             return;
         }
-        
+
         $controller = null;
         $pos = strrpos($action, '.');
         if ($pos !== false) {
             $controller = substr($action, 0, $pos);
             $action = substr($action, $pos + 1);
         }
-        
+
         if (! isset($route->values['controller'])) {
             $route->addValues(array('controller' => $controller));
         }
-        
+
         if (! isset($route->values['action'])) {
             $route->addValues(array('action' => $action));
         }
     }
-    
+
     /**
-     * 
-     * Attaches routes to a specific path prefix, and prefixes the attached 
+     *
+     * Attaches routes to a specific path prefix, and prefixes the attached
      * route names.
-     * 
+     *
      * @param string $name The prefix for all route names being
      * attached.
-     * 
+     *
      * @param string $path The prefix for all route paths being
      * attached.
-     * 
+     *
      * @param callable $callable A callable that uses the Router to add new
      * routes. Its signature is `function (\Aura\Router\Router $router)`; this
      * Router instance will be passed to the callable.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     public function attach($name, $path, $callable)
     {
         // save current spec
         $spec = $this->getSpec();
-        
+
         // append to the name prefix, with delimiter if needed
         if ($this->name_prefix) {
             $this->name_prefix .= '.';
         }
         $this->name_prefix .= $name;
-        
+
         // append to the path prefix
         $this->path_prefix .= $path;
-        
+
         // invoke the callable, passing this RouteCollection as the only param
         call_user_func($callable, $this);
-        
+
         // restore previous spec
         $this->setSpec($spec);
     }
-    
+
     protected function getSpec()
     {
         $vars = array(
@@ -417,16 +417,16 @@ class RouteCollection extends AbstractSpec implements
         }
     }
     /**
-     * 
+     *
      * Use the `$resourceCallable` to attach a resource.
-     * 
+     *
      * @param string $name The resource name; used as a route name prefix.
-     * 
+     *
      * @param string $path The path to the resource; used as a route path
      * prefix.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     public function attachResource($name, $path)
     {
@@ -434,28 +434,28 @@ class RouteCollection extends AbstractSpec implements
     }
 
     /**
-     * 
+     *
      * Sets the callable for attaching resource routes.
-     * 
+     *
      * @param callable $resource The resource callable.
-     * 
+     *
      * @return $this
-     * 
+     *
      */
     public function setResourceCallable($resource)
     {
         $this->resource_callable = $resource;
         return $this;
     }
-    
+
     /**
-     * 
+     *
      * Callable for `attachResource()` that adds resource routes.
-     * 
+     *
      * @param RouteCollection $router A RouteCollection, probably $this.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function resourceCallable(RouteCollection $router)
     {
@@ -470,7 +470,7 @@ class RouteCollection extends AbstractSpec implements
         if ($tokens) {
             $router->addTokens($tokens);
         }
-        
+
         // add the routes
         $router->addGet('browse', '{format}');
         $router->addGet('read', '/{id}{format}');

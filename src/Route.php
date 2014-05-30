@@ -1,12 +1,12 @@
 <?php
 /**
- * 
+ *
  * This file is part of the Aura for PHP.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  * @license http://opensource.org/licenses/bsd-license.php BSD
- * 
+ *
  */
 namespace Aura\Router;
 
@@ -14,102 +14,102 @@ use ArrayObject;
 use Closure;
 
 /**
- * 
+ *
  * Represents an individual route with a name, path, params, values, etc.
  *
  * In general, you should never need to instantiate a Route directly. Use the
  * RouteFactory instead, or the Router.
- * 
+ *
  * @package Aura.Router
- * 
+ *
  * @property-read string $name The route name.
- * 
+ *
  * @property-read string $path The route path.
- * 
+ *
  * @property-read array $values Default values for params.
- * 
+ *
  * @property-read array $params The matched params.
- * 
+ *
  * @property-read string $regex The regular expression for the route.
- * 
+ *
  * @property-read string $matches All params found during `isMatch()`.
- * 
+ *
  * @property-read array $debug Debugging messages.
- * 
+ *
  * @property-read callable $generate A callable for generating a link.
- * 
+ *
  * @property-read string $wildcard The name of the wildcard param.
- * 
+ *
  */
 class Route extends AbstractSpec
 {
     /**
-     * 
+     *
      * The name for this Route.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $name;
 
     /**
-     * 
+     *
      * The path for this Route with param tokens.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $path;
 
     /**
-     * 
+     *
      * Matched param values.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $params = array();
 
     /**
-     * 
+     *
      * The `$path` property converted to a regular expression, using the
      * `$tokens` subpatterns.
-     * 
+     *
      * @var string
-     * 
+     *
      */
     protected $regex;
 
     /**
-     * 
+     *
      * All params found during the `isMatch()` process, both from the path
      * tokens and from matched server values.
-     * 
+     *
      * @var array
-     * 
+     *
      * @see isMatch()
-     * 
+     *
      */
     protected $matches = array();
 
     /**
-     * 
+     *
      * Debugging information about why the route did not match.
-     * 
+     *
      * @var array
-     * 
+     *
      */
     protected $debug;
 
     /**
-     * 
+     *
      * Constructor.
-     * 
+     *
      * @param string $path The path for this Route with param token
      * placeholders.
-     * 
+     *
      * @param string $name The name for this route.
-     * 
+     *
      */
     public function __construct($path, $name = null)
     {
@@ -118,13 +118,13 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Magic read-only for all properties and spec keys.
-     * 
+     *
      * @param string $key The property to read from.
-     * 
+     *
      * @return mixed
-     * 
+     *
      */
     public function __get($key)
     {
@@ -132,13 +132,13 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Magic isset() for all properties.
-     * 
+     *
      * @param string $key The property to check if isset().
-     * 
+     *
      * @return bool
-     * 
+     *
      */
     public function __isset($key)
     {
@@ -146,17 +146,17 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Checks if a given path and server values are a match for this
      * Route.
-     * 
+     *
      * @param string $path The path to check against this Route.
-     * 
-     * @param array $server A copy of $_SERVER so that this Route can check 
+     *
+     * @param array $server A copy of $_SERVER so that this Route can check
      * against the server values.
-     * 
+     *
      * @return bool
-     * 
+     *
      */
     public function isMatch($path, array $server)
     {
@@ -170,11 +170,11 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Sets the regular expression for this Route.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function setRegex()
     {
@@ -189,12 +189,12 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Expands optional params in the regex from ``{/foo,bar,baz}` to
      * `(/{foo}(/{bar}(/{baz})?)?)?`.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function setRegexOptionalParams()
     {
@@ -204,7 +204,7 @@ class Route extends AbstractSpec
             $this->regex = str_replace($matches[0], $repl, $this->regex);
         }
     }
-    
+
     protected function getRegexOptionalParamsReplacement($list)
     {
         $list = explode(',', $list);
@@ -231,11 +231,11 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Expands param names in the regex to named subpatterns.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function setRegexParams()
     {
@@ -250,32 +250,32 @@ class Route extends AbstractSpec
             }
         }
     }
-    
+
     /**
-     * 
+     *
      * Adds a wildcard subpattern to the end of the regex.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function setRegexWildcard()
     {
         if (! $this->wildcard) {
             return;
         }
-        
+
         $this->regex = rtrim($this->regex, '/')
                      . "(/(?P<{$this->wildcard}>.*))?";
     }
-    
+
     /**
-     * 
+     *
      * Returns a named subpattern for a param name.
-     * 
+     *
      * @param string $name The param name.
-     * 
+     *
      * @return string The named subpattern.
-     * 
+     *
      */
     protected function getSubpattern($name)
     {
@@ -283,11 +283,11 @@ class Route extends AbstractSpec
         if (isset($this->tokens[$name])) {
             return "(?P<{$name}>{$this->tokens[$name]})";
         }
-        
+
         // use a default subpattern
         return "(?P<{$name}>[^/]+)";
     }
-    
+
     protected function isFullMatch($path, array $server)
     {
         return $this->isRoutableMatch()
@@ -307,13 +307,13 @@ class Route extends AbstractSpec
         return false;
     }
     /**
-     * 
+     *
      * Checks that the path matches the Route regex.
-     * 
+     *
      * @param string $path The path to match against.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isRegexMatch($path)
     {
@@ -327,13 +327,13 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Checks that $_SERVER values match their related regular expressions.
-     * 
+     *
      * @param array $server A copy of $_SERVER.
-     * 
+     *
      * @return bool True if they all match, false if not.
-     * 
+     *
      */
     protected function isServerMatch($server)
     {
@@ -360,13 +360,13 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
+     *
      * Checks that the Route `$secure` matches the corresponding server values.
-     * 
+     *
      * @param array $server A copy of $_SERVER.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isSecureMatch($server)
     {
@@ -389,14 +389,14 @@ class Route extends AbstractSpec
     }
 
     /**
-     * 
-     * Checks that the custom Route `$is_match` callable returns true, given 
+     *
+     * Checks that the custom Route `$is_match` callable returns true, given
      * the server values.
-     * 
+     *
      * @param array $server A copy of $_SERVER.
-     * 
+     *
      * @return bool True on a match, false if not.
-     * 
+     *
      */
     protected function isCustomMatch($server)
     {
@@ -407,7 +407,7 @@ class Route extends AbstractSpec
         // pass the matches as an object, not as an array, so we can avoid
         // tricky hacks for references
         $arrobj = new ArrayObject($this->matches);
-        
+
         // attempt the match
         $result = call_user_func($this->is_match, $server, $arrobj);
 
@@ -421,13 +421,13 @@ class Route extends AbstractSpec
 
         return $result;
     }
-    
+
     /**
-     * 
+     *
      * Sets the route params from the matched values.
-     * 
+     *
      * @return null
-     * 
+     *
      */
     protected function setParams()
     {

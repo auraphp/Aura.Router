@@ -16,12 +16,12 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         return $this->factory->newInstance();
     }
-    
+
     protected function assertIsRoute($actual)
     {
         $this->assertInstanceOf('Aura\Router\Route', $actual);
     }
-    
+
     protected function assertRoute($expect, $actual)
     {
         $this->assertIsRoute($actual);
@@ -29,11 +29,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($val, $actual->$key);
         }
     }
-    
+
     public function testBeforeAndAfterAttach()
     {
         $this->router->add('before', '/foo');
-        
+
         $this->router->attach('during', '/during', function ($router) {
             $router->setTokens(array('id' => '\d+'));
             $router->setServer(array('HTTP_REQUEST' => 'GET'));
@@ -45,11 +45,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             $router->setGenerateCallable(function () { });
             $router->add('bar', '/bar');
         });
-        
+
         $this->router->add('after', '/baz');
-        
+
         $routes = $this->router->getRoutes();
-        
+
         $expect = array(
             'tokens' => array(),
             'server' => array(),
@@ -61,10 +61,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'generate' => null,
         );
         $this->assertRoute($expect, $routes['before']);
-        
+
         $expect['values']['action'] = 'after';
         $this->assertRoute($expect, $routes['after']);
-        
+
         $actual = $routes['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
@@ -78,7 +78,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Closure', $actual->is_match);
         $this->assertInstanceOf('Closure', $actual->generate);
     }
-    
+
     public function testAttachInAttach()
     {
         $this->router->attach('foo', '/foo', function ($router) {
@@ -87,30 +87,30 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 $router->add('index', '/index');
             });
         });
-        
+
         $routes = $this->router->getRoutes();
-        
+
         $this->assertSame('/foo/index', $routes['foo.index']->path);
         $this->assertSame('/foo/bar/index', $routes['foo.bar.index']->path);
     }
-    
+
     public function testAddAndGenerate()
     {
         $this->router->attach('resource', '/resource', function ($router) {
-            
+
             $router->setTokens(array(
                 'id' => '(\d+)',
             ));
-            
+
             $router->setValues(array(
                 'controller' => 'resource',
             ));
-            
+
             $router->addGet(null, '/')
                 ->addValues(array(
                     'action' => 'browse'
                 ));
-                
+
             $router->addGet('read', '/{id}');
             $router->addPost('edit', '/{id}');
             $router->addPut('add', '/{id}');
@@ -118,7 +118,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             $router->addPatch('patch', '/{id}');
             $router->addOptions('options', '/{id}');
         });
-        
+
         // fail to match
         $actual = $this->router->match('/foo/bar/baz/dib');
         $this->assertFalse($actual);
@@ -146,7 +146,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'GET',
         );
         $this->assertEquals($expect_values, $actual->params);
-        
+
         // edit
         $server = array('REQUEST_METHOD' => 'POST');
         $actual = $this->router->match('/resource/42', $server);
@@ -160,7 +160,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'POST',
         );
         $this->assertEquals($expect_values, $actual->params);
-        
+
         // add
         $server = array('REQUEST_METHOD' => 'PUT');
         $actual = $this->router->match('/resource/42', $server);
@@ -183,7 +183,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'DELETE',
         );
         $this->assertEquals($expect_values, $actual->params);
-        
+
         // patch
         $server = array('REQUEST_METHOD' => 'PATCH');
         $actual = $this->router->match('/resource/42', $server);
@@ -197,7 +197,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'PATCH',
         );
         $this->assertEquals($expect_values, $actual->params);
-        
+
         // options
         $server = array('REQUEST_METHOD' => 'OPTIONS');
         $actual = $this->router->match('/resource/42', $server);
@@ -211,19 +211,19 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'REQUEST_METHOD' => 'OPTIONS',
         );
         $this->assertEquals($expect_values, $actual->params);
-        
+
         // get a named route
         $actual = $this->router->generate('resource.read', array(
             'id' => 42,
             'format' => null,
         ));
         $this->assertSame('/resource/42', $actual);
-        
+
         // fail to match
         $this->setExpectedException('Aura\Router\Exception\RouteNotFound');
         $actual = $this->router->generate('no-route');
     }
-    
+
     public function testGetAndSetRoutes()
     {
         $this->router->attach('page', '/page', function ($router) {
@@ -231,16 +231,16 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
             ));
-            
+
             $router->setValues(array(
                 'controller' => 'page',
                 'format' => null,
             ));
-            
+
             $router->add('browse', '/');
             $router->add('read', '/{id}{format}');
         });
-        
+
         $actual = $this->router->getRoutes();
         $this->assertInstanceOf('Aura\Router\RouteCollection', $actual);
         $this->assertTrue(count($actual) == 2);
@@ -248,11 +248,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/page/', $actual['page.browse']->path);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
-        
+
         // emulate caching the values
         $saved = serialize($actual);
         $restored = unserialize($saved);
-        
+
         // set routes from the restored values
         $router = $this->newRouter();
         $router->setRoutes($restored);
@@ -264,26 +264,26 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
     }
-    
+
     public function testGetDebug()
     {
         $foo = $this->router->add(null, '/foo');
         $bar = $this->router->add(null, '/bar');
         $baz = $this->router->add(null, '/baz');
-        
+
         $this->router->match('/bar');
-        
+
         $actual = $this->router->getDebug();
         $expect = array($foo, $bar);
         $this->assertSame($expect, $actual);
         $this->assertRoute($bar, $this->router->getMatchedRoute());
     }
-    
+
     public function testAttachResource()
     {
         $this->router->attachResource('blog', '/api/v1/blog');
         $routes = $this->router->getRoutes();
-        
+
         $expect = array(
             'name' => 'blog.browse',
             'path' => '/api/v1/blog{format}',
@@ -300,7 +300,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.browse']);
-        
+
         $expect = array(
             'name' => 'blog.read',
             'path' => '/api/v1/blog/{id}{format}',
@@ -317,7 +317,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.read']);
-        
+
         $expect = array(
             'name' => 'blog.add',
             'path' => '/api/v1/blog/add',
@@ -334,7 +334,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.add']);
-        
+
         $expect = array(
             'name' => 'blog.edit',
             'path' => '/api/v1/blog/{id}/edit{format}',
@@ -351,7 +351,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.edit']);
-        
+
         $expect = array(
             'name' => 'blog.delete',
             'path' => '/api/v1/blog/{id}',
@@ -368,7 +368,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.delete']);
-        
+
         $expect = array(
             'name' => 'blog.create',
             'path' => '/api/v1/blog',
@@ -385,7 +385,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.create']);
-        
+
         $expect = array(
             'name' => 'blog.update',
             'path' => '/api/v1/blog/{id}',
@@ -402,7 +402,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.update']);
-        
+
         $expect = array(
             'name' => 'blog.replace',
             'path' => '/api/v1/blog/{id}',
@@ -419,13 +419,13 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ),
         );
         $this->assertRoute($expect, $routes['blog.replace']);
-        
+
     }
-    
+
     public function testCatchAll()
     {
         $this->router->add(null, '{/controller,action,id}');
-        
+
         $actual = $this->router->match('/', array());
         $expect = array(
             'params' => array(
@@ -470,17 +470,17 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->router->getMatchedRoute());
     }
-    
+
     public function testArrayAccess()
     {
         $foo = $this->router->add('foo', '/foo');
-        
+
         $this->router->offsetUnset('foo');
         $this->assertFalse($this->router->offsetExists('foo'));
-        
+
         $this->router->offsetSet('foo', $foo);
         $this->assertTrue($this->router->offsetExists('foo'));
-        
+
         $this->setExpectedException('Aura\Router\Exception\UnexpectedValue');
         $this->router->offsetSet('bar', 'not a route');
     }
