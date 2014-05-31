@@ -1,5 +1,5 @@
-- [DOC] Add PHP 5.5 to Travis build, update README and LICENSE.
+- Add methods Map::appendMap() and Map::prependMap(), to append or prepend the definitions from another map.
 
-- [ADD] Route::__isset()
+- Add test for Route::__isset()
 
-- [CHG] Route::attach() now works with an empty path
+- Remove 'router_map' service from config; leave this for the framework-level config
