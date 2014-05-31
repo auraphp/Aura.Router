@@ -28,7 +28,7 @@ class Map
      * @var array
      * 
      */
-    protected $attach_common = null;
+    protected $attach_common = [];
 
     /**
      * 
@@ -37,7 +37,7 @@ class Map
      * @var array
      * 
      */
-    protected $attach_routes = null;
+    protected $attach_routes = [];
 
     /**
      * 
@@ -156,6 +156,60 @@ class Map
         );
     }
 
+    /**
+     * 
+     * Appends the definitions of another map to this map.
+     * 
+     * @param Map $map The map to append.
+     * 
+     * @return void
+     * 
+     */
+    public function appendMap(Map $map)
+    {
+        if ($this->routes) {
+            throw new Exception("Cannot append a map after attempting match().");
+        }
+        
+        $this->definitions = array_merge(
+            $this->definitions,
+            $map->definitions
+        );
+    }
+    
+    /**
+     * 
+     * Prepends the definitions of another map to this map.
+     * 
+     * @param Map $map The map to prepend.
+     * 
+     * @return void
+     * 
+     */
+    public function prependMap(Map $map)
+    {
+        if ($this->routes) {
+            throw new Exception("Cannot prepend a map after attempting match().");
+        }
+        
+        $this->definitions = array_merge(
+            $map->definitions,
+            $this->definitions
+        );
+    }
+    
+    /**
+     * 
+     * Clears out all existing definitions.
+     * 
+     * @return void
+     * 
+     */
+    public function reset()
+    {
+        return $this->setRoutes([]);
+    }
+    
     /**
      * 
      * Gets a route that matches a given path and other server conditions.

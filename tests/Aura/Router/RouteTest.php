@@ -31,6 +31,20 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         parent::tearDown();
     }
     
+    public function test__isset()
+    {
+        $route = $this->factory->newInstance([
+            'path' => '/foo/bar/baz',
+            'values' => [
+                'controller' => 'zim',
+                'action' => 'dib',
+            ],
+        ]);
+        
+        $this->assertTrue(isset($route->path));
+        $this->assertFalse(isset($route->no_such_property));
+    }
+    
     public function testIsMatchOnStaticPath()
     {
         $route = $this->factory->newInstance([

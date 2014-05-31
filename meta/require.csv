@@ -1,2 +1,2 @@
 php,>=5.4.0
-aura/installer-default,>=1.0.0
+aura/installer-default,1.0.*
