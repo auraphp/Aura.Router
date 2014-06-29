@@ -315,8 +315,8 @@ class RouteCollection extends AbstractSpec implements
 
     /**
      *
-     * Modifies the newly-added route to set 'controller' and 'action' values
-     * if they are not already present.  Uses the route name to do so.
+     * Modifies the newly-added route to set an 'action' value from the route
+     * name.
      *
      * @param Route $route The newly-added route.
      *
@@ -325,24 +325,8 @@ class RouteCollection extends AbstractSpec implements
      */
     protected function routeCallable(Route $route)
     {
-        $action = $route->name;
-        if (! $action) {
-            return;
-        }
-
-        $controller = null;
-        $pos = strrpos($action, '.');
-        if ($pos !== false) {
-            $controller = substr($action, 0, $pos);
-            $action = substr($action, $pos + 1);
-        }
-
-        if (! isset($route->values['controller'])) {
-            $route->addValues(array('controller' => $controller));
-        }
-
-        if (! isset($route->values['action'])) {
-            $route->addValues(array('action' => $action));
+        if ($route->name && ! isset($route->values['action'])) {
+            $route->addValues(array('action' => $route->name));
         }
     }
 
