@@ -480,5 +480,6 @@ class RouteCollection extends AbstractSpec implements
         $router->addPost('create', '');
         $router->addPatch('update', '/{id}');
         $router->addPut('replace', '/{id}');
+        $router->addOptions('options', '');
     }
 }
