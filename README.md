@@ -6,7 +6,7 @@ route.
 
 This package does not provide a dispatching mechanism. Your application is
 expected to take the information provided by the matching route and dispatch
-to a controller on its own. For one possible dispatch system, please see
+it on its own. For one possible dispatch system, please see
 [Aura.Dispatcher][].
 
 
@@ -75,14 +75,13 @@ $router->add('home', '/');
 $router->add(null, '/{controller}/{action}/{id}');
 
 // add a named route with an extended specification
-$router->add('read', '/blog/read/{id}{format}')
+$router->add('blog.read', '/blog/read/{id}{format}')
     ->addTokens(array(
         'id'     => '\d+',
         'format' => '(\.[^/]+)?',
     ))
     ->addValues(array(
-        'controller' => 'blog',
-        'action'     => 'read',
+        'action'     => 'BlogReadAction',
         'format'     => '.html',
     ));
 ?>
@@ -140,29 +139,21 @@ if (! $route) {
     exit();
 }
 
-// does the route indicate a controller?
-if (isset($route->params['controller'])) {
-    // take the controller class directly from the route
-    $controller = $route->params['controller'];
-} else {
-    // use a default controller
-    $controller = 'Index';
-}
-
 // does the route indicate an action?
 if (isset($route->params['action'])) {
-    // take the action method directly from the route
-    $action = $route->params['action'];
+    // take the action class directly from the route
+    $class = $route->params['action'];
 } else {
-    // use a default action
-    $action = 'index';
+    // use a default action class
+    $class = 'IndexAction';
 }
 
 // instantiate the controller class
-$page = new $controller();
+$action = new $action_class();
 
-// invoke the action method with the route values
-echo $page->$action($route->params);
+// call the __invoke() method on the action
+// class using the route params
+echo $action->__invoke($route->params);
 ?>
 ```
 
@@ -206,34 +197,34 @@ You can extend a route specification with the following methods:
 
 - `addTokens()` -- Adds regular expression subpatterns that params must
   match.
-        
+
         addTokens(array(
             'id' => '\d+',
         ))
-    
+
     Note that `setTokens()` is also available, but this will replace any
     previous subpatterns entirely, instead of merging with the existing
     subpatterns.
-        
+
 - `addServer()` -- Adds regular expressions that server values must
   match.
-        
+
         addServer(array(
             'REQUEST_METHOD' => 'PUT|PATCH',
         ))
-    
+
     Note that `setServer()` is also available, but this will replace any
     previous expressions entirely, instead of merging with the existing
     expressions.
-        
+
 - `addValues()` -- Adds default values for the params.
 
         addValues(array(
-            'controller' => 'blog',
-            'action' => 'read',
-            'id' => 1,
+            'year' => '1979',
+            'month' => '11',
+            'day' => '07'
         ))
-        
+
     Note that `setValues()` is also available, but this will replace any
     previous default values entirely, instead of merging with the existing
     default value.
@@ -245,7 +236,7 @@ You can extend a route specification with the following methods:
 - `setWildcard()` -- Sets the name of a wildcard param; this is where
   arbitrary slash-separated values appearing after the route path will be
   stored.
-  
+
 - `setRoutable()` -- When `false` the route will be used only for generating
   paths, not for matching (`true` by default).
 
@@ -263,31 +254,29 @@ Here is a full extended route specification named `read`:
 
 ```php
 <?php
-$router->add('read', '/blog/read/{id}{format}')
+$router->add('blog.read', '/blog/read/{id}{format}')
     ->addTokens(array(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
         'REQUEST_METHOD' => 'GET|POST',
     ))
     ->addValues(array(
-        'controller' => 'blog',
-        'action' => 'read',
         'id' => 1,
         'format' => '.html',
     ))
     ->setSecure(false)
     ->setRoutable(false)
     ->setIsMatchCallable(function(array $server, \ArrayObject $matches) {
-            
+
         // disallow matching if referred from example.com
         if ($server['HTTP_REFERER'] == 'http://example.com') {
             return false;
         }
-        
+
         // add the referer from $server to the match values
         $matches['referer'] = $server['HTTP_REFERER'];
         return true;
-        
+
     })
     ->setGenerateCallable(function (\ArrayObject $data) {
         $data['foo'] = 'bar';
@@ -317,7 +306,7 @@ $router->addValues(array(
     'format' => null,
 ));
 
-// set the default 'secure' value 
+// set the default 'secure' value
 $router->setSecure(true);
 
 // set the default wildcard param name
@@ -333,7 +322,7 @@ $router->setIsMatchCallable(function (...) { ... });
 $router->setGenerateCallable(function (...) { ... });
 ?>
 ```
-  
+
 ### Simple Routes
 
 You don't need to specify an extended route specification. With the following
@@ -362,36 +351,22 @@ $router->add('archive', '/archive/{year}/{month}/{day}')
 
 ### Automatic Params
 
-The _Router_ will automatically populate values for `controller` and `action`
-route params if those params do not already have values. The _Router_ combines
-the route name prefix (if one exists) with a dot and the route name; the
-portion before the last dot is the `controller` value, and the `action` value
-is the portion after the last dot.
+The _Router_ will automatically populate values for the `action`
+route param if one is not set manually.
 
 ```php
 <?php
-// controller = 'foo' and action = 'bar'
-// because they have not been set otherwise
+// ['action' => 'foo.bar'] because it has not been set otherwise
 $router->add('foo.bar', '/path/to/bar');
 
-// the 'action' param value on this route will be 'baz'
-// because we explicitly set a default in the router;
-// 'controller' is still 'foo'
-$router->setValues(array('action' => 'baz'));
-$router->add('foo.bar', '/path/to/bar');
-
-// the value for the 'action' param on this route will be
-// 'zim' because we explicitly set it on the extended route spec
+// ['action' => 'zim'] because we add it explicitly
 $router->add('foo.dib', '/path/to/dib')
-    ->setValues(array('action' => 'zim'));
+       ->addValues(array('action' => 'zim'));
 
 // the 'action' param here will be whatever the path value for {action} is
 $router->add('/path/to/{action}');
 ?>
 ```
-
-> N.b. If there are no dots in the combined name, the `controller` value will
-> be null and the `action` value will be the name.
 
 ### Optional Params
 
@@ -533,7 +508,7 @@ $name_prefix = 'blog';
 $path_prefix = '/blog';
 
 $router->attach($name_prefix, $path_prefix, function ($router) {
-    
+
     $router->add('browse', '{format}')
         ->addTokens(array(
             'format' => '(\.json|\.atom|\.html)?'
@@ -541,7 +516,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
         ->addValues(array(
             'format' => '.html',
         ));
-    
+
     $router->add('read', '/{id}{format}', array(
         ->addTokens(array(
             'id'     => '\d+',
@@ -550,7 +525,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
         ->addValues(array(
             'format' => '.html',
         ));
-    
+
     $router->add('edit', '/{id}/edit{format}', array(
         ->addTokens(array(
             'id' => '\d+',
@@ -562,8 +537,8 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
 });
 ?>
 ```
-    
-Each of the route names will be prefixed with 'blog.', and of the route paths
+
+Each of the route names will be prefixed with 'blog.', and each of the route paths
 will be prefixed with `/blog`, so the effective route names and paths become:
 
 - `blog.browse  =>  /blog{format}`
@@ -581,16 +556,16 @@ $name_prefix = 'blog';
 $path_prefix = '/blog';
 
 $router->attach($name_prefix, $path_prefix, function ($router) {
-    
+
     $router->setTokens(array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?'
     ));
-    
+
     $router->setValues(array(
         'format' => '.html',
     ));
-    
+
     $router->add('browse', '');
     $router->add('read', '/{id}{format}');
     $router->add('edit', '/{id}/edit');
@@ -611,25 +586,24 @@ $router->attachResource('blog', '/blog');
 
 That method call will result in the following routes being added:
 
-| Route Name    | HTTP Method   | Route Path            | Route Values                      | Purpose
-| ------------- | ------------- | --------------------- | --------------------------------- | -------
-| blog.browse   | GET           | /blog{format}         | controller=>blog, action=>browse  | Browse multiple resources
-| blog.read     | GET           | /blog/{id}{format}    | controller=>blog, action=>read    | Read a single resource
-| blog.edit     | GET           | /blog/{id}/edit       | controller=>blog, action=>edit    | The form for editing a resource
-| blog.add      | GET           | /blog/add             | controller=>blog, action=>add     | The form for adding a resource
-| blog.delete   | DELETE        | /blog/{id}            | controller=>blog, action=>delete  | Delete a single resource
-| blog.create   | POST          | /blog                 | controller=>blog, action=>create  | Create a new resource
-| blog.update   | PATCH         | /blog/{id}            | controller=>blog, action=>update  | Update part of an existing resource
-| blog.replace  | PUT           | /blog/{id}            | controller=>blog, action=>replace | Replace an entire existing resource
+| Route Name    | HTTP Method   | Route Path            | Purpose
+| ------------- | ------------- | --------------------- | -------
+| blog.browse   | GET           | /blog{format}         | Browse multiple resources
+| blog.read     | GET           | /blog/{id}{format}    | Read a single resource
+| blog.edit     | GET           | /blog/{id}/edit       | The form for editing a resource
+| blog.add      | GET           | /blog/add             | The form for adding a resource
+| blog.delete   | DELETE        | /blog/{id}            | Delete a single resource
+| blog.create   | POST          | /blog                 | Create a new resource
+| blog.update   | PATCH         | /blog/{id}            | Update part of an existing resource
+| blog.replace  | PUT           | /blog/{id}            | Replace an entire existing resource
 
-The `{id}` token is whatever has already been defined in the router; it not
+The `{id}` token is whatever has already been defined in the router; if not
 already defined, it will be any series of numeric digits. Likewise, the
 `{format}` token is whatever has already been defined in the router; if not
 already defined, it is an optional dot-format file extension (including the
 dot itself).
 
-The `controller` value comes from the route name prefix, and the `action`
-value comes from the route name.
+The `action` value is the same as the route name.
 
 If you want calls to `attachResource()` to create a different series of REST
 routes, use the `setResourceCallable()` method to set your own callable to
@@ -669,19 +643,19 @@ $cache = '/path/to/routes.cache';
 
 // does the cache exist?
 if (file_exists($cache)) {
-    
+
     // restore from the cache
     $routes = unserialize(file_get_contents($cache));
     $router->setRoutes($routes);
-    
+
 } else {
-    
+
     // build the routes using add() and attach() ...
     // ... ... ...
     // ... then save to the cache for the next page load
     $routes = $router->getRoutes();
     file_put_contents($cache, serialize($routes));
-    
+
 }
 ?>
 ```
@@ -695,7 +669,7 @@ callables instead.
 
 ### As a Micro-Framework
 
-Sometimes you may wish to use the _Router_ as a micro-framework. This is 
+Sometimes you may wish to use the _Router_ as a micro-framework. This is
 possible by assigning a `callable` as a default param value, then calling that
 param to dispatch it.
 
@@ -707,7 +681,7 @@ $router->add('read', '/blog/read/{id}{format}')
         'format' => '(\.[^/]+)?',
 	))
 	->addValues(array(
-		'controller' => function ($params) {
+		'action' => function ($params) {
 		    if ($params['format'] == '.json') {
     			$id = (int) $params['id'];
 		        header('Content-Type: application/json');
@@ -730,14 +704,14 @@ A naive micro-framework dispatcher might work like this:
 // get the route params
 $params = $route->params;
 
-// extract the controller callable from the params
-$controller = $params['controller'];
-unset($params['controller']);
+// extract the action callable from the params
+$action = $params['action'];
+unset($params['action']);
 
 // invoke the callable
-$controller($params);
+$action($params);
 ?>
 ```
 
-With the above example controller, the URL `/blog/read/1.json` will send JSON
+With the above example action, the URL `/blog/read/1.json` will send JSON
 ouput, but for `/blog/read/1` it will send plain text output.
