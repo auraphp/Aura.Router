@@ -142,13 +142,13 @@ if (! $route) {
 // does the route indicate an action?
 if (isset($route->params['action'])) {
     // take the action class directly from the route
-    $class = $route->params['action'];
+    $action_class = $route->params['action'];
 } else {
     // use a default action class
-    $class = 'IndexAction';
+    $action_class = 'IndexAction';
 }
 
-// instantiate the controller class
+// instantiate the action class
 $action = new $action_class();
 
 // call the __invoke() method on the action
