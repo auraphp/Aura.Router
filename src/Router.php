@@ -50,12 +50,12 @@ class Router
 
     protected $generator;
 
-	/**
-	 *
-	 * Constructor.
-	 *
-	 * @param RouteCollection $routes A route collection object.
-	 */
+    /**
+     *
+     * Constructor.
+     *
+     * @param RouteCollection $routes A route collection object.
+     */
     public function __construct(RouteCollection $routes, Generator $generator)
     {
         $this->routes = $routes;

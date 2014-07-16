@@ -689,22 +689,22 @@ param to dispatch it.
 <?php
 $router->add('read', '/blog/read/{id}{format}')
     ->addTokens(array(
-		'id' => '\d+',
+        'id' => '\d+',
         'format' => '(\.[^/]+)?',
-	))
-	->addValues(array(
-		'action' => function ($params) {
-		    if ($params['format'] == '.json') {
-    			$id = (int) $params['id'];
-		        header('Content-Type: application/json');
-		        echo json_encode(['id' => $id]);
-		    } else {
-    			$id = (int) $params['id'];
-		        header('Content-Type: text/plain');
-    			echo "Reading blog ID {$id}";
-		    }
-		},
-		'format' => '.html',
+    ))
+    ->addValues(array(
+        'action' => function ($params) {
+            if ($params['format'] == '.json') {
+                $id = (int) $params['id'];
+                header('Content-Type: application/json');
+                echo json_encode(['id' => $id]);
+            } else {
+                $id = (int) $params['id'];
+                header('Content-Type: text/plain');
+                echo "Reading blog ID {$id}";
+            }
+        },
+        'format' => '.html',
     ));
 ?>
 ```

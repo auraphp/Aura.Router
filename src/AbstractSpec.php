@@ -19,16 +19,16 @@ namespace Aura\Router;
  */
 class AbstractSpec
 {
-	protected $tokens      = array();
-	protected $server      = array();
+    protected $tokens      = array();
+    protected $server      = array();
     protected $accept      = array();
-	protected $values      = array();
-	protected $secure      = null;
-	protected $wildcard    = null;
-	protected $routable    = true;
-	protected $is_match    = null;
-	protected $generate    = null;
-	protected $regex       = null;
+    protected $values      = array();
+    protected $secure      = null;
+    protected $wildcard    = null;
+    protected $routable    = true;
+    protected $is_match    = null;
+    protected $generate    = null;
+    protected $regex       = null;
 
     /**
      *

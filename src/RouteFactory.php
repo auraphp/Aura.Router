@@ -42,17 +42,17 @@ class RouteFactory
         'path_prefix' => null,
     );
 
-	/**
-	 *
-	 * Constructor.
-	 *
-	 * @param string $class The route class to create.
-	 *
-	 */
-	public function __construct($class = 'Aura\Router\Route')
-	{
-	    $this->class = $class;
-	}
+    /**
+     *
+     * Constructor.
+     *
+     * @param string $class The route class to create.
+     *
+     */
+    public function __construct($class = 'Aura\Router\Route')
+    {
+        $this->class = $class;
+    }
 
     /**
      *
