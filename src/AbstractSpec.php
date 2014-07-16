@@ -21,6 +21,7 @@ class AbstractSpec
 {
 	protected $tokens      = array();
 	protected $server      = array();
+    protected $accept      = array();
 	protected $values      = array();
 	protected $secure      = null;
 	protected $wildcard    = null;
@@ -89,6 +90,16 @@ class AbstractSpec
         $this->server = array_merge($this->server, $server);
         $this->regex = null;
         return $this;
+    }
+
+    public function setAccept(array $accept)
+    {
+        $this->accept = $accept;
+    }
+
+    public function addAccept(array $accept)
+    {
+        $this->accept = array_merge($this->accept, $accept);
     }
 
     /**

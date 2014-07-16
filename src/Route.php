@@ -294,6 +294,7 @@ class Route extends AbstractSpec
             && $this->isRegexMatch($path)
             && $this->isServerMatch($server)
             && $this->isSecureMatch($server)
+            && $this->isAcceptMatch($server)
             && $this->isCustomMatch($server);
     }
 
@@ -386,6 +387,44 @@ class Route extends AbstractSpec
     {
         return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
             || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
+    }
+
+    protected function isAcceptMatch($server)
+    {
+        if (! $this->accept) {
+            return true;
+        }
+
+        if (! isset($server['HTTP_ACCEPT'])) {
+            return true;
+        }
+
+        $header = str_replace(' ', '', $server['HTTP_ACCEPT']);
+
+        if ($this->isAcceptMatchHeader('*/*', $header)) {
+            return true;
+        }
+
+        foreach ($this->accept as $type) {
+            if ($this->isAcceptMatchHeader($type, $header)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function isAcceptMatchHeader($type, $header)
+    {
+        list($type, $subtype) = explode('/', $type);
+        $type = preg_quote($type);
+        $subtype = preg_quote($subtype);
+        $regex = "#$type/($subtype|\*)(;q=(\d\.\d))?#";
+        $found = preg_match($regex, $header, $matches);
+        if (! $found) {
+            return false;
+        }
+        return isset($matches[3]) && $matches[3] !== '0.0';
     }
 
     /**

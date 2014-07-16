@@ -93,7 +93,7 @@ the related HTTP method:
 
 - `$router->addGet()`
 - `$router->addDelete()`
-- `$router->addOption()`
+- `$router->addOptions()`
 - `$router->addPatch()`
 - `$router->addPost()`
 - `$router->addPut()`
@@ -216,6 +216,18 @@ You can extend a route specification with the following methods:
     Note that `setServer()` is also available, but this will replace any
     previous expressions entirely, instead of merging with the existing
     expressions.
+
+- `addAccept()` -- Adds a list of content types that the route responds to. Note that this is *not* content negotiation per se, only a "sanity check" to make sure the route can eventually provide the content types specified by the request.
+
+        addAccept(array(
+            'application/json',
+            'application/xml',
+            'text/csv',
+        ));
+
+    Note that `setAccept()` is also available, but this will replace any
+    previous content types entirely, instead of merging with the existing
+    types.
 
 - `addValues()` -- Adds default values for the params.
 

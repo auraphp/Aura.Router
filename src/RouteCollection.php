@@ -374,6 +374,7 @@ class RouteCollection extends AbstractSpec implements
         $vars = array(
             'tokens',
             'server',
+            'accept',
             'values',
             'secure',
             'wildcard',
