@@ -291,11 +291,11 @@ class Route extends AbstractSpec
     protected function isFullMatch($path, array $server)
     {
         return $this->isRoutableMatch()
-            && $this->isRegexMatch($path)
-            && $this->isServerMatch($server)
             && $this->isSecureMatch($server)
+            && $this->isRegexMatch($path)
             && $this->isMethodMatch($server)
             && $this->isAcceptMatch($server)
+            && $this->isServerMatch($server)
             && $this->isCustomMatch($server);
     }
 
