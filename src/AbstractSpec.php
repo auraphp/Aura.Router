@@ -21,6 +21,7 @@ class AbstractSpec
 {
     protected $tokens      = array();
     protected $server      = array();
+    protected $method      = array();
     protected $accept      = array();
     protected $values      = array();
     protected $secure      = null;
@@ -88,18 +89,27 @@ class AbstractSpec
     public function addServer(array $server)
     {
         $this->server = array_merge($this->server, $server);
-        $this->regex = null;
         return $this;
     }
 
-    public function setAccept(array $accept)
+    public function setMethod($method)
     {
-        $this->accept = $accept;
+        $this->method = (array) $method;
     }
 
-    public function addAccept(array $accept)
+    public function addMethod($method)
     {
-        $this->accept = array_merge($this->accept, $accept);
+        $this->method = array_merge($this->method, (array) $method);
+    }
+
+    public function setAccept($accept)
+    {
+        $this->accept = (array) $accept;
+    }
+
+    public function addAccept($accept)
+    {
+        $this->accept = array_merge($this->accept, (array) $accept);
     }
 
     /**

@@ -32,6 +32,8 @@ class RouteFactory
     protected $spec = array(
         'tokens' => array(),
         'server' => array(),
+        'method' => array(),
+        'accept' => array(),
         'values' => array(),
         'secure' => null,
         'wildcard' => null,
@@ -81,6 +83,8 @@ class RouteFactory
         $route = new $class($path, $name);
         $route->addTokens($spec['tokens']);
         $route->addServer($spec['server']);
+        $route->addMethod($spec['method']);
+        $route->addAccept($spec['accept']);
         $route->addValues($spec['values']);
         $route->setSecure($spec['secure']);
         $route->setWildcard($spec['wildcard']);

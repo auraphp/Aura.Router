@@ -203,7 +203,7 @@ class RouteCollection extends AbstractSpec implements
     public function addGet($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'GET'));
+        $route->addMethod('GET');
         return $route;
     }
 
@@ -221,7 +221,7 @@ class RouteCollection extends AbstractSpec implements
     public function addDelete($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'DELETE'));
+        $route->addMethod('DELETE');
         return $route;
     }
 
@@ -239,7 +239,7 @@ class RouteCollection extends AbstractSpec implements
     public function addOptions($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'OPTIONS'));
+        $route->addMethod('OPTIONS');
         return $route;
     }
 
@@ -257,7 +257,7 @@ class RouteCollection extends AbstractSpec implements
     public function addPatch($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'PATCH'));
+        $route->addMethod('PATCH');
         return $route;
     }
 
@@ -275,7 +275,7 @@ class RouteCollection extends AbstractSpec implements
     public function addPost($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'POST'));
+        $route->addMethod('POST');
         return $route;
     }
 
@@ -293,7 +293,7 @@ class RouteCollection extends AbstractSpec implements
     public function addPut($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'PUT'));
+        $route->addMethod('PUT');
         return $route;
     }
 
@@ -374,6 +374,7 @@ class RouteCollection extends AbstractSpec implements
         $vars = array(
             'tokens',
             'server',
+            'method',
             'accept',
             'values',
             'secure',

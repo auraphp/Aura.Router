@@ -294,6 +294,7 @@ class Route extends AbstractSpec
             && $this->isRegexMatch($path)
             && $this->isServerMatch($server)
             && $this->isSecureMatch($server)
+            && $this->isMethodMatch($server)
             && $this->isAcceptMatch($server)
             && $this->isCustomMatch($server);
     }
@@ -307,6 +308,7 @@ class Route extends AbstractSpec
         $this->debug[] = 'Not routable.';
         return false;
     }
+
     /**
      *
      * Checks that the path matches the Route regex.
@@ -391,11 +393,7 @@ class Route extends AbstractSpec
 
     protected function isAcceptMatch($server)
     {
-        if (! $this->accept) {
-            return true;
-        }
-
-        if (! isset($server['HTTP_ACCEPT'])) {
+        if (! $this->accept || ! isset($server['HTTP_ACCEPT'])) {
             return true;
         }
 
@@ -425,6 +423,15 @@ class Route extends AbstractSpec
             return false;
         }
         return isset($matches[3]) && $matches[3] !== '0.0';
+    }
+
+    protected function isMethodMatch($server)
+    {
+        if (! $this->method) {
+            return true;
+        }
+
+        return in_array($server['REQUEST_METHOD'], $this->method);
     }
 
     /**
