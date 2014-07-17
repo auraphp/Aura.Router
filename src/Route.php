@@ -101,6 +101,8 @@ class Route extends AbstractSpec
      */
     protected $debug;
 
+    protected $score = 0;
+
     /**
      *
      * Constructor.
@@ -167,6 +169,76 @@ class Route extends AbstractSpec
             return true;
         }
         return false;
+    }
+
+    protected function isFullMatch($path, array $server)
+    {
+        return $this->isRoutableMatch()
+            && $this->isSecureMatch($server)
+            && $this->isRegexMatch($path)
+            && $this->isMethodMatch($server)
+            && $this->isAcceptMatch($server)
+            && $this->isServerMatch($server)
+            && $this->isCustomMatch($server);
+    }
+
+    protected function isRoutableMatch()
+    {
+        if ($this->routable) {
+            return true;
+        }
+
+        $this->debug[] = 'Not routable.';
+        return false;
+    }
+
+    /**
+     *
+     * Checks that the Route `$secure` matches the corresponding server values.
+     *
+     * @param array $server A copy of $_SERVER.
+     *
+     * @return bool True on a match, false if not.
+     *
+     */
+    protected function isSecureMatch($server)
+    {
+        if ($this->secure === null) {
+            return true;
+        }
+
+        if ($this->secure != $this->serverIsSecure($server)) {
+            $this->debug[] = 'Not a secure match.';
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function serverIsSecure($server)
+    {
+        return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
+            || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
+    }
+
+    /**
+     *
+     * Checks that the path matches the Route regex.
+     *
+     * @param string $path The path to match against.
+     *
+     * @return bool True on a match, false if not.
+     *
+     */
+    protected function isRegexMatch($path)
+    {
+        $this->setRegex();
+        $regex = "#^{$this->regex}$#";
+        $match = preg_match($regex, $path, $this->matches);
+        if (! $match) {
+            $this->debug[] = 'Not a regex match.';
+        }
+        return $match;
     }
 
     /**
@@ -253,23 +325,6 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Adds a wildcard subpattern to the end of the regex.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexWildcard()
-    {
-        if (! $this->wildcard) {
-            return;
-        }
-
-        $this->regex = rtrim($this->regex, '/')
-                     . "(/(?P<{$this->wildcard}>.*))?";
-    }
-
-    /**
-     *
      * Returns a named subpattern for a param name.
      *
      * @param string $name The param name.
@@ -288,107 +343,30 @@ class Route extends AbstractSpec
         return "(?P<{$name}>[^/]+)";
     }
 
-    protected function isFullMatch($path, array $server)
+    /**
+     *
+     * Adds a wildcard subpattern to the end of the regex.
+     *
+     * @return null
+     *
+     */
+    protected function setRegexWildcard()
     {
-        return $this->isRoutableMatch()
-            && $this->isSecureMatch($server)
-            && $this->isRegexMatch($path)
-            && $this->isMethodMatch($server)
-            && $this->isAcceptMatch($server)
-            && $this->isServerMatch($server)
-            && $this->isCustomMatch($server);
+        if (! $this->wildcard) {
+            return;
+        }
+
+        $this->regex = rtrim($this->regex, '/')
+                     . "(/(?P<{$this->wildcard}>.*))?";
     }
 
-    protected function isRoutableMatch()
+    protected function isMethodMatch($server)
     {
-        if ($this->routable) {
+        if (! $this->method) {
             return true;
         }
 
-        $this->debug[] = 'Not routable.';
-        return false;
-    }
-
-    /**
-     *
-     * Checks that the path matches the Route regex.
-     *
-     * @param string $path The path to match against.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isRegexMatch($path)
-    {
-        $this->setRegex();
-        $regex = "#^{$this->regex}$#";
-        $match = preg_match($regex, $path, $this->matches);
-        if (! $match) {
-            $this->debug[] = 'Not a regex match.';
-        }
-        return $match;
-    }
-
-    /**
-     *
-     * Checks that $_SERVER values match their related regular expressions.
-     *
-     * @param array $server A copy of $_SERVER.
-     *
-     * @return bool True if they all match, false if not.
-     *
-     */
-    protected function isServerMatch($server)
-    {
-        foreach ($this->server as $name => $regex) {
-            $matches = $this->isServerMatchRegex($server, $name, $regex);
-            if (! $matches) {
-                $this->debug[] = "Not a server match ($name).";
-                return false;
-            }
-            $this->matches[$name] = $matches[$name];
-        }
-
-        return true;
-    }
-
-    protected function isServerMatchRegex($server, $name, $regex)
-    {
-        $value = isset($server[$name])
-               ? $server[$name]
-               : '';
-        $regex = "#(?P<{$name}>{$regex})#";
-        preg_match($regex, $value, $matches);
-        return $matches;
-    }
-
-    /**
-     *
-     * Checks that the Route `$secure` matches the corresponding server values.
-     *
-     * @param array $server A copy of $_SERVER.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isSecureMatch($server)
-    {
-        if ($this->secure === null) {
-            return true;
-        }
-
-        if ($this->secure != $this->serverIsSecure($server)) {
-            $this->debug[] = 'Not a secure match.';
-            return false;
-        }
-
-        return true;
-    }
-
-    protected function serverIsSecure($server)
-    {
-        return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-            || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
+        return in_array($server['REQUEST_METHOD'], $this->method);
     }
 
     protected function isAcceptMatch($server)
@@ -425,13 +403,37 @@ class Route extends AbstractSpec
         return isset($matches[3]) && $matches[3] !== '0.0';
     }
 
-    protected function isMethodMatch($server)
+    /**
+     *
+     * Checks that $_SERVER values match their related regular expressions.
+     *
+     * @param array $server A copy of $_SERVER.
+     *
+     * @return bool True if they all match, false if not.
+     *
+     */
+    protected function isServerMatch($server)
     {
-        if (! $this->method) {
-            return true;
+        foreach ($this->server as $name => $regex) {
+            $matches = $this->isServerMatchRegex($server, $name, $regex);
+            if (! $matches) {
+                $this->debug[] = "Not a server match ($name).";
+                return false;
+            }
+            $this->matches[$name] = $matches[$name];
         }
 
-        return in_array($server['REQUEST_METHOD'], $this->method);
+        return true;
+    }
+
+    protected function isServerMatchRegex($server, $name, $regex)
+    {
+        $value = isset($server[$name])
+               ? $server[$name]
+               : '';
+        $regex = "#(?P<{$name}>{$regex})#";
+        preg_match($regex, $value, $matches);
+        return $matches;
     }
 
     /**
