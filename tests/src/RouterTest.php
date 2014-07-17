@@ -36,7 +36,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $this->router->attach('during', '/during', function ($router) {
             $router->setTokens(array('id' => '\d+'));
-            $router->setServer(array('HTTP_REQUEST' => 'GET'));
+            $router->setMethod('GET');
             $router->setValues(array('zim' => 'gir'));
             $router->setSecure(true);
             $router->setWildcard('other');
@@ -53,6 +53,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'tokens' => array(),
             'server' => array(),
+            'method' => array(),
             'values' => array('action' => 'before'),
             'secure' => null,
             'wildcard' => null,
@@ -68,7 +69,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $actual = $routes['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
-            'server' => array('HTTP_REQUEST' => 'GET'),
+            'method' => array('GET'),
             'values' => array('zim' => 'gir', 'action' => 'during.bar'),
             'secure' => true,
             'wildcard' => 'other',
@@ -137,7 +138,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect_values = array(
             'action' => 'resource.read',
             'id' => '42',
-            'REQUEST_METHOD' => 'GET',
         );
         $this->assertEquals($expect_values, $actual->params);
 
@@ -150,7 +150,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect_values = array(
             'action' => 'resource.edit',
             'id' => '42',
-            'REQUEST_METHOD' => 'POST',
         );
         $this->assertEquals($expect_values, $actual->params);
 
@@ -171,7 +170,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect_values = array(
             'action' => 'resource.delete',
             'id' => '42',
-            'REQUEST_METHOD' => 'DELETE',
         );
         $this->assertEquals($expect_values, $actual->params);
 
@@ -184,7 +182,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect_values = array(
             'action' => 'resource.patch',
             'id' => '42',
-            'REQUEST_METHOD' => 'PATCH',
         );
         $this->assertEquals($expect_values, $actual->params);
 
@@ -197,7 +194,6 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect_values = array(
             'action' => 'resource.options',
             'id' => '42',
-            'REQUEST_METHOD' => 'OPTIONS',
         );
         $this->assertEquals($expect_values, $actual->params);
 
@@ -280,9 +276,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'GET',
-            ),
+            'method' => array('GET'),
             'values' => array(
                 'action' => 'blog.browse',
             ),
@@ -296,9 +290,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'GET',
-            ),
+            'method' => array('GET'),
             'values' => array(
                 'action' => 'blog.read',
             ),
@@ -312,9 +304,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'GET',
-            ),
+            'method' => array('GET'),
             'values' => array(
                 'action' => 'blog.add',
             ),
@@ -328,9 +318,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'GET',
-            ),
+            'method' => array('GET'),
             'values' => array(
                 'action' => 'blog.edit',
             ),
@@ -344,9 +332,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'DELETE',
-            ),
+            'method' => array('DELETE'),
             'values' => array(
                 'action' => 'blog.delete',
             ),
@@ -360,9 +346,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'POST',
-            ),
+            'method' => array('POST'),
             'values' => array(
                 'action' => 'blog.create',
             ),
@@ -376,9 +360,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'PATCH',
-            ),
+            'method' => array('PATCH'),
             'values' => array(
                 'action' => 'blog.update',
             ),
@@ -392,9 +374,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'id' => '\d+',
                 'format' => '(\.[^/]+)?',
             ),
-            'server' => array(
-                'REQUEST_METHOD' => 'PUT',
-            ),
+            'method' => array('PUT'),
             'values' => array(
                 'action' => 'blog.replace',
             ),

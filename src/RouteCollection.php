@@ -45,115 +45,115 @@ class RouteCollection extends AbstractSpec implements
      */
     protected $route_factory;
 
-	protected $name_prefix = null;
-	protected $path_prefix = null;
-	protected $resource_callable = null;
-	protected $route_callable = null;
+    protected $name_prefix = null;
+    protected $path_prefix = null;
+    protected $resource_callable = null;
+    protected $route_callable = null;
 
-	/**
-	 *
-	 * Constructor.
-	 *
-	 * @param RouteFactory $route_factory A factory to create route objects.
-	 *
-	 * @param array $routes An array of route objects.
-	 *
-	 */
-	public function __construct(
-	    RouteFactory $route_factory,
-	    array $routes = array()
-	) {
-	    $this->route_factory = $route_factory;
+    /**
+     *
+     * Constructor.
+     *
+     * @param RouteFactory $route_factory A factory to create route objects.
+     *
+     * @param array $routes An array of route objects.
+     *
+     */
+    public function __construct(
+        RouteFactory $route_factory,
+        array $routes = array()
+    ) {
+        $this->route_factory = $route_factory;
         $this->routes = $routes;
         $this->setResourceCallable(array($this, 'resourceCallable'));
         $this->setRouteCallable(array($this, 'routeCallable'));
-	}
+    }
 
-	/**
-	 *
-	 * ArrayAccess: gets a route by name.
-	 *
-	 * @param string $name The route name.
-	 *
-	 * @return Route
-	 *
-	 */
-	public function offsetGet($name)
-	{
+    /**
+     *
+     * ArrayAccess: gets a route by name.
+     *
+     * @param string $name The route name.
+     *
+     * @return Route
+     *
+     */
+    public function offsetGet($name)
+    {
         return $this->routes[$name];
-	}
+    }
 
-	/**
-	 *
-	 * ArrayAccess: sets a route by name.
-	 *
-	 * @param string $name The route name.
-	 *
-	 * @param Route $route The route object.
-	 *
-	 * @return null
-	 *
-	 */
-	public function offsetSet($name, $route)
-	{
-	    if (! $route instanceof Route) {
-	        throw new Exception\UnexpectedValue;
-	    }
+    /**
+     *
+     * ArrayAccess: sets a route by name.
+     *
+     * @param string $name The route name.
+     *
+     * @param Route $route The route object.
+     *
+     * @return null
+     *
+     */
+    public function offsetSet($name, $route)
+    {
+        if (! $route instanceof Route) {
+            throw new Exception\UnexpectedValue;
+        }
 
-	    $this->routes[$name] = $route;
-	}
+        $this->routes[$name] = $route;
+    }
 
-	/**
-	 *
-	 * ArrayAccess: does a route name exist?
-	 *
-	 * @param string $name The route name.
-	 *
-	 * @return bool
-	 *
-	 */
-	public function offsetExists($name)
-	{
-	    return isset($this->routes[$name]);
-	}
+    /**
+     *
+     * ArrayAccess: does a route name exist?
+     *
+     * @param string $name The route name.
+     *
+     * @return bool
+     *
+     */
+    public function offsetExists($name)
+    {
+        return isset($this->routes[$name]);
+    }
 
-	/**
-	 *
-	 * ArrayAccess: removes a route by name.
-	 *
-	 * @param string $name The route name to remove.
-	 *
-	 * @return null
-	 *
-	 */
-	public function offsetUnset($name)
-	{
-	    unset($this->routes[$name]);
-	}
+    /**
+     *
+     * ArrayAccess: removes a route by name.
+     *
+     * @param string $name The route name to remove.
+     *
+     * @return null
+     *
+     */
+    public function offsetUnset($name)
+    {
+        unset($this->routes[$name]);
+    }
 
-	/**
-	 *
-	 * Countable: returns the number of routes in the collection.
-	 *
-	 * @return int
-	 *
-	 */
-	public function count()
-	{
-	    return count($this->routes);
-	}
+    /**
+     *
+     * Countable: returns the number of routes in the collection.
+     *
+     * @return int
+     *
+     */
+    public function count()
+    {
+        return count($this->routes);
+    }
 
-	/**
-	 *
-	 * IteratorAggregate: returns the iterator object.
-	 *
-	 * @return ArrayIterator
-	 *
-	 */
-	public function getIterator()
-	{
-	    return new ArrayIterator($this->routes);
-	}
+    /**
+     *
+     * IteratorAggregate: returns the iterator object.
+     *
+     * @return ArrayIterator
+     *
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->routes);
+    }
 
     /**
      *
@@ -203,7 +203,7 @@ class RouteCollection extends AbstractSpec implements
     public function addGet($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'GET'));
+        $route->addMethod('GET');
         return $route;
     }
 
@@ -221,7 +221,7 @@ class RouteCollection extends AbstractSpec implements
     public function addDelete($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'DELETE'));
+        $route->addMethod('DELETE');
         return $route;
     }
 
@@ -239,7 +239,7 @@ class RouteCollection extends AbstractSpec implements
     public function addOptions($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'OPTIONS'));
+        $route->addMethod('OPTIONS');
         return $route;
     }
 
@@ -257,7 +257,7 @@ class RouteCollection extends AbstractSpec implements
     public function addPatch($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'PATCH'));
+        $route->addMethod('PATCH');
         return $route;
     }
 
@@ -275,7 +275,7 @@ class RouteCollection extends AbstractSpec implements
     public function addPost($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'POST'));
+        $route->addMethod('POST');
         return $route;
     }
 
@@ -293,7 +293,7 @@ class RouteCollection extends AbstractSpec implements
     public function addPut($name, $path)
     {
         $route = $this->add($name, $path);
-        $route->addServer(array('REQUEST_METHOD' => 'PUT'));
+        $route->addMethod('PUT');
         return $route;
     }
 
@@ -374,6 +374,8 @@ class RouteCollection extends AbstractSpec implements
         $vars = array(
             'tokens',
             'server',
+            'method',
+            'accept',
             'values',
             'secure',
             'wildcard',

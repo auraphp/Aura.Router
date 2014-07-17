@@ -50,12 +50,14 @@ class Router
 
     protected $generator;
 
-	/**
-	 *
-	 * Constructor.
-	 *
-	 * @param RouteCollection $routes A route collection object.
-	 */
+    protected $closest_match;
+
+    /**
+     *
+     * Constructor.
+     *
+     * @param RouteCollection $routes A route collection object.
+     */
     public function __construct(RouteCollection $routes, Generator $generator)
     {
         $this->routes = $routes;
@@ -93,18 +95,32 @@ class Router
     public function match($path, array $server = array())
     {
         $this->debug = array();
+        $this->closest_match = null;
 
         foreach ($this->routes as $route) {
-            $match = $route->isMatch($path, $server);
+
             $this->debug[] = $route;
+
+            $match = $route->isMatch($path, $server);
             if ($match) {
                 $this->matched_route = $route;
                 return $route;
+            }
+
+            $closer_match = ! $this->closest_match
+                         || $route->score > $this->closest_match->score;
+            if ($closer_match) {
+                $this->closest_match = $route;
             }
         }
 
         $this->matched_route = false;
         return false;
+    }
+
+    public function getClosestMatch()
+    {
+        return $this->closest_match;
     }
 
     /**

@@ -487,4 +487,65 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
     }
+
+    public function testIsAcceptMatch()
+    {
+        $proto = $this->factory->newInstance('/foo/bar/baz');
+
+        // match when no HTTP_ACCEPT
+        $route = clone $proto;
+        $route->addAccept(array('zim/gir'));
+        $server = array();
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertTrue($actual);
+
+        // match */*
+        $route = clone $proto;
+        $route->addAccept(array('zim/gir'));
+        $server = array('HTTP_ACCEPT' => 'text/*;q=0.9,application/json,*/*;q=0.1,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertTrue($actual);
+
+        // do not match */* when q=0.0
+        $route = clone $proto;
+        $route->setAccept(array('zim/gir'));
+        $server = array('HTTP_ACCEPT' => 'text/*;q=0.9,application/json,*/*;q=0.0,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertFalse($actual);
+
+        // match text/csv
+        $route = clone $proto;
+        $route->setAccept(array('text/csv'));
+        $server = array('HTTP_ACCEPT' => 'text/csv;q=0.9,application/json,*/*;q=0.0,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertTrue($actual);
+
+        // do not match text/csv when q=0
+        $route = clone $proto;
+        $route->setAccept(array('text/csv'));
+        $server = array('HTTP_ACCEPT' => 'application/json,text/csv;q=0.0,*/*;q=0.0,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertFalse($actual);
+
+        // match text/*
+        $route = clone $proto;
+        $route->setAccept(array('text/csv'));
+        $server = array('HTTP_ACCEPT' => 'application/json,text/*;q=0.9,*/*;q=0.1,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertTrue($actual);
+
+        // do not match text/* when q=0
+        $route = clone $proto;
+        $route->setAccept(array('text/csv'));
+        $server = array('HTTP_ACCEPT' => 'application/json,text/*;q=0.0,*/*;q=0.1,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertTrue($actual);
+
+        // match application/json without q score
+        $route = clone $proto;
+        $route->setAccept(array('application/json'));
+        $server = array('HTTP_ACCEPT' => 'application/json,text/*;q=0.0,*/*;q=0.1,application/xml');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertTrue($actual);
+    }
 }
