@@ -103,6 +103,8 @@ class Route extends AbstractSpec
 
     protected $score = 0;
 
+    protected $failure = null;
+
     /**
      *
      * Constructor.
@@ -165,6 +167,7 @@ class Route extends AbstractSpec
         $this->debug = array();
         $this->params = array();
         $this->score = 0;
+        $this->failure = null;
         if ($this->isFullMatch($path, $server)) {
             $this->setParams();
             return true;
