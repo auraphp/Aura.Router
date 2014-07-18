@@ -58,7 +58,6 @@ class AbstractSpec
     public function addTokens(array $tokens)
     {
         $this->tokens = array_merge($this->tokens, $tokens);
-        $this->regex = null;
         return $this;
     }
 

@@ -45,6 +45,69 @@ class Route extends AbstractSpec
 {
     /**
      *
+     * The route failed to match at isRoutableMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_ROUTABLE = 'FAILED_ROUTABLE';
+
+    /**
+     *
+     * The route failed to match at isSecureMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_SECURE = 'FAILED_SECURE';
+
+    /**
+     *
+     * The route failed to match at isRegexMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_REGEX = 'FAILED_REGEX';
+
+    /**
+     *
+     * The route failed to match at isMethodMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_METHOD = 'FAILED_METHOD';
+
+    /**
+     *
+     * The route failed to match at isAcceptMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_ACCEPT = 'FAILED_ACCEPT';
+
+    /**
+     *
+     * The route failed to match at isServerMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_SERVER = 'FAILED_SERVER';
+
+    /**
+     *
+     * The route failed to match at isCustomMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_CUSTOM = 'FAILED_CUSTOM';
+
+    /**
+     *
      * The name for this Route.
      *
      * @var string
@@ -90,7 +153,7 @@ class Route extends AbstractSpec
      * @see isMatch()
      *
      */
-    protected $matches = array();
+    protected $matches;
 
     /**
      *
@@ -101,8 +164,22 @@ class Route extends AbstractSpec
      */
     protected $debug;
 
+    /**
+     *
+     * The matching score for this route (+1 for each is*Match() that passes).
+     *
+     * @var int
+     *
+     */
     protected $score = 0;
 
+    /**
+     *
+     * The failure code, if any, during matching.
+     *
+     * @var string
+     *
+     */
     protected $failure = null;
 
     /**
@@ -115,8 +192,9 @@ class Route extends AbstractSpec
      * @param string $name The name for this route.
      *
      */
-    public function __construct($path, $name = null)
+    public function __construct(Regex $regex, $path, $name = null)
     {
+        $this->regex = $regex;
         $this->path = $path;
         $this->name = $name;
     }
@@ -192,11 +270,21 @@ class Route extends AbstractSpec
         return true;
     }
 
-    protected function fail($debug, $failure)
+    protected function fail($failure, $append = null)
     {
-        $this->debug[] = $debug;
+        $this->debug[] = $failure . $append;
         $this->failure = $failure;
         return false;
+    }
+
+    public function failedAccept()
+    {
+        return $this->failed == self::FAILED_ACCEPT;
+    }
+
+    public function failedMethod()
+    {
+        return $this->failed == self::FAILED_METHOD;
     }
 
     protected function isRoutableMatch()
@@ -205,7 +293,7 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        return $this->fail('Not routable.', __FUNCTION__);
+        return $this->fail(self::FAILED_ROUTABLE);
     }
 
     /**
@@ -224,7 +312,7 @@ class Route extends AbstractSpec
         }
 
         if ($this->secure != $this->serverIsSecure($server)) {
-            return $this->fail('Not a secure match.', __FUNCTION__);
+            return $this->fail(self::FAILED_SECURE);
         }
 
         return $this->pass();
@@ -247,133 +335,15 @@ class Route extends AbstractSpec
      */
     protected function isRegexMatch($path)
     {
-        $this->setRegex();
-        $regex = "#^{$this->regex}$#";
-        $match = preg_match($regex, $path, $this->matches);
+        $regex = clone $this->regex;
+        $match = $regex->match($this, $path);
         if (! $match) {
-            return $this->fail('Not a regex match.', __FUNCTION__);
+            return $this->fail(self::FAILED_REGEX);
         }
+        $this->matches = new ArrayObject($regex->getMatches());
         return $this->pass();
     }
 
-    /**
-     *
-     * Sets the regular expression for this Route.
-     *
-     * @return null
-     *
-     */
-    protected function setRegex()
-    {
-        if ($this->regex) {
-            return;
-        }
-        $this->regex = $this->path;
-        $this->setRegexOptionalParams();
-        $this->setRegexParams();
-        $this->setRegexWildcard();
-        $this->regex = '^' . $this->regex . '$';
-    }
-
-    /**
-     *
-     * Expands optional params in the regex from ``{/foo,bar,baz}` to
-     * `(/{foo}(/{bar}(/{baz})?)?)?`.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexOptionalParams()
-    {
-        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
-        if ($matches) {
-            $repl = $this->getRegexOptionalParamsReplacement($matches[1]);
-            $this->regex = str_replace($matches[0], $repl, $this->regex);
-        }
-    }
-
-    protected function getRegexOptionalParamsReplacement($list)
-    {
-        $list = explode(',', $list);
-        $head = $this->getRegexOptionalParamsReplacementHead($list);
-        $tail = '';
-        foreach ($list as $name) {
-            $head .= "(/{{$name}}";
-            $tail .= ')?';
-        }
-
-        return $head . $tail;
-    }
-
-    protected function getRegexOptionalParamsReplacementHead(&$list)
-    {
-        // if the optional set is the first part of the path, make sure there
-        // is a leading slash in the replacement before the optional param.
-        $head = '';
-        if (substr($this->regex, 0, 2) == '{/') {
-            $name = array_shift($list);
-            $head = "/({{$name}})?";
-        }
-        return $head;
-    }
-
-    /**
-     *
-     * Expands param names in the regex to named subpatterns.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexParams()
-    {
-        $find = '#{([a-z][a-zA-Z0-9_]*)}#';
-        preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $name = $match[1];
-            $subpattern = $this->getSubpattern($name);
-            $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! isset($this->values[$name])) {
-                $this->values[$name] = null;
-            }
-        }
-    }
-
-    /**
-     *
-     * Returns a named subpattern for a param name.
-     *
-     * @param string $name The param name.
-     *
-     * @return string The named subpattern.
-     *
-     */
-    protected function getSubpattern($name)
-    {
-        // is there a custom subpattern for the name?
-        if (isset($this->tokens[$name])) {
-            return "(?P<{$name}>{$this->tokens[$name]})";
-        }
-
-        // use a default subpattern
-        return "(?P<{$name}>[^/]+)";
-    }
-
-    /**
-     *
-     * Adds a wildcard subpattern to the end of the regex.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexWildcard()
-    {
-        if (! $this->wildcard) {
-            return;
-        }
-
-        $this->regex = rtrim($this->regex, '/')
-                     . "(/(?P<{$this->wildcard}>.*))?";
-    }
 
     protected function isMethodMatch($server)
     {
@@ -385,7 +355,7 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        return $this->fail('Not a method match.', __FUNCTION__);
+        return $this->fail(self::FAILED_METHOD);
     }
 
     protected function isAcceptMatch($server)
@@ -406,7 +376,7 @@ class Route extends AbstractSpec
             }
         }
 
-        return $this->fail('Not an accept match.', __FUNCTION__);
+        return $this->fail(self::FAILED_ACCEPT);
     }
 
     protected function isAcceptMatchHeader($type, $header)
@@ -436,7 +406,7 @@ class Route extends AbstractSpec
         foreach ($this->server as $name => $regex) {
             $matches = $this->isServerMatchRegex($server, $name, $regex);
             if (! $matches) {
-                return $this->fail("Not a server match ($name).", __FUNCTION__);
+                return $this->fail(self::FAILED_SERVER, " ($name)");
             }
             $this->matches[$name] = $matches[$name];
         }
@@ -470,19 +440,12 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        // pass the matches as an object, not as an array, so we can avoid
-        // tricky hacks for references
-        $arrobj = new ArrayObject($this->matches);
-
         // attempt the match
-        $result = call_user_func($this->is_match, $server, $arrobj);
-
-        // convert back to array
-        $this->matches = $arrobj->getArrayCopy();
+        $result = call_user_func($this->is_match, $server, $this->matches);
 
         // did it match?
         if (! $result) {
-            return $this->fail('Not a custom match.', __FUNCTION__);
+            return $this->fail(self::FAILED_CUSTOM);
         }
 
         return $this->pass();
