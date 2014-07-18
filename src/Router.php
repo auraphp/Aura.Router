@@ -43,7 +43,7 @@ class Router
      *
      * The Route object matched by the router.
      *
-     * @var Route
+     * @var Route|false
      *
      */
     protected $matched_route = null;
@@ -95,7 +95,7 @@ class Router
     public function match($path, array $server = array())
     {
         $this->debug = array();
-        $this->closest_match = null;
+        $this->failed_route = null;
 
         foreach ($this->routes as $route) {
 
