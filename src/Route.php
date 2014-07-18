@@ -43,12 +43,67 @@ use Closure;
  */
 class Route extends AbstractSpec
 {
+    /**
+     *
+     * The route failed to match at isRoutableMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_ROUTABLE = 'FAILED_ROUTABLE';
+
+    /**
+     *
+     * The route failed to match at isSecureMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_SECURE = 'FAILED_SECURE';
+
+    /**
+     *
+     * The route failed to match at isRegexMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_REGEX = 'FAILED_REGEX';
+
+    /**
+     *
+     * The route failed to match at isMethodMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_METHOD = 'FAILED_METHOD';
+
+    /**
+     *
+     * The route failed to match at isAcceptMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_ACCEPT = 'FAILED_ACCEPT';
+
+    /**
+     *
+     * The route failed to match at isServerMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_SERVER = 'FAILED_SERVER';
+
+    /**
+     *
+     * The route failed to match at isCustomMatch().
+     *
+     * @const string
+     *
+     */
     const FAILED_CUSTOM = 'FAILED_CUSTOM';
 
     /**
@@ -109,8 +164,22 @@ class Route extends AbstractSpec
      */
     protected $debug;
 
+    /**
+     *
+     * The matching score for this route (+1 for each is*Match() that passes).
+     *
+     * @var int
+     *
+     */
     protected $score = 0;
 
+    /**
+     *
+     * The failure code, if any, during matching.
+     *
+     * @var string
+     *
+     */
     protected $failure = null;
 
     /**
