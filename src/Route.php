@@ -192,8 +192,9 @@ class Route extends AbstractSpec
      * @param string $name The name for this route.
      *
      */
-    public function __construct($path, $name = null)
+    public function __construct(Regex $regex, $path, $name = null)
     {
+        $this->regex = $regex;
         $this->path = $path;
         $this->name = $name;
     }
@@ -334,8 +335,8 @@ class Route extends AbstractSpec
      */
     protected function isRegexMatch($path)
     {
-        $regex = new Regex($this);
-        $match = $regex->match($path);
+        $regex = clone $this->regex;
+        $match = $regex->match($this, $path);
         if (! $match) {
             return $this->fail(self::FAILED_REGEX);
         }

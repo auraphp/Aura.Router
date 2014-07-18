@@ -80,7 +80,7 @@ class RouteFactory
               : $name;
 
         $class = $this->class;
-        $route = new $class($path, $name);
+        $route = new $class(new Regex, $path, $name);
         $route->addTokens($spec['tokens']);
         $route->addServer($spec['server']);
         $route->addMethod($spec['method']);

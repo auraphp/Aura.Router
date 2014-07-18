@@ -5,11 +5,6 @@ class Regex
 {
     protected $route;
 
-    public function __construct(Route $route)
-    {
-        $this->route = $route;
-    }
-
     /**
      *
      * Sets the regular expression for this Route.
@@ -17,8 +12,9 @@ class Regex
      * @return null
      *
      */
-    public function match($path)
+    public function match(Route $route, $path)
     {
+        $this->route = $route;
         $this->regex = $this->route->path;
         $this->setRegexOptionalParams();
         $this->setRegexParams();
