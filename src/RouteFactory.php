@@ -28,6 +28,7 @@ class RouteFactory
      */
     protected $class = 'Aura\Router\Route';
 
+    protected $regex;
 
     protected $spec = array(
         'tokens' => array(),
@@ -54,6 +55,7 @@ class RouteFactory
     public function __construct($class = 'Aura\Router\Route')
     {
         $this->class = $class;
+        $this->regex = new Regex;
     }
 
     /**
@@ -80,7 +82,7 @@ class RouteFactory
               : $name;
 
         $class = $this->class;
-        $route = new $class(new Regex, $path, $name);
+        $route = new $class($this->regex, $path, $name);
         $route->addTokens($spec['tokens']);
         $route->addServer($spec['server']);
         $route->addMethod($spec['method']);

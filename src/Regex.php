@@ -5,6 +5,10 @@ class Regex
 {
     protected $route;
 
+    protected $regex;
+
+    protected $matches;
+
     /**
      *
      * Sets the regular expression for this Route.
