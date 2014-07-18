@@ -43,6 +43,14 @@ use Closure;
  */
 class Route extends AbstractSpec
 {
+    const FAILED_ROUTABLE = 'FAILED_ROUTABLE';
+    const FAILED_SECURE = 'FAILED_SECURE';
+    const FAILED_REGEX = 'FAILED_REGEX';
+    const FAILED_METHOD = 'FAILED_METHOD';
+    const FAILED_ACCEPT = 'FAILED_ACCEPT';
+    const FAILED_SERVER = 'FAILED_SERVER';
+    const FAILED_CUSTOM = 'FAILED_CUSTOM';
+
     /**
      *
      * The name for this Route.
@@ -192,9 +200,9 @@ class Route extends AbstractSpec
         return true;
     }
 
-    protected function fail($debug, $failure)
+    protected function fail($failure, $append = null)
     {
-        $this->debug[] = $debug;
+        $this->debug[] = $failure . $append;
         $this->failure = $failure;
         return false;
     }
@@ -205,7 +213,7 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        return $this->fail('Not routable.', __FUNCTION__);
+        return $this->fail(self::FAILED_ROUTABLE);
     }
 
     /**
@@ -224,7 +232,7 @@ class Route extends AbstractSpec
         }
 
         if ($this->secure != $this->serverIsSecure($server)) {
-            return $this->fail('Not a secure match.', __FUNCTION__);
+            return $this->fail(self::FAILED_SECURE);
         }
 
         return $this->pass();
@@ -251,7 +259,7 @@ class Route extends AbstractSpec
         $regex = "#^{$this->regex}$#";
         $match = preg_match($regex, $path, $this->matches);
         if (! $match) {
-            return $this->fail('Not a regex match.', __FUNCTION__);
+            return $this->fail(self::FAILED_REGEX);
         }
         return $this->pass();
     }
@@ -385,7 +393,7 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        return $this->fail('Not a method match.', __FUNCTION__);
+        return $this->fail(self::FAILED_METHOD);
     }
 
     protected function isAcceptMatch($server)
@@ -406,7 +414,7 @@ class Route extends AbstractSpec
             }
         }
 
-        return $this->fail('Not an accept match.', __FUNCTION__);
+        return $this->fail(self::FAILED_ACCEPT);
     }
 
     protected function isAcceptMatchHeader($type, $header)
@@ -436,7 +444,7 @@ class Route extends AbstractSpec
         foreach ($this->server as $name => $regex) {
             $matches = $this->isServerMatchRegex($server, $name, $regex);
             if (! $matches) {
-                return $this->fail("Not a server match ($name).", __FUNCTION__);
+                return $this->fail(self::FAILED_SERVER, " ($name)");
             }
             $this->matches[$name] = $matches[$name];
         }
@@ -482,7 +490,7 @@ class Route extends AbstractSpec
 
         // did it match?
         if (! $result) {
-            return $this->fail('Not a custom match.', __FUNCTION__);
+            return $this->fail(self::FAILED_CUSTOM);
         }
 
         return $this->pass();
