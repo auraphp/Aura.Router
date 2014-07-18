@@ -336,10 +336,11 @@ class Route extends AbstractSpec
     {
         $this->setRegex();
         $regex = "#^{$this->regex}$#";
-        $match = preg_match($regex, $path, $this->matches);
+        $match = preg_match($regex, $path, $matches);
         if (! $match) {
             return $this->fail(self::FAILED_REGEX);
         }
+        $this->matches = new ArrayObject($matches);
         return $this->pass();
     }
 
@@ -557,15 +558,8 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        // pass the matches as an object, not as an array, so we can avoid
-        // tricky hacks for references
-        $arrobj = new ArrayObject($this->matches);
-
         // attempt the match
-        $result = call_user_func($this->is_match, $server, $arrobj);
-
-        // convert back to array
-        $this->matches = $arrobj->getArrayCopy();
+        $result = call_user_func($this->is_match, $server, $this->matches);
 
         // did it match?
         if (! $result) {
