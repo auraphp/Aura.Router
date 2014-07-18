@@ -153,7 +153,7 @@ class Route extends AbstractSpec
      * @see isMatch()
      *
      */
-    protected $matches = array();
+    protected $matches;
 
     /**
      *
@@ -334,134 +334,15 @@ class Route extends AbstractSpec
      */
     protected function isRegexMatch($path)
     {
-        $this->setRegex();
-        $regex = "#^{$this->regex}$#";
-        $match = preg_match($regex, $path, $matches);
+        $regex = new Regex($this);
+        $match = $regex->match($path);
         if (! $match) {
             return $this->fail(self::FAILED_REGEX);
         }
-        $this->matches = new ArrayObject($matches);
+        $this->matches = new ArrayObject($regex->getMatches());
         return $this->pass();
     }
 
-    /**
-     *
-     * Sets the regular expression for this Route.
-     *
-     * @return null
-     *
-     */
-    protected function setRegex()
-    {
-        if ($this->regex) {
-            return;
-        }
-        $this->regex = $this->path;
-        $this->setRegexOptionalParams();
-        $this->setRegexParams();
-        $this->setRegexWildcard();
-        $this->regex = '^' . $this->regex . '$';
-    }
-
-    /**
-     *
-     * Expands optional params in the regex from ``{/foo,bar,baz}` to
-     * `(/{foo}(/{bar}(/{baz})?)?)?`.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexOptionalParams()
-    {
-        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
-        if ($matches) {
-            $repl = $this->getRegexOptionalParamsReplacement($matches[1]);
-            $this->regex = str_replace($matches[0], $repl, $this->regex);
-        }
-    }
-
-    protected function getRegexOptionalParamsReplacement($list)
-    {
-        $list = explode(',', $list);
-        $head = $this->getRegexOptionalParamsReplacementHead($list);
-        $tail = '';
-        foreach ($list as $name) {
-            $head .= "(/{{$name}}";
-            $tail .= ')?';
-        }
-
-        return $head . $tail;
-    }
-
-    protected function getRegexOptionalParamsReplacementHead(&$list)
-    {
-        // if the optional set is the first part of the path, make sure there
-        // is a leading slash in the replacement before the optional param.
-        $head = '';
-        if (substr($this->regex, 0, 2) == '{/') {
-            $name = array_shift($list);
-            $head = "/({{$name}})?";
-        }
-        return $head;
-    }
-
-    /**
-     *
-     * Expands param names in the regex to named subpatterns.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexParams()
-    {
-        $find = '#{([a-z][a-zA-Z0-9_]*)}#';
-        preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $name = $match[1];
-            $subpattern = $this->getSubpattern($name);
-            $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! isset($this->values[$name])) {
-                $this->values[$name] = null;
-            }
-        }
-    }
-
-    /**
-     *
-     * Returns a named subpattern for a param name.
-     *
-     * @param string $name The param name.
-     *
-     * @return string The named subpattern.
-     *
-     */
-    protected function getSubpattern($name)
-    {
-        // is there a custom subpattern for the name?
-        if (isset($this->tokens[$name])) {
-            return "(?P<{$name}>{$this->tokens[$name]})";
-        }
-
-        // use a default subpattern
-        return "(?P<{$name}>[^/]+)";
-    }
-
-    /**
-     *
-     * Adds a wildcard subpattern to the end of the regex.
-     *
-     * @return null
-     *
-     */
-    protected function setRegexWildcard()
-    {
-        if (! $this->wildcard) {
-            return;
-        }
-
-        $this->regex = rtrim($this->regex, '/')
-                     . "(/(?P<{$this->wildcard}>.*))?";
-    }
 
     protected function isMethodMatch($server)
     {
