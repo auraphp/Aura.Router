@@ -30,9 +30,11 @@ use Closure;
  *
  * @property-read array $params The matched params.
  *
- * @property-read string $regex The regular expression for the route.
+ * @property-read Regex $regex The regular expression for the route.
  *
- * @property-read string $matches All params found during `isMatch()`.
+ * @property-read array $tokens The regular expression for the route.
+ *
+ * @property-read ArrayObject $matches All params found during `isMatch()`.
  *
  * @property-read array $debug Debugging messages.
  *
@@ -148,7 +150,7 @@ class Route extends AbstractSpec
      * All params found during the `isMatch()` process, both from the path
      * tokens and from matched server values.
      *
-     * @var array
+     * @var ArrayObject
      *
      * @see isMatch()
      *
@@ -180,11 +182,13 @@ class Route extends AbstractSpec
      * @var string
      *
      */
-    protected $failure = null;
+    protected $failed = null;
 
     /**
      *
      * Constructor.
+     *
+     * @param Regex $regex A regular expression support object.
      *
      * @param string $path The path for this Route with param token
      * placeholders.
