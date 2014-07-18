@@ -50,7 +50,7 @@ class Router
 
     protected $generator;
 
-    protected $closest_match;
+    protected $failed_route = null;
 
     /**
      *
@@ -107,10 +107,10 @@ class Router
                 return $route;
             }
 
-            $closer_match = ! $this->closest_match
-                         || $route->score > $this->closest_match->score;
-            if ($closer_match) {
-                $this->closest_match = $route;
+            $better_match = ! $this->failed_route
+                         || $route->score > $this->failed_route->score;
+            if ($better_match) {
+                $this->failed_route = $route;
             }
         }
 
@@ -118,9 +118,10 @@ class Router
         return false;
     }
 
-    public function getClosestMatch()
+    // returns the first of the closest-matching failed routes
+    public function getFailedRoute()
     {
-        return $this->closest_match;
+        return $this->failed_route;
     }
 
     /**

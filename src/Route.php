@@ -207,6 +207,16 @@ class Route extends AbstractSpec
         return false;
     }
 
+    public function failedAccept()
+    {
+        return $this->failed == self::FAILED_ACCEPT;
+    }
+
+    public function failedMethod()
+    {
+        return $this->failed == self::FAILED_METHOD;
+    }
+
     protected function isRoutableMatch()
     {
         if ($this->routable) {
