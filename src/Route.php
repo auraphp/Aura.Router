@@ -373,6 +373,8 @@ class Route extends AbstractSpec
      *
      * Check whether the server is in secure mode
      *
+     * @param array $server
+     *
      * @return bool
      *
      */
