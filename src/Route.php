@@ -140,7 +140,7 @@ class Route extends AbstractSpec
      * The `$path` property converted to a regular expression, using the
      * `$tokens` subpatterns.
      *
-     * @var string
+     * @var Regex
      *
      */
     protected $regex;
