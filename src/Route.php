@@ -249,7 +249,7 @@ class Route extends AbstractSpec
         $this->debug = array();
         $this->params = array();
         $this->score = 0;
-        $this->failure = null;
+        $this->failed = null;
         if ($this->isFullMatch($path, $server)) {
             $this->setParams();
             return true;
@@ -257,6 +257,16 @@ class Route extends AbstractSpec
         return false;
     }
 
+    /**
+     *
+     * @param string $path The path to check against this route
+     *
+     * @param array $server A copy of $_SERVER so that this Route can check
+     * against the server values.
+     *
+     * @return bool
+     *
+     */
     protected function isFullMatch($path, array $server)
     {
         return $this->isRoutableMatch()
@@ -268,29 +278,66 @@ class Route extends AbstractSpec
             && $this->isCustomMatch($server);
     }
 
+    /**
+     *
+     * Internal function to add a score for a route
+     *
+     * @return bool
+     *
+     */
     protected function pass()
     {
         $this->score ++;
         return true;
     }
 
-    protected function fail($failure, $append = null)
+    /**
+     *
+     * @param string $failed The reason of failure
+     *
+     * @param string $append
+     *
+     * @return bool
+     *
+     */
+    protected function fail($failed, $append = null)
     {
-        $this->debug[] = $failure . $append;
-        $this->failure = $failure;
+        $this->debug[] = $failed . $append;
+        $this->failed = $failed;
         return false;
     }
 
+    /**
+     *
+     * Check whether a failure happened due to accept header
+     *
+     * @return bool
+     *
+     */
     public function failedAccept()
     {
         return $this->failed == self::FAILED_ACCEPT;
     }
 
+    /**
+     *
+     * Check whether a failure happened due to http method
+     *
+     * @return bool
+     *
+     */
     public function failedMethod()
     {
         return $this->failed == self::FAILED_METHOD;
     }
 
+    /**
+     *
+     * Check whether a failure happened due to route not match
+     *
+     * @return bool
+     *
+     */
     protected function isRoutableMatch()
     {
         if ($this->routable) {
@@ -322,6 +369,13 @@ class Route extends AbstractSpec
         return $this->pass();
     }
 
+    /**
+     *
+     * Check whether the server is in secure mode
+     *
+     * @return bool
+     *
+     */
     protected function serverIsSecure($server)
     {
         return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
@@ -349,6 +403,15 @@ class Route extends AbstractSpec
     }
 
 
+    /**
+     *
+     * Is the requested method matching
+     *
+     * @param array $server
+     *
+     * @return bool
+     *
+     */
     protected function isMethodMatch($server)
     {
         if (! $this->method) {
@@ -362,6 +425,15 @@ class Route extends AbstractSpec
         return $this->fail(self::FAILED_METHOD);
     }
 
+    /**
+     *
+     * Is the accepted method matching
+     *
+     * @param array $server
+     *
+     * @return bool
+     *
+     */
     protected function isAcceptMatch($server)
     {
         if (! $this->accept || ! isset($server['HTTP_ACCEPT'])) {
@@ -383,6 +455,17 @@ class Route extends AbstractSpec
         return $this->fail(self::FAILED_ACCEPT);
     }
 
+    /**
+     *
+     * Is the accept method matching
+     *
+     * @param string $type
+     *
+     * @param string $header
+     *
+     * @return bool
+     *
+     */
     protected function isAcceptMatchHeader($type, $header)
     {
         list($type, $subtype) = explode('/', $type);
@@ -418,6 +501,17 @@ class Route extends AbstractSpec
         return $this->pass();
     }
 
+    /**
+     *
+     * @param array $server
+     *
+     * @param string $name
+     *
+     * @param string $regex
+     *
+     * @return array
+     *
+     */
     protected function isServerMatchRegex($server, $name, $regex)
     {
         $value = isset($server[$name])
@@ -470,6 +564,11 @@ class Route extends AbstractSpec
 
     }
 
+    /**
+     *
+     * @return null
+     *
+     */
     protected function setParamsWithMatches()
     {
         // populate the path matches into the route values. if the path match
@@ -482,6 +581,11 @@ class Route extends AbstractSpec
         }
     }
 
+    /**
+     *
+     * @return null
+     *
+     */
     protected function setParamsWithWildcard()
     {
         if (! $this->wildcard) {
