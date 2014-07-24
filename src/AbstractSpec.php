@@ -94,21 +94,25 @@ class AbstractSpec
     public function setMethod($method)
     {
         $this->method = (array) $method;
+        return $this;
     }
 
     public function addMethod($method)
     {
         $this->method = array_merge($this->method, (array) $method);
+        return $this;
     }
 
     public function setAccept($accept)
     {
         $this->accept = (array) $accept;
+        return $this;
     }
 
     public function addAccept($accept)
     {
         $this->accept = array_merge($this->accept, (array) $accept);
+        return $this;
     }
 
     /**
