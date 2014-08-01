@@ -227,6 +227,24 @@ class RouteCollection extends AbstractSpec implements
 
     /**
      *
+     * Adds a Head route.
+     *
+     * @param string $name The route name.
+     *
+     * @param string $path The route path.
+     *
+     * @return Route The newly-added route object.
+     *
+     */
+    public function addHead($name, $path)
+    {
+        $route = $this->add($name, $path);
+        $route->addMethod('HEAD');
+        return $route;
+    }
+
+    /**
+     *
      * Adds an Options route.
      *
      * @param string $name The route name.
