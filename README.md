@@ -91,6 +91,7 @@ You can create a route that matches only against a particular HTTP method
 as well. The following _Router_ methods are identical to `add()` but require
 the related HTTP method:
 
+- `$router->addHead()`
 - `$router->addGet()`
 - `$router->addDelete()`
 - `$router->addOptions()`
