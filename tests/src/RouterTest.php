@@ -108,6 +108,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                     'action' => 'browse'
                 ));
 
+            $router->addHead('head', '/{id}');
             $router->addGet('read', '/{id}');
             $router->addPost('edit', '/{id}');
             $router->addPut('add', '/{id}');
@@ -129,6 +130,16 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(null, $actual->name);
         $this->assertRoute($actual, $this->router->getMatchedRoute());
 
+        // head
+        $server = array('REQUEST_METHOD' => 'HEAD');
+        $actual = $this->router->match('/resource/42', $server);
+        $this->assertIsRoute($actual);
+        $this->assertSame('resource.head', $actual->name);
+        $this->assertRoute($actual, $this->router->getMatchedRoute());
+        $expect_values = array(
+            'action' => 'resource.head',
+            'id' => '42',
+        );
         // read
         $server = array('REQUEST_METHOD' => 'GET');
         $actual = $this->router->match('/resource/42', $server);
