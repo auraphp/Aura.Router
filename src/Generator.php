@@ -22,6 +22,8 @@ use ArrayObject;
 class Generator
 {
     protected $route;
+    protected $path;
+    protected $data;
 
     /**
      *
@@ -40,57 +42,52 @@ class Generator
     public function generate(Route $route, $data = array(), $raw = array())
     {
         $this->route = $route;
+        $this->path = $this->route->path;
+        $this->data = $data;
 
-        $path = $this->route->path;
-        $data = $this->generateData($data);
-        $repl = $this->generateTokenReplacements($data, $raw);
-        $repl = $this->generateOptionalReplacements($path, $repl, $data, $raw);
-        $path = strtr($path, $repl);
-        $path = $this->generateWildcardReplacement($path, $data, $raw);
-        return $path;
+        $this->generateData();
+        $repl = $this->generateTokenReplacements($raw);
+        $repl = $this->generateOptionalReplacements($repl, $raw);
+        $this->path = strtr($this->path, $repl);
+        $this->generateWildcardReplacement($raw);
+        return $this->path;
     }
 
     /**
      *
      * Generates the data for token replacements.
      *
-     * @param array $data Data for the token replacements.
-     *
      * @return array
      *
      */
-    protected function generateData(array $data)
+    protected function generateData()
     {
         // the data for replacements
-        $data = array_merge($this->route->values, $data);
+        $this->data = array_merge($this->route->values, $this->data);
 
         // use a callable to modify the data?
         if ($this->route->generate) {
             // pass the data as an object, not as an array, so we can avoid
             // tricky hacks for references
-            $arrobj = new ArrayObject($data);
+            $arrobj = new ArrayObject($this->data);
             // modify
             call_user_func($this->route->generate, $arrobj);
             // convert back to array
-            $data = $arrobj->getArrayCopy();
+            $this->data = $arrobj->getArrayCopy();
         }
-
-        return $data;
     }
 
     /**
      *
      * Generates urlencoded data for token replacements.
      *
-     * @param array $data Data for the token replacements.
-     *
      * @return array
      *
      */
-    protected function generateTokenReplacements($data, $raw)
+    protected function generateTokenReplacements($raw)
     {
         $repl = array();
-        foreach ($data as $key => $val) {
+        foreach ($this->data as $key => $val) {
             if (is_scalar($val) || $val === null) {
                 $repl["{{$key}}"] = $this->encode($key, $val, $raw);
             }
@@ -102,19 +99,15 @@ class Generator
      *
      * Generates replacements for params in the generated path.
      *
-     * @param string $path The generated path.
-     *
      * @param array $repl The token replacements.
-     *
-     * @param array $data The original data.
      *
      * @return string
      *
      */
-    protected function generateOptionalReplacements($path, $repl, $data, $raw)
+    protected function generateOptionalReplacements($repl, $raw)
     {
         // replacements for optional params, if any
-        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $path, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->path, $matches);
         if (! $matches) {
             return $repl;
         }
@@ -128,14 +121,14 @@ class Generator
         // look for data for each of the param names
         foreach ($names as $name) {
             // is there data for this optional param?
-            if (! isset($data[$name])) {
+            if (! isset($this->data[$name])) {
                 // options are *sequentially* optional, so if one is
                 // missing, we're done
                 break;
             }
             // encode the optional value
-            if (is_scalar($data[$name])) {
-                $repl[$key] .= '/' . $this->encode($name, $data[$name], $raw);
+            if (is_scalar($this->data[$name])) {
+                $repl[$key] .= '/' . $this->encode($name, $this->data[$name], $raw);
             }
         }
         return $repl;
@@ -145,26 +138,21 @@ class Generator
      *
      * Generates a wildcard replacement in the generated path.
      *
-     * @param string $path The generated path.
-     *
-     * @param array $data Data for the token replacements.
-     *
      * @return string
      *
      */
-    protected function generateWildcardReplacement($path, $data, $raw)
+    protected function generateWildcardReplacement($raw)
     {
         $wildcard = $this->route->wildcard;
-        if ($wildcard && isset($data[$wildcard])) {
-            $path = rtrim($path, '/');
-            foreach ($data[$wildcard] as $val) {
+        if ($wildcard && isset($this->data[$wildcard])) {
+            $this->path = rtrim($this->path, '/');
+            foreach ($this->data[$wildcard] as $val) {
                 // encode the wildcard value
                 if (is_scalar($val)) {
-                    $path .= '/' . $this->encode($wildcard, $val, $raw);
+                    $this->path .= '/' . $this->encode($wildcard, $val, $raw);
                 }
             }
         }
-        return $path;
     }
 
     protected function encode($key, $val, $raw)
