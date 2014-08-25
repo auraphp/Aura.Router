@@ -24,6 +24,7 @@ class Generator
     protected $route;
     protected $path;
     protected $data;
+    protected $repl;
 
     /**
      *
@@ -44,11 +45,12 @@ class Generator
         $this->route = $route;
         $this->path = $this->route->path;
         $this->data = $data;
+        $this->repl = array();
 
         $this->generateData();
-        $repl = $this->generateTokenReplacements($raw);
-        $repl = $this->generateOptionalReplacements($repl, $raw);
-        $this->path = strtr($this->path, $repl);
+        $this->generateTokenReplacements($raw);
+        $this->generateOptionalReplacements($raw);
+        $this->path = strtr($this->path, $this->repl);
         $this->generateWildcardReplacement($raw);
         return $this->path;
     }
@@ -86,36 +88,32 @@ class Generator
      */
     protected function generateTokenReplacements($raw)
     {
-        $repl = array();
         foreach ($this->data as $key => $val) {
             if (is_scalar($val) || $val === null) {
-                $repl["{{$key}}"] = $this->encode($key, $val, $raw);
+                $this->repl["{{$key}}"] = $this->encode($key, $val, $raw);
             }
         }
-        return $repl;
     }
 
     /**
      *
      * Generates replacements for params in the generated path.
      *
-     * @param array $repl The token replacements.
-     *
      * @return string
      *
      */
-    protected function generateOptionalReplacements($repl, $raw)
+    protected function generateOptionalReplacements($raw)
     {
         // replacements for optional params, if any
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->path, $matches);
         if (! $matches) {
-            return $repl;
+            return;
         }
 
         // this is the full token to replace in the path
         $key = $matches[0];
         // start with an empty replacement
-        $repl[$key] = '';
+        $this->repl[$key] = '';
         // the optional param names in the token
         $names = explode(',', $matches[1]);
         // look for data for each of the param names
@@ -128,10 +126,9 @@ class Generator
             }
             // encode the optional value
             if (is_scalar($this->data[$name])) {
-                $repl[$key] .= '/' . $this->encode($name, $this->data[$name], $raw);
+                $this->repl[$key] .= '/' . $this->encode($name, $this->data[$name], $raw);
             }
         }
-        return $repl;
     }
 
     /**
