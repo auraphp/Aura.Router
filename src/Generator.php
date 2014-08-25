@@ -21,6 +21,8 @@ use ArrayObject;
  */
 class Generator
 {
+    protected $route;
+
     /**
      *
      * Gets the path for a Route with data replacements for param tokens.
@@ -37,12 +39,14 @@ class Generator
      */
     public function generate(Route $route, $data = array(), $raw = array())
     {
-        $path = $route->path;
-        $data = $this->generateData($route, $data);
+        $this->route = $route;
+
+        $path = $this->route->path;
+        $data = $this->generateData($data);
         $repl = $this->generateTokenReplacements($data, $raw);
         $repl = $this->generateOptionalReplacements($path, $repl, $data, $raw);
         $path = strtr($path, $repl);
-        $path = $this->generateWildcardReplacement($route, $path, $data, $raw);
+        $path = $this->generateWildcardReplacement($path, $data, $raw);
         return $path;
     }
 
@@ -50,25 +54,23 @@ class Generator
      *
      * Generates the data for token replacements.
      *
-     * @param Route $route The route to work with.
-     *
      * @param array $data Data for the token replacements.
      *
      * @return array
      *
      */
-    protected function generateData(Route $route, array $data)
+    protected function generateData(array $data)
     {
         // the data for replacements
-        $data = array_merge($route->values, $data);
+        $data = array_merge($this->route->values, $data);
 
         // use a callable to modify the data?
-        if ($route->generate) {
+        if ($this->route->generate) {
             // pass the data as an object, not as an array, so we can avoid
             // tricky hacks for references
             $arrobj = new ArrayObject($data);
             // modify
-            call_user_func($route->generate, $arrobj);
+            call_user_func($this->route->generate, $arrobj);
             // convert back to array
             $data = $arrobj->getArrayCopy();
         }
@@ -143,8 +145,6 @@ class Generator
      *
      * Generates a wildcard replacement in the generated path.
      *
-     * @param Route $route The route to work with.
-     *
      * @param string $path The generated path.
      *
      * @param array $data Data for the token replacements.
@@ -152,9 +152,9 @@ class Generator
      * @return string
      *
      */
-    protected function generateWildcardReplacement(Route $route, $path, $data, $raw)
+    protected function generateWildcardReplacement($path, $data, $raw)
     {
-        $wildcard = $route->wildcard;
+        $wildcard = $this->route->wildcard;
         if ($wildcard && isset($data[$wildcard])) {
             $path = rtrim($path, '/');
             foreach ($data[$wildcard] as $val) {
