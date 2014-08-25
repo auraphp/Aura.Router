@@ -1,19 +1,60 @@
 <?php
+/**
+ *
+ * This file is part of the Aura for PHP.
+ *
+ * @package Aura.Router
+ *
+ * @license http://opensource.org/licenses/bsd-license.php BSD
+ *
+ */
 namespace Aura\Router;
 
+/**
+ *
+ * A regular-expression tracker for a Route.
+ *
+ * @package Aura.Router
+ *
+ */
 class Regex
 {
+    /**
+     *
+     * The Route this regex is associated with.
+     *
+     * @var Route
+     *
+     */
     protected $route;
 
+    /**
+     *
+     * The regular expression.
+     *
+     * @var string
+     *
+     */
     protected $regex;
 
+    /**
+     *
+     * Matches from the regex.
+     *
+     * @var array
+     *
+     */
     protected $matches;
 
     /**
      *
-     * Sets the regular expression for this Route.
+     * Does the Route match the requested URL path?
      *
-     * @return null
+     * @param Route $route The route being checked.
+     *
+     * @param string $path The requested URL path.
+     *
+     * @return bool
      *
      */
     public function match(Route $route, $path)
@@ -27,6 +68,13 @@ class Regex
         return preg_match($this->regex, $path, $this->matches);
     }
 
+    /**
+     *
+     * Returns the matches.
+     *
+     * @return array
+     *
+     */
     public function getMatches()
     {
         return $this->matches;
@@ -49,6 +97,15 @@ class Regex
         }
     }
 
+    /**
+     *
+     * Gets the replacement for optional params in the regex.
+     *
+     * @param array $list The optional params.
+     *
+     * @return string
+     *
+     */
     protected function getRegexOptionalParamsReplacement($list)
     {
         $list = explode(',', $list);
@@ -62,6 +119,15 @@ class Regex
         return $head . $tail;
     }
 
+    /**
+     *
+     * Gets the leading portion of the optional params replacement.
+     *
+     * @param array $list The optional params.
+     *
+     * @return string
+     *
+     */
     protected function getRegexOptionalParamsReplacementHead(&$list)
     {
         // if the optional set is the first part of the path, make sure there

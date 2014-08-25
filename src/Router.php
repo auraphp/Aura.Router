@@ -48,8 +48,22 @@ class Router
      */
     protected $matched_route = null;
 
+    /**
+     *
+     * A URL path generator.
+     *
+     * @var Generator
+     *
+     */
     protected $generator;
 
+    /**
+     *
+     * The first of the closest-matching failed routes.
+     *
+     * @var Route
+     *
+     */
     protected $failed_route = null;
 
     /**
@@ -57,6 +71,9 @@ class Router
      * Constructor.
      *
      * @param RouteCollection $routes A route collection object.
+     *
+     * @param Generator A URL path generator.
+     *
      */
     public function __construct(RouteCollection $routes, Generator $generator)
     {
@@ -118,7 +135,13 @@ class Router
         return false;
     }
 
-    // returns the first of the closest-matching failed routes
+    /**
+     *
+     * Get the first of the closest-matching failed routes.
+     *
+     * @return Route
+     *
+     */
     public function getFailedRoute()
     {
         return $this->failed_route;

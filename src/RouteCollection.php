@@ -45,9 +45,44 @@ class RouteCollection extends AbstractSpec implements
      */
     protected $route_factory;
 
+    /**
+     *
+     * A prefix to add to each route name added to the collection.
+     *
+     * @var string
+     *
+     */
     protected $name_prefix = null;
+
+    /**
+     *
+     * A prefix to add to each route path added to the collection.
+     *
+     * @var string
+     *
+     */
     protected $path_prefix = null;
+
+    /**
+     *
+     * A callable to use for each resource attached to the collection.
+     *
+     * @var callable
+     *
+     * @see attachResource()
+     *
+     */
     protected $resource_callable = null;
+
+    /**
+     *
+     * A callable to modify to each route added to the collection.
+     *
+     * @var callable
+     *
+     * @see add()
+     *
+     */
     protected $route_callable = null;
 
     /**
@@ -387,6 +422,13 @@ class RouteCollection extends AbstractSpec implements
         $this->setSpec($spec);
     }
 
+    /**
+     *
+     * Gets the existing default route specification.
+     *
+     * @return array
+     *
+     */
     protected function getSpec()
     {
         $vars = array(
@@ -414,6 +456,15 @@ class RouteCollection extends AbstractSpec implements
         return $spec;
     }
 
+    /**
+     *
+     * Sets the existing default route specification.
+     *
+     * @param array $spec The new default route specification.
+     *
+     * @return null
+     *
+     */
     protected function setSpec($spec)
     {
         foreach ($spec as $key => $val) {

@@ -28,8 +28,22 @@ class RouteFactory
      */
     protected $class = 'Aura\Router\Route';
 
+    /**
+     *
+     * A reusable Regex object.
+     *
+     * @param Regex
+     *
+     */
     protected $regex;
 
+    /**
+     *
+     * The default route specification.
+     *
+     * @var array
+     *
+     */
     protected $spec = array(
         'tokens' => array(),
         'server' => array(),

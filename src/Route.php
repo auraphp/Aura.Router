@@ -258,6 +258,8 @@ class Route extends AbstractSpec
 
     /**
      *
+     * Is the route a full match?
+     *
      * @param string $path The path to check against this route
      *
      * @param array $server A copy of $_SERVER so that this Route can check
@@ -279,7 +281,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Internal function to add a score for a route
+     * A partial match passed.
      *
      * @return bool
      *
@@ -291,6 +293,8 @@ class Route extends AbstractSpec
     }
 
     /**
+     *
+     * A partial match failed.
      *
      * @param string $failed The reason of failure
      *
@@ -504,11 +508,13 @@ class Route extends AbstractSpec
 
     /**
      *
-     * @param array $server
+     * Does a server key match a regex?
      *
-     * @param string $name
+     * @param array $server The server values.
      *
-     * @param string $regex
+     * @param string $name The server key.
+     *
+     * @param string $regex The regex to match against.
      *
      * @return array
      *
@@ -567,6 +573,8 @@ class Route extends AbstractSpec
 
     /**
      *
+     * Set the params with their matched values.
+     *
      * @return null
      *
      */
@@ -583,6 +591,8 @@ class Route extends AbstractSpec
     }
 
     /**
+     *
+     * Set the wildcard param value.
      *
      * @return null
      *
