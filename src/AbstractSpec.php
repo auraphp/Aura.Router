@@ -19,17 +19,95 @@ namespace Aura\Router;
  */
 class AbstractSpec
 {
+    /**
+     *
+     * Token names and regexes.
+     *
+     * @var array
+     *
+     */
     protected $tokens      = array();
+
+    /**
+     *
+     * Server keys and regexes.
+     *
+     * @var array
+     *
+     */
     protected $server      = array();
+
+    /**
+     *
+     * HTTP method(s).
+     *
+     * @var array
+     *
+     */
     protected $method      = array();
+
+    /**
+     *
+     * Accept header values.
+     *
+     * @var array
+     *
+     */
     protected $accept      = array();
+
+    /**
+     *
+     * Default token values.
+     *
+     * @var array
+     *
+     */
     protected $values      = array();
+
+    /**
+     *
+     * Secure route?
+     *
+     * @var bool
+     *
+     */
     protected $secure      = null;
+
+    /**
+     *
+     * Wildcard token name, if any.
+     *
+     * @var string
+     *
+     */
     protected $wildcard    = null;
+
+    /**
+     *
+     * Routable route?
+     *
+     * @var bool
+     *
+     */
     protected $routable    = true;
+
+    /**
+     *
+     * Custom callable for isMatch() logic.
+     *
+     * @var callable
+     *
+     */
     protected $is_match    = null;
+
+    /**
+     *
+     * Custom callable for generate() logic.
+     *
+     * @var callable
+     *
+     */
     protected $generate    = null;
-    protected $regex       = null;
 
     /**
      *
@@ -91,24 +169,60 @@ class AbstractSpec
         return $this;
     }
 
+    /**
+     *
+     * Sets the allowable method(s), overwriting previous the previous value.
+     *
+     * @param string|array $method The allowable method(s).
+     *
+     * @return $this
+     *
+     */
     public function setMethod($method)
     {
         $this->method = (array) $method;
         return $this;
     }
 
+    /**
+     *
+     * Adds to the allowable method(s).
+     *
+     * @param string|array $method The allowable method(s).
+     *
+     * @return $this
+     *
+     */
     public function addMethod($method)
     {
         $this->method = array_merge($this->method, (array) $method);
         return $this;
     }
 
+    /**
+     *
+     * Sets the list of matchable content-types, overwriting previous values.
+     *
+     * @param string|array $accept The matchable content-types.
+     *
+     * @return $this
+     *
+     */
     public function setAccept($accept)
     {
         $this->accept = (array) $accept;
         return $this;
     }
 
+    /**
+     *
+     * Adds to the list of matchable content-types.
+     *
+     * @param string|array $accept The matchable content-types.
+     *
+     * @return $this
+     *
+     */
     public function addAccept($accept)
     {
         $this->accept = array_merge($this->accept, (array) $accept);
