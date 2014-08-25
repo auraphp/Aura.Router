@@ -1,16 +1,34 @@
 <?php
+/**
+ *
+ * This file is part of the Aura for PHP.
+ *
+ * @package Aura.Router
+ *
+ * @license http://opensource.org/licenses/bsd-license.php BSD
+ *
+ */
 namespace Aura\Router;
 
 use ArrayObject;
 
+/**
+ *
+ * Generates URL paths from routes.
+ *
+ * @package Aura.Router
+ *
+ */
 class Generator
 {
     /**
      *
-     * Gets the path for this Route with data replacements for param tokens.
+     * Gets the path for a Route with data replacements for param tokens.
+     *
+     * @param Route $route The route to generate a path for.
      *
      * @param array $data An array of key-value pairs to interpolate into the
-     * param tokens in the path for this Route. Keys that do not map to
+     * param tokens in the path for the Route. Keys that do not map to
      * params are discarded; param tokens that have no mapped key are left in
      * place.
      *
@@ -19,15 +37,26 @@ class Generator
      */
     public function generate(Route $route, $data = array())
     {
-        $link = $route->path;
+        $path = $route->path;
         $data = $this->generateData($route, $data);
         $repl = $this->generateTokenReplacements($data);
-        $repl = $this->generateParamReplacements($link, $repl, $data);
-        $link = strtr($link, $repl);
-        $link = $this->generateWildcard($route, $link, $data);
-        return $link;
+        $repl = $this->generateOptionalReplacements($path, $repl, $data);
+        $path = strtr($path, $repl);
+        $path = $this->generateWildcardReplacement($route, $path, $data);
+        return $path;
     }
 
+    /**
+     *
+     * Generates the data for token replacements.
+     *
+     * @param Route $route The route to work with.
+     *
+     * @param array $data Data for the token replacements.
+     *
+     * @return array
+     *
+     */
     protected function generateData(Route $route, array $data)
     {
         // the data for replacements
@@ -47,6 +76,15 @@ class Generator
         return $data;
     }
 
+    /**
+     *
+     * Generates urlencoded data for token replacements.
+     *
+     * @param array $data Data for the token replacements.
+     *
+     * @return array
+     *
+     */
     protected function generateTokenReplacements($data)
     {
         $repl = array();
@@ -58,15 +96,28 @@ class Generator
         return $repl;
     }
 
-    protected function generateParamReplacements($link, $repl, $data)
+    /**
+     *
+     * Generates replacements for params in the generated path.
+     *
+     * @param string $path The generated path.
+     *
+     * @param array $repl The token replacements.
+     *
+     * @param array $data The original data.
+     *
+     * @return string
+     *
+     */
+    protected function generateOptionalReplacements($path, $repl, $data)
     {
         // replacements for optional params, if any
-        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $link, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $path, $matches);
         if (! $matches) {
             return $repl;
         }
 
-        // this is the full token to replace in the link
+        // this is the full token to replace in the path
         $key = $matches[0];
         // start with an empty replacement
         $repl[$key] = '';
@@ -88,18 +139,31 @@ class Generator
         return $repl;
     }
 
-    protected function generateWildcard(Route $route, $link, $data)
+    /**
+     *
+     * Generates a wildcard replacement in the generated path.
+     *
+     * @param Route $route The route to work with.
+     *
+     * @param string $path The generated path.
+     *
+     * @param array $data Data for the token replacements.
+     *
+     * @return string
+     *
+     */
+    protected function generateWildcardReplacement(Route $route, $path, $data)
     {
         $wildcard = $route->wildcard;
         if ($wildcard && isset($data[$wildcard])) {
-            $link = rtrim($link, '/');
+            $path = rtrim($path, '/');
             foreach ($data[$wildcard] as $val) {
                 // encode the wildcard value
                 if (is_scalar($val)) {
-                    $link .= '/' . rawurlencode($val);
+                    $path .= '/' . rawurlencode($val);
                 }
             }
         }
-        return $link;
+        return $path;
     }
 }

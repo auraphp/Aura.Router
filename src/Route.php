@@ -137,8 +137,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * The `$path` property converted to a regular expression, using the
-     * `$tokens` subpatterns.
+     * A Regex object for the path.
      *
      * @var Regex
      *
