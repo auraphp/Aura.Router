@@ -126,6 +126,28 @@ example, matching a route with the path `/{controller}/{action}/{id}` will
 populate the `$route->params` array with `controller`, `action`, and `id`
 keys.
 
+### Handling Failure To Match
+
+When `$router->match()` returns empty, it means there was matching route for the URL path and server variables. However, we can still discover something about the matching process; in particular, whether the failure is related to an HTTP method or an `Accept` header.
+
+```php
+<?php
+// get the first of the best-available non-matched routes
+$failure = $router->getFailedRoute();
+
+// inspect the failed route
+if ($failure->failedMethod()) {
+    // the route failed on the allowed HTTP methods.
+    // this is a "405 Method Not Allowed" error.
+} elseif ($failure->failedAccept()) {
+    // the route failed on the available content-types.
+    // this is a "406 Not Acceptable" error.
+} else {
+    // there was some other unknown matching problem.
+}
+?>
+```
+
 ### Dispatching A Route
 
 Now that you have route, you can dispatch it. The following is what a
