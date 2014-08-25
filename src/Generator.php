@@ -43,15 +43,17 @@ class Generator
     public function generate(Route $route, $data = array(), $raw = array())
     {
         $this->route = $route;
-        $this->path = $this->route->path;
         $this->data = $data;
+        $this->raw = $raw;
+        $this->path = $this->route->path;
         $this->repl = array();
 
         $this->generateData();
-        $this->generateTokenReplacements($raw);
-        $this->generateOptionalReplacements($raw);
+        $this->generateTokenReplacements();
+        $this->generateOptionalReplacements();
         $this->path = strtr($this->path, $this->repl);
-        $this->generateWildcardReplacement($raw);
+        $this->generateWildcardReplacement();
+
         return $this->path;
     }
 
@@ -86,11 +88,11 @@ class Generator
      * @return array
      *
      */
-    protected function generateTokenReplacements($raw)
+    protected function generateTokenReplacements()
     {
         foreach ($this->data as $key => $val) {
             if (is_scalar($val) || $val === null) {
-                $this->repl["{{$key}}"] = $this->encode($key, $val, $raw);
+                $this->repl["{{$key}}"] = $this->encode($key, $val);
             }
         }
     }
@@ -102,7 +104,7 @@ class Generator
      * @return string
      *
      */
-    protected function generateOptionalReplacements($raw)
+    protected function generateOptionalReplacements()
     {
         // replacements for optional params, if any
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->path, $matches);
@@ -126,7 +128,7 @@ class Generator
             }
             // encode the optional value
             if (is_scalar($this->data[$name])) {
-                $this->repl[$key] .= '/' . $this->encode($name, $this->data[$name], $raw);
+                $this->repl[$key] .= '/' . $this->encode($name, $this->data[$name]);
             }
         }
     }
@@ -138,7 +140,7 @@ class Generator
      * @return string
      *
      */
-    protected function generateWildcardReplacement($raw)
+    protected function generateWildcardReplacement()
     {
         $wildcard = $this->route->wildcard;
         if ($wildcard && isset($this->data[$wildcard])) {
@@ -146,15 +148,15 @@ class Generator
             foreach ($this->data[$wildcard] as $val) {
                 // encode the wildcard value
                 if (is_scalar($val)) {
-                    $this->path .= '/' . $this->encode($wildcard, $val, $raw);
+                    $this->path .= '/' . $this->encode($wildcard, $val);
                 }
             }
         }
     }
 
-    protected function encode($key, $val, $raw)
+    protected function encode($key, $val)
     {
-        if (in_array($key, $raw)) {
+        if (in_array($key, $this->raw)) {
             return $val;
         }
         return rawurlencode($val);
