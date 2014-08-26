@@ -156,9 +156,9 @@ class Generator
 
     protected function encode($key, $val)
     {
-        if (in_array($key, $this->raw)) {
-            return $val;
-        }
-        return rawurlencode($val);
+        $encode = ! in_array($key, $this->raw)
+               && (is_scalar($val) || $val === null);
+
+        return ($encode) ? rawurlencode($val) : $val;
     }
 }
