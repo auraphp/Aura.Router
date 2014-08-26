@@ -25,6 +25,7 @@ class Generator
     protected $path;
     protected $data;
     protected $repl;
+    protected $raw;
 
     /**
      *
