@@ -22,8 +22,8 @@ Alternatively, [download a release](https://github.com/auraphp/Aura.Router/relea
 
 ### Quality
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/quality-score.png?s=094ea8e84ef4c5df2f798e28d5c9a526ecea31fd)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
-[![Code Coverage](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/coverage.png?s=e4ebd771ba626d2bbfafa0422ec3726b504365d6)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/quality-score.png?b=develop-2)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
+[![Code Coverage](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/coverage.png?b=develop-2)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
 [![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=develop-2)](https://travis-ci.org/auraphp/Aura.Router)
 
 To run the [PHPUnit][] tests at the command line, go to the _tests_ directory and issue `phpunit`.
