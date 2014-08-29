@@ -7,7 +7,7 @@
         "router",
         "routing"
     ],
-    "homepage": "https://github.com/auraphp/Aura.Router/releases",
+    "homepage": "https://github.com/auraphp/Aura.Router",
     "license": "BSD-2-Clause",
     "authors": [
         {
