@@ -21,51 +21,129 @@ use ArrayObject;
  */
 class Generator
 {
+    /**
+     *
+     * The route from which the path is being generated.
+     *
+     * @var Router
+     *
+     */
     protected $route;
+
+    /**
+     *
+     * The path being generated.
+     *
+     * @var string
+     *
+     */
     protected $path;
+
+    /**
+     *
+     * Data being interpolated into the path.
+     *
+     * @var array
+     *
+     */
     protected $data;
+
+    /**
+     *
+     * Replacement data.
+     *
+     * @var array
+     *
+     */
     protected $repl;
+
+    /**
+     *
+     * Leave values raw?
+     *
+     * @var bool
+     *
+     */
     protected $raw;
 
     /**
      *
-     * Gets the path for a Route with data replacements for param tokens.
+     * Gets the path for a Route with **encoded** data replacements for param
+     * tokens.
      *
      * @param Route $route The route to generate a path for.
      *
      * @param array $data An array of key-value pairs to interpolate into the
      * param tokens in the path for the Route. Keys that do not map to
      * params are discarded; param tokens that have no mapped key are left in
-     * place.
+     * place. All values are rawurlencoded.
      *
      * @return string
      *
      */
-    public function generate(Route $route, $data = array(), $raw = array())
+    public function generate(Route $route, $data = array())
+    {
+        $this->raw = false;
+        return $this->buildPath($route, $data);
+    }
+
+    /**
+     *
+     * Gets the path for a Route with **raw** data replacements for param
+     * tokens.
+     *
+     * @param Route $route The route to generate a path for.
+     *
+     * @param array $data An array of key-value pairs to interpolate into the
+     * param tokens in the path for the Route. Keys that do not map to
+     * params are discarded; param tokens that have no mapped key are left in
+     * place. All values are left raw; you will need to encode them yourself.
+     *
+     * @return string
+     *
+     */
+    public function generateRaw(Route $route, $data = array())
+    {
+        $this->raw = true;
+        return $this->buildPath($route, $data);
+    }
+
+    /**
+     *
+     * Gets the path for a Route.
+     *
+     * @param Route $route The route to generate a path for.
+     *
+     * @param array $data An array of key-value pairs to interpolate into the
+     * param tokens in the path for the Route.
+     *
+     * @return string
+     *
+     */
+    protected function buildPath(Route $route, $data = array())
     {
         $this->route = $route;
         $this->data = $data;
-        $this->raw = $raw;
         $this->path = $this->route->path;
         $this->repl = array();
 
-        $this->generateData();
-        $this->generateTokenReplacements();
-        $this->generateOptionalReplacements();
+        $this->buildData();
+        $this->buildTokenReplacements();
+        $this->buildOptionalReplacements();
         $this->path = strtr($this->path, $this->repl);
-        $this->generateWildcardReplacement();
+        $this->buildWildcardReplacement();
 
         return $this->path;
     }
 
     /**
      *
-     * Generates the data for token replacements.
+     * Builds the data for token replacements.
      *
      * @return array
      *
      */
-    protected function generateData()
+    protected function buildData()
     {
         // the data for replacements
         $this->data = array_merge($this->route->values, $this->data);
@@ -84,28 +162,26 @@ class Generator
 
     /**
      *
-     * Generates urlencoded data for token replacements.
+     * Builds urlencoded data for token replacements.
      *
      * @return array
      *
      */
-    protected function generateTokenReplacements()
+    protected function buildTokenReplacements()
     {
         foreach ($this->data as $key => $val) {
-            if (is_scalar($val) || $val === null) {
-                $this->repl["{{$key}}"] = $this->encode($key, $val);
-            }
+            $this->repl["{{$key}}"] = $this->encode($val);
         }
     }
 
     /**
      *
-     * Generates replacements for params in the generated path.
+     * Builds replacements for params in the generated path.
      *
      * @return string
      *
      */
-    protected function generateOptionalReplacements()
+    protected function buildOptionalReplacements()
     {
         // replacements for optional params, if any
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->path, $matches);
@@ -128,38 +204,43 @@ class Generator
                 break;
             }
             // encode the optional value
-            if (is_scalar($this->data[$name])) {
-                $this->repl[$key] .= '/' . $this->encode($name, $this->data[$name]);
+            $this->repl[$key] .= '/' . $this->encode($this->data[$name]);
+        }
+    }
+
+    /**
+     *
+     * Builds a wildcard replacement in the generated path.
+     *
+     * @return string
+     *
+     */
+    protected function buildWildcardReplacement()
+    {
+        $wildcard = $this->route->wildcard;
+        if ($wildcard && isset($this->data[$wildcard])) {
+            $this->path = rtrim($this->path, '/');
+            foreach ($this->data[$wildcard] as $val) {
+                $this->path .= '/' . $this->encode($val);
             }
         }
     }
 
     /**
      *
-     * Generates a wildcard replacement in the generated path.
+     * Encodes values, or leaves them raw.
      *
-     * @return string
+     * @param string $val The value to encode or leave raw.
+     *
+     * @return mixed
      *
      */
-    protected function generateWildcardReplacement()
+    protected function encode($val)
     {
-        $wildcard = $this->route->wildcard;
-        if ($wildcard && isset($this->data[$wildcard])) {
-            $this->path = rtrim($this->path, '/');
-            foreach ($this->data[$wildcard] as $val) {
-                // encode the wildcard value
-                if (is_scalar($val)) {
-                    $this->path .= '/' . $this->encode($wildcard, $val);
-                }
-            }
+        if ($this->raw) {
+            return $val;
         }
-    }
 
-    protected function encode($key, $val)
-    {
-        $encode = ! in_array($key, $this->raw)
-               && (is_scalar($val) || $val === null);
-
-        return ($encode) ? rawurlencode($val) : $val;
+        return is_scalar($val) ? rawurlencode($val) : null;
     }
 }

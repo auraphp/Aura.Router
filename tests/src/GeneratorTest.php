@@ -139,7 +139,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($actual, $expect);
     }
 
-    public function testGenerateWithRaw()
+    public function testGenerateRaw()
     {
         $route = $this->factory->newInstance('/{vendor}/{package}/{file}');
         $data = array(
@@ -148,8 +148,8 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
             'file' => 'foo/bar/baz.jpg',
         );
         $raw = array('file');
-        $actual = $this->generator->generate($route, $data, $raw);
-        $expect = '/vendor%2Bname/package%2Bname/foo/bar/baz.jpg';
+        $actual = $this->generator->generateRaw($route, $data);
+        $expect = '/vendor+name/package+name/foo/bar/baz.jpg';
         $this->assertSame($actual, $expect);
     }
 }
