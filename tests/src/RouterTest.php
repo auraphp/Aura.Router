@@ -456,4 +456,13 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('Aura\Router\Exception\UnexpectedValue');
         $this->router->offsetSet('bar', 'not a route');
     }
+
+    public function testGetFailedRoute()
+    {
+        $foo = $this->router->add('foo', '/foo');
+        $route = $this->router->match('/bar', array());
+        $this->assertFalse($route);
+        $failed_route = $this->router->getFailedRoute();
+        $this->assertSame($foo, $failed_route);
+    }
 }
