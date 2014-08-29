@@ -423,16 +423,17 @@ class Route extends AbstractSpec
             return $this->pass();
         }
 
-        if (in_array($server['REQUEST_METHOD'], $this->method)) {
-            return $this->pass();
-        }
+        $pass = isset($server['REQUEST_METHOD'])
+             && in_array($server['REQUEST_METHOD'], $this->method);
 
-        return $this->fail(self::FAILED_METHOD);
+        return $pass
+             ? $this->pass()
+             : $this->fail(self::FAILED_METHOD);
     }
 
     /**
      *
-     * Is the accepted method matching
+     * Is the Accept header a match.
      *
      * @param array $server
      *

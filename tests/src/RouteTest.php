@@ -488,6 +488,70 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($actual);
     }
 
+    public function testIsMethodMatch()
+    {
+        $proto = $this->factory->newInstance('/foo/bar/baz')
+            ->setMethod('POST');
+
+        // correct
+        $route = clone $proto;
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
+            'REQUEST_METHOD' => 'POST',
+        )));
+
+        // wrong path
+        $route = clone $proto;
+        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
+            'REQUEST_METHOD' => 'POST',
+        )));
+
+        // wrong REQUEST_METHOD
+        $route = clone $proto;
+        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
+            'REQUEST_METHOD' => 'GET',
+        )));
+        $this->assertTrue($route->failedMethod());
+
+        /**
+         * try many REQUEST_METHOD
+         */
+        $proto = $this->factory->newInstance('/foo/bar/baz')
+            ->setMethod(array('GET', 'POST'));
+
+        // correct
+        $route = clone $proto;
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
+            'REQUEST_METHOD' => 'GET',
+        )));
+
+        $route = clone $proto;
+        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
+            'REQUEST_METHOD' => 'POST',
+        )));
+
+        // wrong path, right REQUEST_METHOD
+        $route = clone $proto;
+        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
+            'REQUEST_METHOD' => 'GET',
+        )));
+
+        $route = clone $proto;
+        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
+            'REQUEST_METHOD' => 'POST',
+        )));
+
+        // right path, wrong REQUEST_METHOD
+        $route = clone $proto;
+        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
+            'REQUEST_METHOD' => 'PUT',
+        )));
+        $this->assertTrue($route->failedMethod());
+
+        // no REQUEST_METHOD
+        $route = clone $proto;
+        $this->assertFalse($route->isMatch('/foo/bar/baz', array()));
+    }
+
     public function testIsAcceptMatch()
     {
         $proto = $this->factory->newInstance('/foo/bar/baz');
@@ -512,6 +576,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $server = array('HTTP_ACCEPT' => 'text/*;q=0.9,application/json,*/*;q=0.0,application/xml');
         $actual = $route->isMatch('/foo/bar/baz', $server);
         $this->assertFalse($actual);
+        $this->assertTrue($route->failedAccept());
 
         // match text/csv
         $route = clone $proto;
@@ -526,6 +591,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $server = array('HTTP_ACCEPT' => 'application/json,text/csv;q=0.0,*/*;q=0.0,application/xml');
         $actual = $route->isMatch('/foo/bar/baz', $server);
         $this->assertFalse($actual);
+        $this->assertTrue($route->failedAccept());
 
         // match text/*
         $route = clone $proto;
