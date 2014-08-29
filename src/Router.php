@@ -72,7 +72,7 @@ class Router
      *
      * @param RouteCollection $routes A route collection object.
      *
-     * @param Generator A URL path generator.
+     * @param Generator $generator A URL path generator.
      *
      */
     public function __construct(RouteCollection $routes, Generator $generator)
