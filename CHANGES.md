@@ -1,3 +1,5 @@
+First stable 2.0 release.
+
 - DOC: Update README and docblocks.
 
 - ADD: Methods Route::setAccept() and Route::addAccept() to match against "Accept" headers.
@@ -19,6 +21,8 @@
 - CHG: Method Router::attachResource() now adds an "OPTIONS" route.
 
 - REF: Extract a Generator class from the Route class
+
+- ADD: Generator::generateRaw() to use **raw** values in the route; you will need to encode them yourself.
 
 - ADD: Method Router::getMatchedRoute() for use after matching.
 
