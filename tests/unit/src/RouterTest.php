@@ -465,4 +465,17 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $failed_route = $this->router->getFailedRoute();
         $this->assertSame($foo, $failed_route);
     }
+
+    public function testGenerateRaw()
+    {
+        $this->router->add('asset', '/{vendor}/{package}/{file}');
+        $data = array(
+            'vendor' => 'vendor+name',
+            'package' => 'package+name',
+            'file' => 'foo/bar/baz.jpg',
+        );
+        $actual = $this->router->generateRaw('asset', $data);
+        $expect = '/vendor+name/package+name/foo/bar/baz.jpg';
+        $this->assertSame($actual, $expect);
+    }
 }
