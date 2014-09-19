@@ -175,15 +175,37 @@ class Router
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
      *
+     * @throw Exception\RouteNotFound
+     *
      */
     public function generate($name, $data = array())
     {
-        if (! $this->routes->offsetExists($name)) {
-            throw new Exception\RouteNotFound($name);
-        }
+        $this->routeExists($name);
 
         $route = $this->routes->offsetGet($name);
         return $this->generator->generate($route, $data);
+    }
+
+    /**
+     *
+     * Generate the route without url encoding.
+     *
+     * @param string $name The route name to look up.
+     *
+     * @param array $data The data to interpolate into the URI; data keys
+     * map to param tokens in the path.
+     *
+     * @return string|false A URI path string if the route name is found, or
+     * boolean false if not.
+     *
+     * @throw Exception\RouteNotFound
+     *
+     */
+    public function generateRaw($name, $data = array())
+    {
+        $this->routeExists($name);
+        $route = $this->routes->offsetGet($name);
+        return $this->generator->generateRaw($route, $data);
     }
 
     /**
@@ -226,5 +248,12 @@ class Router
     public function getDebug()
     {
         return $this->debug;
+    }
+
+    protected function routeExists($name)
+    {
+        if (! $this->routes->offsetExists($name)) {
+            throw new Exception\RouteNotFound($name);
+        }
     }
 }
