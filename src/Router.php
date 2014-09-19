@@ -175,7 +175,7 @@ class Router
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
      *
-     * @throw Exception\RouteNotFound
+     * @throws Exception\RouteNotFound
      *
      */
     public function generate($name, $data = array())
@@ -196,7 +196,7 @@ class Router
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
      *
-     * @throw Exception\RouteNotFound
+     * @throws Exception\RouteNotFound
      *
      */
     public function generateRaw($name, $data = array())
