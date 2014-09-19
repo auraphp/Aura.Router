@@ -180,9 +180,7 @@ class Router
      */
     public function generate($name, $data = array())
     {
-        $this->routeExists($name);
-
-        $route = $this->routes->offsetGet($name);
+        $route = $this->routeExists($name);
         return $this->generator->generate($route, $data);
     }
 
@@ -203,8 +201,7 @@ class Router
      */
     public function generateRaw($name, $data = array())
     {
-        $this->routeExists($name);
-        $route = $this->routes->offsetGet($name);
+        $route = $this->routeExists($name);
         return $this->generator->generateRaw($route, $data);
     }
 
@@ -255,5 +252,7 @@ class Router
         if (! $this->routes->offsetExists($name)) {
             throw new Exception\RouteNotFound($name);
         }
+
+        return $this->routes->offsetGet($name);
     }
 }
