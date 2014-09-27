@@ -1,22 +1,22 @@
 <?php
 namespace Aura\Router\_Config;
 
-use Aura\Di\ContainerAssertionsTrait;
+use Aura\Di\_Config\AbstractContainerTest;
 
-class CommonTest extends \PHPUnit_Framework_TestCase
+class CommonTest extends AbstractContainerTest
 {
-    use ContainerAssertionsTrait;
-
-    public function setUp()
+    protected function getConfigClasses()
     {
-        $this->setUpContainer(array(
+        return array(
             'Aura\Router\_Config\Common',
-        ));
+        );
     }
 
-    public function test()
+    public function provideNewInstance()
     {
-        $this->assertNewInstance('Aura\Router\RouteCollection');
-        $this->assertNewInstance('Aura\Router\Router');
+        return array(
+            array('Aura\Router\RouteCollection'),
+            array('Aura\Router\Router'),
+        );
     }
 }
