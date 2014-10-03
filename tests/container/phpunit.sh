@@ -2,7 +2,7 @@ if [ -d vendor ]
 then
     composer update
 else
-    composer require aura/di:dev-develop-2
+    composer require "aura/di:2.0.*@dev"
 fi
 phpunit $@
 exit $?
