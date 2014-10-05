@@ -251,6 +251,8 @@ class Router
      *
      * Gets a Route for generation.
      *
+     * @param string $name Get this route name.
+     *
      * @return Route
      *
      * @throws Exception\RouteNotFound when the named route does not exist.
