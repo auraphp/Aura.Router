@@ -620,5 +620,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $server = array('HTTP_ACCEPT' => 'application/json');
         $actual = $route->isMatch('/foo/bar/baz', $server);
         $this->assertTrue($actual);
+
+        // do not match application/json in simplest case
+        $route = clone $proto;
+        $route->setAccept(array('application/json'));
+        $server = array('HTTP_ACCEPT' => 'text/html');
+        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $this->assertFalse($actual);
     }
 }
