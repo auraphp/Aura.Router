@@ -1,3 +1,1 @@
-- ADD: Router::generateRaw() to generate routes with raw data.
-
-- TST: Add container integration tests.
+- FIX: Allow simplest possible match of a single Accept header type without a Q value.
