@@ -478,11 +478,17 @@ class Route extends AbstractSpec
         $type = preg_quote($type);
         $subtype = preg_quote($subtype);
         $regex = "#$type/($subtype|\*)(;q=(\d\.\d))?#";
+
         $found = preg_match($regex, $header, $matches);
         if (! $found) {
             return false;
         }
-        return isset($matches[3]) && $matches[3] !== '0.0';
+
+        if (isset($matches[3])) {
+            return $matches[3] !== '0.0';
+        }
+
+        return true;
     }
 
     /**
