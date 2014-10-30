@@ -204,7 +204,7 @@ $path = $router->generate('read', array(
 ));
 
 $href = htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
-echo '<a href="$href">Atom feed for this blog entry</a>';
+echo '<a href="' . $href .'">Atom feed for this blog entry</a>';
 ?>
 ```
 
