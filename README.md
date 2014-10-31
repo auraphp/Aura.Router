@@ -134,7 +134,7 @@ keys.
 
 ### Handling Failure To Match
 
-When `$router->match()` returns empty, it means there was matching route for the URL path and server variables. However, we can still discover something about the matching process; in particular, whether the failure is related to an HTTP method or an `Accept` header.
+When `$router->match()` returns empty, it means there was no matching route for the URL path and server variables. However, we can still discover something about the matching process; in particular, whether the failure is related to an HTTP method or an `Accept` header.
 
 ```php
 <?php
