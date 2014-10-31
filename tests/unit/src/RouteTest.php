@@ -628,4 +628,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $actual = $route->isMatch('/foo/bar/baz', $server);
         $this->assertFalse($actual);
     }
+
+    public function testIsMatchOnOptionalEndingSlash()
+    {
+        $route = $this->factory->newInstance('/foo(/)?');
+        $this->assertTrue($route->isMatch('/foo', array()));
+        $this->assertTrue($route->isMatch('/foo/', array()));
+    }
 }
