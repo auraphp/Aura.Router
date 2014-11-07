@@ -1,1 +1,4 @@
-- FIX: Allow simplest possible match of a single Accept header type without a Q value.
+- DOC: Update README and docblocks.
+
+- TST: Disable auto-resolve for container tests.
+
