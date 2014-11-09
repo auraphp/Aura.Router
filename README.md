@@ -382,6 +382,9 @@ following extended route:
 ```php
 <?php
 $router->add('archive', '/archive/{year}/{month}/{day}')
+    ->setValues(array(
+        'action' => 'archive',
+    ))
     ->addTokens(array(
         'year'  => '[^/]+',
         'month' => '[^/]+',
@@ -711,8 +714,8 @@ callables instead.
 ### As a Micro-Framework
 
 Sometimes you may wish to use the _Router_ as a micro-framework. This is
-possible by assigning a `callable` as a default param value, then calling that
-param to dispatch it.
+possible by assigning a `callable` as a default param value, usually `action`,
+then calling that param to dispatch it.
 
 ```php
 <?php
@@ -737,8 +740,35 @@ $router->add('read', '/blog/read/{id}{format}')
     ));
 ?>
 ```
+Alternatively, and perhaps more easily, you may specify a third parameter to the `add()` method; this will be used as the `action` value in the params. The following is identical to the above:
 
-A naive micro-framework dispatcher might work like this:
+```php
+<?php
+$router->add(
+    'read',
+    '/blog/read/{id}{format}',
+    function ($params) {
+        if ($params['format'] == '.json') {
+            $id = (int) $params['id'];
+            header('Content-Type: application/json');
+            echo json_encode(['id' => $id]);
+        } else {
+            $id = (int) $params['id'];
+            header('Content-Type: text/plain');
+            echo "Reading blog ID {$id}";
+        }
+    })
+    ->addTokens(array(
+        'id' => '\d+',
+        'format' => '(\.[^/]+)?',
+    ))
+    ->addValues(array(
+        'format' => '.html',
+    ));
+?>
+```
+
+A naive micro-framework dispatcher might then work like this:
 
 ```php
 <?php
