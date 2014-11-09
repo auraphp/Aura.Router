@@ -201,13 +201,13 @@ class RouteCollection extends AbstractSpec implements
      * @return Route The newly-added route object.
      *
      */
-    public function add($name, $path)
+    public function add($name, $path, $action = null)
     {
         // create the route with the full path, name, and spec
         $route = $this->route_factory->newInstance(
             $path,
             $name,
-            $this->getSpec()
+            $this->getSpec($action)
         );
 
         // add the route
@@ -429,7 +429,7 @@ class RouteCollection extends AbstractSpec implements
      * @return array
      *
      */
-    protected function getSpec()
+    protected function getSpec($action = null)
     {
         $vars = array(
             'tokens',
@@ -451,6 +451,10 @@ class RouteCollection extends AbstractSpec implements
         $spec = array();
         foreach ($vars as $var) {
             $spec[$var] = $this->$var;
+        }
+
+        if ($action) {
+            $spec['values']['action'] = $action;
         }
 
         return $spec;

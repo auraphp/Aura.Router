@@ -478,4 +478,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $expect = '/vendor+name/package+name/foo/bar/baz.jpg';
         $this->assertSame($actual, $expect);
     }
+
+    public function testAddWithAction()
+    {
+        $this->router->add('foo.bar', '/foo/bar', 'DirectAction');
+        $actual = $this->router->match('/foo/bar');
+        $this->assertSame('DirectAction', $actual->values['action']);
+    }
 }
