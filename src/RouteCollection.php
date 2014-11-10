@@ -442,6 +442,8 @@ class RouteCollection extends AbstractSpec implements
      *
      * Gets the existing default route specification.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return array
      *
      */
