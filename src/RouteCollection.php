@@ -198,6 +198,8 @@ class RouteCollection extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
@@ -232,12 +234,14 @@ class RouteCollection extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addGet($name, $path)
+    public function addGet($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('GET');
         return $route;
     }
@@ -250,48 +254,54 @@ class RouteCollection extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addDelete($name, $path)
+    public function addDelete($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('DELETE');
         return $route;
     }
 
     /**
      *
-     * Adds a Head route.
+     * Adds a HEAD route.
      *
      * @param string $name The route name.
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addHead($name, $path)
+    public function addHead($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('HEAD');
         return $route;
     }
 
     /**
      *
-     * Adds an Options route.
+     * Adds an OPTIONS route.
      *
      * @param string $name The route name.
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addOptions($name, $path)
+    public function addOptions($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('OPTIONS');
         return $route;
     }
@@ -304,12 +314,14 @@ class RouteCollection extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addPatch($name, $path)
+    public function addPatch($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('PATCH');
         return $route;
     }
@@ -322,12 +334,14 @@ class RouteCollection extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addPost($name, $path)
+    public function addPost($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('POST');
         return $route;
     }
@@ -340,12 +354,14 @@ class RouteCollection extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
+     * @param mixed $action A value for $route->values['action'].
+     *
      * @return Route The newly-added route object.
      *
      */
-    public function addPut($name, $path)
+    public function addPut($name, $path, $action = null)
     {
-        $route = $this->add($name, $path);
+        $route = $this->add($name, $path, $action);
         $route->addMethod('PUT');
         return $route;
     }
