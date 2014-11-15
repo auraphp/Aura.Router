@@ -1,2 +1,2 @@
-/tests/container/vendor
-/tests/container/composer.*
+/coverage
+/vendor
