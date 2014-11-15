@@ -25,7 +25,7 @@ class Generator
      *
      * The route from which the path is being generated.
      *
-     * @var Router
+     * @var Route
      *
      */
     protected $route;
