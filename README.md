@@ -561,16 +561,16 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'format' => '.html',
         ));
 
-    $router->add('read', '/{id}{format}', array(
+    $router->add('read', '/{id}{format}')
         ->addTokens(array(
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
-        )),
+        ))
         ->addValues(array(
             'format' => '.html',
         ));
 
-    $router->add('edit', '/{id}/edit{format}', array(
+    $router->add('edit', '/{id}/edit{format}')
         ->addTokens(array(
             'id' => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
