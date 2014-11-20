@@ -457,13 +457,14 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router->offsetSet('bar', 'not a route');
     }
 
-    public function testGetFailedRoute()
+    public function testGetFailedRouteIsBestMatch()
     {
-        $foo = $this->router->add('foo', '/foo');
+        $post_bar = $this->router->addPost('bar', '/bar');
+        $this->router->add('foo', '/foo');
         $route = $this->router->match('/bar', array());
         $this->assertFalse($route);
         $failed_route = $this->router->getFailedRoute();
-        $this->assertSame($foo, $failed_route);
+        $this->assertSame($post_bar, $failed_route);
     }
 
     public function testGenerateRaw()
