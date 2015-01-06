@@ -467,6 +467,18 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($post_bar, $failed_route);
     }
 
+    public function testGetFailedRouteIsBestMatchWithPriorityGivenToThoseAddedFirst()
+    {
+        $post_bar = $this->router->addPost('post_bar', '/bar');
+        $delete_bar = $this->router->addDelete('delete_bar', '/bar');
+
+        $route = $this->router->match('/bar', array());
+
+        $this->assertFalse($route);
+        $this->assertSame($post_bar, $this->router->getFailedRoute());
+        $this->assertEquals($post_bar->score, $delete_bar->score, "Assert scores were actually equal");
+    }
+
     public function testGenerateRaw()
     {
         $this->router->add('asset', '/{vendor}/{package}/{file}');
