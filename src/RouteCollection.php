@@ -212,9 +212,9 @@ class RouteCollection extends AbstractSpec implements
 
         // add the route
         if (! $route->name) {
-            $this->routes[] = $route;
+            $this->routes = array($route) + $this->routes;
         } else {
-            $this->routes[$route->name] = $route;
+            $this->routes = array($route->name => $route) + $this->routes;
         }
 
         // modify newly-added route
