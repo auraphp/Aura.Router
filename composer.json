@@ -34,5 +34,14 @@
         "branch-alias": {
             "dev-develop-2": "2.0.x-dev"
         }
+    },
+    "require-dev": {
+        "aura/di": "~2.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Aura\\Router\\": "tests/",
+            "Aura\\Di\\": "vendor/aura/di/tests"
+        }
     }
 }
