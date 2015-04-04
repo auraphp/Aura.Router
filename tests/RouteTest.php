@@ -635,4 +635,17 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($route->isMatch('/foo', array()));
         $this->assertTrue($route->isMatch('/foo/', array()));
     }
+
+    public function testRouteNeedsAuthentication()
+    {
+        $route = $this->factory->newInstance('/blog')
+            ->authenticate();
+        $this->assertTrue($route->needsAuthentication());
+    }
+
+    public function testRouteDontNeedAuthentication()
+    {
+        $route = $this->factory->newInstance('/blog');
+        $this->assertFalse($route->needsAuthentication());
+    }
 }
