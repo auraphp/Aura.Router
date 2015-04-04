@@ -19,10 +19,5 @@
         "psr-0": {
             "Aura\\Router": "src/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-develop": "1.2.x-dev"
-        }
     }
 }
