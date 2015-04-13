@@ -130,7 +130,7 @@ class RouteCollection extends AbstractSpec implements
     public function offsetSet($name, $route)
     {
         if (! $route instanceof Route) {
-            throw new Exception\UnexpectedValue;
+            throw new Exception\UnexpectedValue();
         }
 
         $this->routes[$name] = $route;

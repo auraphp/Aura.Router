@@ -8,7 +8,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->factory = new RouterFactory;
+        $this->factory = new RouterFactory();
         $this->router = $this->newRouter();
     }
 

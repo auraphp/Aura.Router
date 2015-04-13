@@ -67,7 +67,7 @@ class RouteFactory
     public function __construct($class = 'Aura\Router\Route')
     {
         $this->class = $class;
-        $this->regex = new Regex;
+        $this->regex = new Regex();
     }
 
     /**
