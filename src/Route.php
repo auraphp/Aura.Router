@@ -257,11 +257,10 @@ class Route extends AbstractSpec
      */
     protected function isFullMatch(ServerRequestInterface $request)
     {
-        $path = $request->getUri()->getPath();
         $server = $request->getServerParams();
         return $this->isRoutableMatch()
             && $this->isSecureMatch($request)
-            && $this->isRegexMatch($path)
+            && $this->isRegexMatch($request)
             && $this->isMethodMatch($request)
             && $this->isAcceptMatch($server)
             && $this->isServerMatch($server);
@@ -373,8 +372,9 @@ class Route extends AbstractSpec
      * @return bool True on a match, false if not.
      *
      */
-    protected function isRegexMatch($path)
+    protected function isRegexMatch(ServerRequestInterface $request)
     {
+        $path = $request->getUri()->getPath();
         $regex = clone $this->regex;
         $match = $regex->match($this, $path);
         if (! $match) {
