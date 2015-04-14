@@ -24,7 +24,7 @@ class AbstractSpec
      * @var array
      *
      */
-    protected $tokens      = array();
+    protected $tokens = array();
 
     /**
      *
@@ -33,7 +33,7 @@ class AbstractSpec
      * @var array
      *
      */
-    protected $server      = array();
+    protected $server = array();
 
     /**
      *
@@ -42,7 +42,7 @@ class AbstractSpec
      * @var array
      *
      */
-    protected $method      = array();
+    protected $method = array();
 
     /**
      *
@@ -51,7 +51,7 @@ class AbstractSpec
      * @var array
      *
      */
-    protected $accept      = array();
+    protected $accept = array();
 
     /**
      *
@@ -60,7 +60,7 @@ class AbstractSpec
      * @var array
      *
      */
-    protected $values      = array();
+    protected $values = array();
 
     /**
      *
@@ -69,7 +69,7 @@ class AbstractSpec
      * @var bool
      *
      */
-    protected $secure      = null;
+    protected $secure = null;
 
     /**
      *
@@ -78,7 +78,7 @@ class AbstractSpec
      * @var string
      *
      */
-    protected $wildcard    = null;
+    protected $wildcard = null;
 
     /**
      *
@@ -87,7 +87,7 @@ class AbstractSpec
      * @var bool
      *
      */
-    protected $routable    = true;
+    protected $routable = true;
 
     /**
      *
@@ -96,7 +96,7 @@ class AbstractSpec
      * @var callable
      *
      */
-    protected $is_match    = null;
+    protected $is_match = null;
 
     /**
      *
@@ -105,7 +105,7 @@ class AbstractSpec
      * @var callable
      *
      */
-    protected $generate    = null;
+    protected $generate = null;
 
     /**
      *
