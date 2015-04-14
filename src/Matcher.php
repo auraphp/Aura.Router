@@ -87,14 +87,13 @@ class Matcher
     public function match(ServerRequestInterface $request)
     {
         $this->failedRoute = null;
+        $context = ['path' => $request->getUri()->getPath()];
 
         foreach ($this->map as $name => $route) {
 
+            $context['name'] = $name;
+
             $match = $route->isMatch($request);
-            $context = [
-                'path' => $request->getUri()->getPath(),
-                'name' => $name,
-            ];
             if ($match) {
                 $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;

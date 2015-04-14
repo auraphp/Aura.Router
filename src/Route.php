@@ -395,7 +395,6 @@ class Route extends AbstractSpec
         return $this->pass();
     }
 
-
     /**
      *
      * Is the requested method matching
@@ -536,7 +535,6 @@ class Route extends AbstractSpec
         $this->attributes = $this->defaults;
         $this->setAttributesWithMatches();
         $this->setAttributesWithWildcard();
-
     }
 
     /**
