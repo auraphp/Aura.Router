@@ -502,11 +502,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'PUT']);
         $this->assertFalse($route->isMatch($request));
         $this->assertTrue($route->failedMethod());
-
-        // no REQUEST_METHOD
-        $route = clone $proto;
-        $request = $this->newRequest('/foo/bar/baz', []);
-        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsAcceptMatch()

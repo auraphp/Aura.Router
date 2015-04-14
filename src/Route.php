@@ -260,9 +260,9 @@ class Route extends AbstractSpec
         $path = $request->getUri()->getPath();
         $server = $request->getServerParams();
         return $this->isRoutableMatch()
-            && $this->isSecureMatch($server)
+            && $this->isSecureMatch($request)
             && $this->isRegexMatch($path)
-            && $this->isMethodMatch($server)
+            && $this->isMethodMatch($request)
             && $this->isAcceptMatch($server)
             && $this->isServerMatch($server);
     }
@@ -347,32 +347,21 @@ class Route extends AbstractSpec
      * @return bool True on a match, false if not.
      *
      */
-    protected function isSecureMatch($server)
+    protected function isSecureMatch($request)
     {
         if ($this->secure === null) {
             return $this->pass();
         }
 
-        if ($this->secure != $this->serverIsSecure($server)) {
+        $server = $request->getServerParams();
+        $secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
+               || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
+
+        if ($this->secure != $secure) {
             return $this->fail(self::FAILED_SECURE);
         }
 
         return $this->pass();
-    }
-
-    /**
-     *
-     * Check whether the server is in secure mode
-     *
-     * @param array $server
-     *
-     * @return bool
-     *
-     */
-    protected function serverIsSecure($server)
-    {
-        return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-            || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
     }
 
     /**
@@ -397,23 +386,21 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Is the requested method matching
+     * Is the requested method matching? If no REQUEST_METHOD default to GET.
      *
      * @param array $server
      *
      * @return bool
      *
      */
-    protected function isMethodMatch($server)
+    protected function isMethodMatch(ServerRequestInterface $request)
     {
         if (! $this->method) {
             return $this->pass();
         }
 
-        $pass = isset($server['REQUEST_METHOD'])
-             && in_array($server['REQUEST_METHOD'], $this->method);
-
-        return $pass
+        $request_method = $request->getMethod() ?: 'GET';
+        return in_array($request_method, $this->method)
              ? $this->pass()
              : $this->fail(self::FAILED_METHOD);
     }
