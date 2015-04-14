@@ -5,13 +5,19 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 {
     protected $map;
     protected $matcher;
+    protected $logger;
 
     protected function setUp()
     {
         parent::setUp();
         $container = new RouterContainer();
+        $container->setLoggerFactory(function () {
+            return new FakeLogger();
+        });
+
         $this->map = $container->getMap();
         $this->matcher = $container->getMatcher();
+        $this->logger = $container->getLogger();
     }
 
     protected function assertIsRoute($actual)
@@ -148,17 +154,21 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
     }
 
-    public function testGetDebug()
+    public function testLogger()
     {
-        $foo = $this->map->add(null, '/foo');
-        $bar = $this->map->add(null, '/bar');
-        $baz = $this->map->add(null, '/baz');
+        $foo = $this->map->add('foo', '/foo');
+        $bar = $this->map->add('bar', '/bar');
+        $baz = $this->map->add('baz', '/baz');
 
         $this->matcher->match('/bar');
 
-        $actual = $this->matcher->getDebug();
-        $expect = array($foo, $bar);
+        $expect = [
+            'debug: /bar FAILED_REGEX ON foo',
+            'debug: /bar MATCHED ON bar',
+        ];
+        $actual = $this->logger->lines;
         $this->assertSame($expect, $actual);
+
         $this->assertRoute($bar, $this->matcher->getMatchedRoute());
     }
 

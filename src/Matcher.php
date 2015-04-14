@@ -85,15 +85,17 @@ class Matcher
      */
     public function match($path, array $server = array())
     {
-        $this->debug = array();
         $this->failedRoute = null;
 
-        foreach ($this->map as $route) {
-
-            $this->debug[] = $route;
+        foreach ($this->map as $name => $route) {
 
             $match = $route->isMatch($path, $server);
+            $context = [
+                'path' => $path,
+                'name' => $name,
+            ];
             if ($match) {
+                $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;
                 return $route;
             }
@@ -103,22 +105,13 @@ class Matcher
             if ($betterMatch) {
                 $this->failedRoute = $route;
             }
+
+            $context['debug'] = $route->debug;
+            $this->logger->debug("{path} {debug} ON {name}", $context);
         }
 
         $this->matchedRoute = false;
         return false;
-    }
-
-    /**
-     *
-     * Gets the attempted route matches.
-     *
-     * @return array An array of routes from the last match() attempt.
-     *
-     */
-    public function getDebug()
-    {
-        return $this->debug;
     }
 
     /**

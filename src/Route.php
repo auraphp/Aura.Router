@@ -34,7 +34,7 @@ use Closure;
  *
  * @property-read ArrayObject $matches All attributes found during `isMatch()`.
  *
- * @property-read array $debug Debugging messages.
+ * @property-read string $debug Debugging messages.
  *
  * @property-read string $wildcard The name of the wildcard attribute.
  *
@@ -147,7 +147,7 @@ class Route extends AbstractSpec
      *
      * Debugging information about why the route did not match.
      *
-     * @var array
+     * @var null|string
      *
      */
     protected $debug;
@@ -232,7 +232,7 @@ class Route extends AbstractSpec
      */
     public function isMatch($path, array $server)
     {
-        $this->debug = array();
+        $this->debug = null;
         $this->attributes = array();
         $this->score = 0;
         $this->failed = null;
@@ -291,7 +291,7 @@ class Route extends AbstractSpec
      */
     protected function fail($failed, $append = null)
     {
-        $this->debug[] = $failed . $append;
+        $this->debug = $failed . $append;
         $this->failed = $failed;
         return false;
     }
