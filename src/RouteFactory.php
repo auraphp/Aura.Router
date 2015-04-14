@@ -47,7 +47,7 @@ class RouteFactory
         'server' => array(),
         'method' => array(),
         'accept' => array(),
-        'values' => array(),
+        'defaults' => array(),
         'secure' => null,
         'wildcard' => null,
         'routable' => true,
@@ -97,7 +97,7 @@ class RouteFactory
         $route->addServer($spec['server']);
         $route->addMethod($spec['method']);
         $route->addAccept($spec['accept']);
-        $route->addValues($spec['values']);
+        $route->addDefaults($spec['defaults']);
         $route->setSecure($spec['secure']);
         $route->setWildcard($spec['wildcard']);
         $route->setRoutable($spec['routable']);

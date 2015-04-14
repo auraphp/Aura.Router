@@ -189,7 +189,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -225,7 +225,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -245,7 +245,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -265,7 +265,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -285,7 +285,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -305,7 +305,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -325,7 +325,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -345,7 +345,7 @@ class Map extends AbstractSpec implements
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return Route The newly-added route object.
      *
@@ -385,8 +385,8 @@ class Map extends AbstractSpec implements
      */
     protected function routeCallable(Route $route)
     {
-        if ($route->name && ! isset($route->values['action'])) {
-            $route->addValues(array('action' => $route->name));
+        if ($route->name && ! isset($route->defaults['action'])) {
+            $route->addDefaults(array('action' => $route->name));
         }
     }
 
@@ -422,7 +422,7 @@ class Map extends AbstractSpec implements
         // append to the path prefix
         $this->path_prefix .= $path;
 
-        // invoke the callable, passing this Map as the only param
+        // invoke the callable, passing this Map as the only attribute
         call_user_func($callable, $this);
 
         // restore previous spec
@@ -433,7 +433,7 @@ class Map extends AbstractSpec implements
      *
      * Gets the existing default route specification.
      *
-     * @param mixed $action A value for $route->values['action'].
+     * @param mixed $action A value for $route->defaults['action'].
      *
      * @return array
      *
@@ -445,7 +445,7 @@ class Map extends AbstractSpec implements
             'server',
             'method',
             'accept',
-            'values',
+            'defaults',
             'secure',
             'wildcard',
             'routable',
@@ -461,7 +461,7 @@ class Map extends AbstractSpec implements
         }
 
         if ($action) {
-            $spec['values']['action'] = $action;
+            $spec['defaults']['action'] = $action;
         }
 
         return $spec;

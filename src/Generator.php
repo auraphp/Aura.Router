@@ -93,7 +93,7 @@ class Generator
      * @param string $name The route name to look up.
      *
      * @param array $data The data to interpolate into the URI; data keys
-     * map to param tokens in the path.
+     * map to attribute tokens in the path.
      *
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
@@ -113,7 +113,7 @@ class Generator
      * @param string $name The route name to look up.
      *
      * @param array $data The data to interpolate into the URI; data keys
-     * map to param tokens in the path.
+     * map to attribute tokens in the path.
      *
      * @return string|false A URI path string if the route name is found, or
      * boolean false if not.
@@ -133,7 +133,7 @@ class Generator
      * @param string $name The route name to look up.
      *
      * @param array $data An array of key-value pairs to interpolate into the
-     * param tokens in the path for the Route.
+     * attribute tokens in the path for the Route.
      *
      * @return string
      *
@@ -144,7 +144,7 @@ class Generator
         $this->route = $this->map->getRoute($name);
         $this->path = $this->route->path;
         $this->repl = array();
-        $this->data = array_merge($this->route->values, $data);
+        $this->data = array_merge($this->route->defaults, $data);
 
         $this->buildTokenReplacements();
         $this->buildOptionalReplacements();
@@ -187,11 +187,11 @@ class Generator
         $key = $matches[0];
         // start with an empty replacement
         $this->repl[$key] = '';
-        // the optional param names in the token
+        // the optional attribute names in the token
         $names = explode(',', $matches[1]);
-        // look for data for each of the param names
+        // look for data for each of the attribute names
         foreach ($names as $name) {
-            // is there data for this optional param?
+            // is there data for this optional attribute?
             if (! isset($this->data[$name])) {
                 // options are *sequentially* optional, so if one is
                 // missing, we're done

@@ -13,10 +13,10 @@ use Closure;
 
 /**
  *
- * Represents an individual route with a name, path, attributes, values, etc.
+ * An individual route with a name, path, attributes, defaults, etc.
  *
  * In general, you should never need to instantiate a Route directly. Use the
- * RouteFactory instead, or the Router.
+ * Map instead.
  *
  * @package Aura.Router
  *
@@ -24,7 +24,7 @@ use Closure;
  *
  * @property-read string $path The route path.
  *
- * @property-read array $values Default values for attributes.
+ * @property-read array $defaults Default values for attributes.
  *
  * @property-read array $attributes The matched attributes.
  *
@@ -36,7 +36,7 @@ use Closure;
  *
  * @property-read array $debug Debugging messages.
  *
- * @property-read string $wildcard The name of the wildcard param.
+ * @property-read string $wildcard The name of the wildcard attribute.
  *
  */
 class Route extends AbstractSpec
@@ -106,7 +106,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * The path for this Route with param tokens.
+     * The path for this Route with attribute tokens.
      *
      * @var string
      *
@@ -115,7 +115,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Matched param values.
+     * Matched attribute values.
      *
      * @var array
      *
@@ -176,7 +176,7 @@ class Route extends AbstractSpec
      *
      * @param Regex $regex A regular expression support object.
      *
-     * @param string $path The path for this Route with param token
+     * @param string $path The path for this Route with attribute token
      * placeholders.
      *
      * @param string $name The name for this route.
@@ -531,7 +531,7 @@ class Route extends AbstractSpec
      */
     protected function setAttributes()
     {
-        $this->attributes = $this->values;
+        $this->attributes = $this->defaults;
         $this->setAttributesWithMatches();
         $this->setAttributesWithWildcard();
 
@@ -546,9 +546,9 @@ class Route extends AbstractSpec
      */
     protected function setAttributesWithMatches()
     {
-        // populate the path matches into the route values. if the path match
+        // populate the path matches into the route defaults. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
-        // to support optional ".format" param values.)
+        // to support optional ".format" attribute values.)
         foreach ($this->matches as $key => $val) {
             if (is_string($key) && $val !== '') {
                 $this->attributes[$key] = rawurldecode($val);
@@ -558,7 +558,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Set the wildcard param value.
+     * Set the wildcard attribute value.
      *
      * @return null
      *

@@ -129,7 +129,7 @@ class Regex
     protected function getRegexOptionalAttributesReplacementHead(&$list)
     {
         // if the optional set is the first part of the path, make sure there
-        // is a leading slash in the replacement before the optional param.
+        // is a leading slash in the replacement before the optional attribute.
         $head = '';
         if (substr($this->regex, 0, 2) == '{/') {
             $name = array_shift($list);
@@ -140,7 +140,7 @@ class Regex
 
     /**
      *
-     * Expands param names in the regex to named subpatterns.
+     * Expands attribute names in the regex to named subpatterns.
      *
      * @return null
      *
@@ -153,17 +153,17 @@ class Regex
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! isset($this->route->values[$name])) {
-                $this->route->addValues(array($name => null));
+            if (! isset($this->route->defaults[$name])) {
+                $this->route->addDefaults(array($name => null));
             }
         }
     }
 
     /**
      *
-     * Returns a named subpattern for a param name.
+     * Returns a named subpattern for a attribute name.
      *
-     * @param string $name The param name.
+     * @param string $name The attribute name.
      *
      * @return string The named subpattern.
      *

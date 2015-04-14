@@ -24,7 +24,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function test__isset()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setValues(array(
+            ->setDefaults(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ));
@@ -36,7 +36,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsMatchOnStaticPath()
     {
         $proto = $this->factory->newInstance('/foo/bar/baz')
-            ->setValues(array(
+            ->setDefaults(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ));
@@ -62,7 +62,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '([0-9]+)',
                 'format' => '(\.[^/]+)?',
             ))
-            ->setValues(array(
+            ->setDefaults(array(
                 'format' => '.html',
             ));
 
@@ -271,7 +271,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function testIsNotRoutable()
     {
         $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setValues(array(
+            ->setDefaults(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ))
@@ -287,7 +287,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     public function testIsMatchOnRFC3986Paths()
     {
-        $route = $this->factory->newInstance('/{controller}/{action}/{param1}/{param2}');
+        $route = $this->factory->newInstance('/{controller}/{action}/{attribute1}/{attribute2}');
 
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
         $actual = $route->isMatch('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami', $this->server);
@@ -295,8 +295,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $expect = array(
             'controller' => 'some-controller',
             'action' => 'some action',
-            'param1' => 'foo @+%/',
-            'param2' => 'sales and marketing/Miami',
+            'attribute1' => 'foo @+%/',
+            'attribute2' => 'sales and marketing/Miami',
         );
         $this->assertEquals($expect, $route->attributes);
     }
@@ -331,7 +331,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
                 'format' => '(\.json|\.html)?',
             ))
-            ->setValues(array(
+            ->setDefaults(array(
                 'controller' => 'blog',
                 'action' => 'read',
                 'format' => '.html',
@@ -387,15 +387,15 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $actual = $route->isMatch('/foo/bar', $this->server);
         $this->assertTrue($actual);
 
-        // optional param 1
+        // optional attribute 1
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
 
-        // optional param 2
+        // optional attribute 2
         $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
         $this->assertTrue($actual);
 
-        // optional param 3
+        // optional attribute 3
         $actual = $route->isMatch('/foo/bar/baz/dib/zim', $this->server);
         $this->assertTrue($actual);
 

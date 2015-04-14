@@ -55,12 +55,12 @@ class AbstractSpec
 
     /**
      *
-     * Default token values.
+     * Default attribute values.
      *
      * @var array
      *
      */
-    protected $values = array();
+    protected $defaults = array();
 
     /**
      *
@@ -91,9 +91,9 @@ class AbstractSpec
 
     /**
      *
-     * Sets the regular expressions for param tokens.
+     * Sets the regular expressions for attribute tokens.
      *
-     * @param array $tokens The regular expressions for param tokens.
+     * @param array $tokens The regular expressions for attribute tokens.
      *
      * @return $this
      *
@@ -106,9 +106,9 @@ class AbstractSpec
 
     /**
      *
-     * Merges with the existing regular expressions for param tokens.
+     * Merges with the existing regular expressions for attribute tokens.
      *
-     * @param array $tokens Regular expressions for param tokens.
+     * @param array $tokens Regular expressions for attribute tokens.
      *
      * @return $this
      *
@@ -218,9 +218,9 @@ class AbstractSpec
      * @return $this
      *
      */
-    public function setValues(array $values)
+    public function setDefaults(array $defaults)
     {
-        $this->values = $values;
+        $this->defaults = $defaults;
         return $this;
     }
 
@@ -228,14 +228,14 @@ class AbstractSpec
      *
      * Merges with the existing default values for attributes.
      *
-     * @param array $values Default values for attributes.
+     * @param array $defaults Default values for attributes.
      *
      * @return $this
      *
      */
-    public function addValues(array $values)
+    public function addDefaults(array $defaults)
     {
-        $this->values = array_merge($this->values, $values);
+        $this->defaults = array_merge($this->defaults, $defaults);
         return $this;
     }
 
@@ -257,9 +257,9 @@ class AbstractSpec
 
     /**
      *
-     * Sets the name of the wildcard param.
+     * Sets the name of the wildcard attribute.
      *
-     * @param string $wildcard The name of the wildcard param, if any.
+     * @param string $wildcard The name of the wildcard attribute, if any.
      *
      * @return $this
      *

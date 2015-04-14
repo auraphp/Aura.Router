@@ -24,7 +24,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
-            ->setValues(array(
+            ->setDefaults(array(
                 "controller" => function ($attributes) {
                     $id = (int) $attributes['id'];
                     return "Hello World";

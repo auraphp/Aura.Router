@@ -35,7 +35,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
             ));
 
             $map->addGet(null, '/')
-                ->addValues(array(
+                ->addDefaults(array(
                     'action' => 'browse'
                 ));
 
