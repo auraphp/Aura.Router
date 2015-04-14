@@ -51,8 +51,6 @@ class RouteFactory
         'secure' => null,
         'wildcard' => null,
         'routable' => true,
-        'is_match' => null,
-        'generate' => null,
         'name_prefix' => null,
         'path_prefix' => null,
     );

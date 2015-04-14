@@ -56,8 +56,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'secure' => null,
             'wildcard' => null,
             'routable' => true,
-            'is_match' => null,
-            'generate' => null,
         );
         $this->assertRoute($expect, $map['before']);
 
@@ -74,8 +72,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'routable' => false,
         );
         $this->assertRoute($expect, $actual);
-        $this->assertInstanceOf('Closure', $actual->is_match);
-        $this->assertInstanceOf('Closure', $actual->generate);
     }
 
     public function testAttachInAttach()
