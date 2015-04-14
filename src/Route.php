@@ -36,8 +36,6 @@ use Closure;
  *
  * @property-read array $debug Debugging messages.
  *
- * @property-read callable $generate A callable for generating a link.
- *
  * @property-read string $wildcard The name of the wildcard param.
  *
  */
@@ -96,15 +94,6 @@ class Route extends AbstractSpec
      *
      */
     const FAILED_SERVER = 'FAILED_SERVER';
-
-    /**
-     *
-     * The route failed to match at isCustomMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_CUSTOM = 'FAILED_CUSTOM';
 
     /**
      *
@@ -273,8 +262,7 @@ class Route extends AbstractSpec
             && $this->isRegexMatch($path)
             && $this->isMethodMatch($server)
             && $this->isAcceptMatch($server)
-            && $this->isServerMatch($server)
-            && $this->isCustomMatch($server);
+            && $this->isServerMatch($server);
     }
 
     /**
@@ -532,33 +520,6 @@ class Route extends AbstractSpec
         $regex = "#(?P<{$name}>{$regex})#";
         preg_match($regex, $value, $matches);
         return $matches;
-    }
-
-    /**
-     *
-     * Checks that the custom Route `$is_match` callable returns true, given
-     * the server values.
-     *
-     * @param array $server A copy of $_SERVER.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isCustomMatch($server)
-    {
-        if (! $this->is_match) {
-            return $this->pass();
-        }
-
-        // attempt the match
-        $result = call_user_func($this->is_match, $server, $this->matches);
-
-        // did it match?
-        if (! $result) {
-            return $this->fail(self::FAILED_CUSTOM);
-        }
-
-        return $this->pass();
     }
 
     /**

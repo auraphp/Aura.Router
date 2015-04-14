@@ -481,8 +481,6 @@ class Map extends AbstractSpec implements
             'secure',
             'wildcard',
             'routable',
-            'is_match',
-            'generate',
             'name_prefix',
             'path_prefix',
             'resource_callable',

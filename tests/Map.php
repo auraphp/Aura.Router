@@ -40,7 +40,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
             $router->setSecure(true);
             $router->setWildcard('other');
             $router->setRoutable(false);
-            $router->setIsMatchCallable(function () { });
             $router->setGenerateCallable(function () { });
             $router->add('bar', '/bar');
         });

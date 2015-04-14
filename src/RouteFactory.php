@@ -103,8 +103,6 @@ class RouteFactory
         $route->setSecure($spec['secure']);
         $route->setWildcard($spec['wildcard']);
         $route->setRoutable($spec['routable']);
-        $route->setIsMatchCallable($spec['is_match']);
-        $route->setGenerateCallable($spec['generate']);
         return $route;
     }
 }

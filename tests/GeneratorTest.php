@@ -54,32 +54,6 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->generator->generate('no-such-route');
     }
 
-    public function testGenerateWithClosure()
-    {
-        $this->map->add('test', '/blog/{id}/edit')
-            ->setTokens(array(
-                'id' => '([0-9]+)',
-            ))
-            ->setGenerateCallable(function(ArrayObject $data) {
-                $data['id'] = 99;
-            });
-
-        $url = $this->generator->generate('test', array('id' => 42, 'foo' => 'bar'));
-        $this->assertEquals('/blog/99/edit', $url);
-    }
-
-    public function testGenerateWithCallback()
-    {
-        $this->map->add('test', '/blog/{id}/edit')
-            ->setTokens(array(
-                'id' => '([0-9]+)',
-            ))
-            ->setGenerateCallable(array($this, 'callbackForGenerate'));
-
-        $url = $this->generator->generate('test', array('id' => 42, 'foo' => 'bar'));
-        $this->assertEquals('/blog/99/edit', $url);
-    }
-
     public function testGenerateWithWildcard()
     {
         $this->map->add('test', '/blog/{id}')

@@ -187,19 +187,7 @@ class Generator
      */
     protected function buildData()
     {
-        // the data for replacements
         $this->data = array_merge($this->route->values, $this->data);
-
-        // use a callable to modify the data?
-        if ($this->route->generate) {
-            // pass the data as an object, not as an array, so we can avoid
-            // tricky hacks for references
-            $arrobj = new ArrayObject($this->data);
-            // modify
-            call_user_func($this->route->generate, $arrobj);
-            // convert back to array
-            $this->data = $arrobj->getArrayCopy();
-        }
     }
 
     /**

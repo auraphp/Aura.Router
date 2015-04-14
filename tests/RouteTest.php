@@ -248,55 +248,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         )));
     }
 
-    public function testIsCustomMatchWithClosure()
-    {
-        $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setIsMatchCallable(function($server, ArrayObject $matches) {
-                $matches['zim'] = 'gir';
-                return true;
-            });
-
-        $actual = $route->isMatch('/foo/bar/baz', $this->server);
-        $this->assertTrue($actual);
-        $this->assertEquals('gir', $route->params['zim']);
-
-        $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setIsMatchCallable(function($server, $matches) {
-                return false;
-            });
-
-        // even though path is correct, should fail because of the closure
-        $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
-    }
-
-    public function testIsCustomMatchWithCallback()
-    {
-        $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setIsMatchCallable(array($this, 'callbackForIsMatchTrue'));
-
-        $actual = $route->isMatch('/foo/bar/baz', $this->server);
-        $this->assertTrue($actual);
-        $this->assertEquals('gir', $route->params['zim']);
-
-        $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setIsMatchCallable(array($this, 'callbackForIsMatchFalse'));
-
-        // even though path is correct, should fail because of the closure
-        $this->assertFalse($route->isMatch('/foo/bar/baz', $this->server));
-    }
-
-    public function callbackForIsMatchTrue(array $server, ArrayObject $matches)
-    {
-        $matches['zim'] = 'gir';
-        return true;
-    }
-
-    public function callbackForIsMatchFalse(array $server, ArrayObject $matches)
-    {
-        return false;
-    }
-
-
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
         $route = $this->factory->newInstance('/{controller}/{action}/{id}{format}')

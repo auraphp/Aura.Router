@@ -91,24 +91,6 @@ class AbstractSpec
 
     /**
      *
-     * Custom callable for isMatch() logic.
-     *
-     * @var callable
-     *
-     */
-    protected $is_match = null;
-
-    /**
-     *
-     * Custom callable for generate() logic.
-     *
-     * @var callable
-     *
-     */
-    protected $generate = null;
-
-    /**
-     *
      * Sets the regular expressions for param tokens.
      *
      * @param array $tokens The regular expressions for param tokens.
@@ -301,37 +283,6 @@ class AbstractSpec
     public function setRoutable($routable = true)
     {
         $this->routable = (bool) $routable;
-        return $this;
-    }
-
-    /**
-     *
-     * Sets a custom callable to evaluate the route for matching.
-     *
-     * @param callable $is_match A custom callable to evaluate the route.
-     *
-     * @return $this
-     *
-     */
-    public function setIsMatchCallable($is_match)
-    {
-        $this->is_match = $is_match;
-        return $this;
-    }
-
-    /**
-     *
-     * Sets a custom callable to modify data for `generate()`.
-     *
-     * @param callable $generate A custom callable to modify data for
-     * `generate()`.
-     *
-     * @return $this
-     *
-     */
-    public function setGenerateCallable($generate)
-    {
-        $this->generate = $generate;
         return $this;
     }
 }
