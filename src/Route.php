@@ -236,9 +236,7 @@ class Route extends AbstractSpec
         $this->attributes = array();
         $this->score = 0;
         $this->failed = null;
-        $path = $request->getUri()->getPath();
-        $server = $request->getServerParams();
-        if ($this->isFullMatch($path, $server)) {
+        if ($this->isFullMatch($request)) {
             $this->setAttributes();
             return true;
         }
@@ -257,8 +255,10 @@ class Route extends AbstractSpec
      * @return bool
      *
      */
-    protected function isFullMatch($path, array $server)
+    protected function isFullMatch(ServerRequestInterface $request)
     {
+        $path = $request->getUri()->getPath();
+        $server = $request->getServerParams();
         return $this->isRoutableMatch()
             && $this->isSecureMatch($server)
             && $this->isRegexMatch($path)
