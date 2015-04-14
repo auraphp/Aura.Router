@@ -21,6 +21,15 @@ class Generator
 {
     /**
      *
+     * The collection of all routes.
+     *
+     * @var RouteCollection
+     *
+     */
+    protected $routes;
+
+    /**
+     *
      * The route from which the path is being generated.
      *
      * @var Route
@@ -66,44 +75,79 @@ class Generator
 
     /**
      *
-     * Gets the path for a Route with **encoded** data replacements for param
-     * tokens.
+     * Constructor.
      *
-     * @param Route $route The route to generate a path for.
-     *
-     * @param array $data An array of key-value pairs to interpolate into the
-     * param tokens in the path for the Route. Keys that do not map to
-     * params are discarded; param tokens that have no mapped key are left in
-     * place. All values are rawurlencoded.
-     *
-     * @return string
+     * @param RouteCollection $routes A route collection object.
      *
      */
-    public function generate(Route $route, $data = array())
+    public function __construct(RouteCollection $routes)
     {
+        $this->routes = $routes;
+    }
+
+    /**
+     *
+     * Looks up a route by name, and interpolates data into it to return
+     * a URI path.
+     *
+     * @param string $name The route name to look up.
+     *
+     * @param array $data The data to interpolate into the URI; data keys
+     * map to param tokens in the path.
+     *
+     * @return string|false A URI path string if the route name is found, or
+     * boolean false if not.
+     *
+     * @throws Exception\RouteNotFound
+     *
+     */
+    public function generate($name, $data = array())
+    {
+        $route = $this->getRouteForGenerate($name);
         $this->raw = false;
         return $this->buildPath($route, $data);
     }
 
     /**
      *
-     * Gets the path for a Route with **raw** data replacements for param
-     * tokens.
+     * Generate the route without url encoding.
      *
-     * @param Route $route The route to generate a path for.
+     * @param string $name The route name to look up.
      *
-     * @param array $data An array of key-value pairs to interpolate into the
-     * param tokens in the path for the Route. Keys that do not map to
-     * params are discarded; param tokens that have no mapped key are left in
-     * place. All values are left raw; you will need to encode them yourself.
+     * @param array $data The data to interpolate into the URI; data keys
+     * map to param tokens in the path.
      *
-     * @return string
+     * @return string|false A URI path string if the route name is found, or
+     * boolean false if not.
+     *
+     * @throws Exception\RouteNotFound
      *
      */
-    public function generateRaw(Route $route, $data = array())
+    public function generateRaw($name, $data = array())
     {
+        $route = $this->getRouteForGenerate($name);
         $this->raw = true;
         return $this->buildPath($route, $data);
+    }
+
+    /**
+     *
+     * Gets a Route for generation.
+     *
+     * @param string $name Get this route name.
+     *
+     * @return Route
+     *
+     * @throws Exception\RouteNotFound when the named route does not exist.
+     *
+     */
+    protected function getRouteForGenerate($name)
+    {
+        if (! $this->routes->offsetExists($name)) {
+            throw new Exception\RouteNotFound($name);
+        }
+
+        return $this->routes->offsetGet($name);
     }
 
     /**

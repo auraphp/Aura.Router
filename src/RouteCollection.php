@@ -104,6 +104,36 @@ class RouteCollection extends AbstractSpec implements
 
     /**
      *
+     * Sets the array of route objects to use.
+     *
+     * @param array $routes Use this array of routes.
+     *
+     * @return null
+     *
+     * @see getRoutes()
+     *
+     */
+    public function setRoutes(array $routes)
+    {
+        $this->routes = $routes;
+    }
+
+    /**
+     *
+     * Gets the route collection.
+     *
+     * @return RouteCollection
+     *
+     * @see setRoutes()
+     *
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
+     *
      * ArrayAccess: gets a route by name.
      *
      * @param string $name The route name.
