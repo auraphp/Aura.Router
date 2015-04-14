@@ -51,8 +51,8 @@ class RouteFactory
         'secure' => null,
         'wildcard' => null,
         'routable' => true,
-        'name_prefix' => null,
-        'path_prefix' => null,
+        'namePrefix' => null,
+        'pathPrefix' => null,
     );
 
     /**
@@ -85,10 +85,10 @@ class RouteFactory
     {
         $spec = array_merge($this->spec, $spec);
 
-        $path = $spec['path_prefix'] . $path;
+        $path = $spec['pathPrefix'] . $path;
 
-        $name = ($spec['name_prefix'] && $name)
-              ? $spec['name_prefix'] . '.' . $name
+        $name = ($spec['namePrefix'] && $name)
+              ? $spec['namePrefix'] . '.' . $name
               : $name;
 
         $class = $this->class;

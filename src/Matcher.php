@@ -44,7 +44,7 @@ class Matcher
      * @var Route|false
      *
      */
-    protected $matched_route = null;
+    protected $matchedRoute = null;
 
     /**
      *
@@ -53,7 +53,7 @@ class Matcher
      * @var Route
      *
      */
-    protected $failed_route = null;
+    protected $failedRoute = null;
 
     /**
      *
@@ -84,7 +84,7 @@ class Matcher
     public function match($path, array $server = array())
     {
         $this->debug = array();
-        $this->failed_route = null;
+        $this->failedRoute = null;
 
         foreach ($this->map as $route) {
 
@@ -92,18 +92,18 @@ class Matcher
 
             $match = $route->isMatch($path, $server);
             if ($match) {
-                $this->matched_route = $route;
+                $this->matchedRoute = $route;
                 return $route;
             }
 
-            $better_match = ! $this->failed_route
-                         || $route->score > $this->failed_route->score;
-            if ($better_match) {
-                $this->failed_route = $route;
+            $betterMatch = ! $this->failedRoute
+                         || $route->score > $this->failedRoute->score;
+            if ($betterMatch) {
+                $this->failedRoute = $route;
             }
         }
 
-        $this->matched_route = false;
+        $this->matchedRoute = false;
         return false;
     }
 
@@ -128,7 +128,7 @@ class Matcher
      */
     public function getFailedRoute()
     {
-        return $this->failed_route;
+        return $this->failedRoute;
     }
 
     /**
@@ -143,6 +143,6 @@ class Matcher
      */
     public function getMatchedRoute()
     {
-        return $this->matched_route;
+        return $this->matchedRoute;
     }
 }

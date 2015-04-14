@@ -4,10 +4,6 @@
 
 - Can we avoid AbstractSpec?
 
-- Change from "params" to "attributes"
-
-- Change from "values" to "defaults"
-
 - get rid of IsServerMatch favor of header matching
 
 - need a way for route to specify what methods to use for matching, so that

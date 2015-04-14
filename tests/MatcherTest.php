@@ -67,10 +67,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.head', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect_values = array(
+        $expect = array(
             'action' => 'resource.head',
             'id' => '42',
         );
+        $this->assertEquals($expect, $actual->attributes);
 
         // read
         $server = array('REQUEST_METHOD' => 'GET');
@@ -78,11 +79,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.read', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect_values = array(
+        $expect = array(
             'action' => 'resource.read',
             'id' => '42',
         );
-        $this->assertEquals($expect_values, $actual->attributes);
+        $this->assertEquals($expect, $actual->attributes);
 
         // edit
         $server = array('REQUEST_METHOD' => 'POST');
@@ -90,11 +91,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.edit', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect_values = array(
+        $expect = array(
             'action' => 'resource.edit',
             'id' => '42',
         );
-        $this->assertEquals($expect_values, $actual->attributes);
+        $this->assertEquals($expect, $actual->attributes);
 
         // add
         $server = array('REQUEST_METHOD' => 'PUT');
@@ -103,6 +104,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.add', $actual->attributes['action']);
         $this->assertSame('resource.add', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
+        $expect = array(
+            'action' => 'resource.add',
+            'id' => '42',
+        );
+        $this->assertEquals($expect, $actual->attributes);
 
         // delete
         $server = array('REQUEST_METHOD' => 'DELETE');
@@ -110,11 +116,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.delete', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect_values = array(
+        $expect = array(
             'action' => 'resource.delete',
             'id' => '42',
         );
-        $this->assertEquals($expect_values, $actual->attributes);
+        $this->assertEquals($expect, $actual->attributes);
 
         // patch
         $server = array('REQUEST_METHOD' => 'PATCH');
@@ -122,11 +128,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.patch', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect_values = array(
+        $expect = array(
             'action' => 'resource.patch',
             'id' => '42',
         );
-        $this->assertEquals($expect_values, $actual->attributes);
+        $this->assertEquals($expect, $actual->attributes);
 
         // options
         $server = array('REQUEST_METHOD' => 'OPTIONS');
@@ -134,11 +140,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.options', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect_values = array(
+        $expect = array(
             'action' => 'resource.options',
             'id' => '42',
         );
-        $this->assertEquals($expect_values, $actual->attributes);
+        $this->assertEquals($expect, $actual->attributes);
     }
 
     public function testGetDebug()
@@ -206,23 +212,23 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFailedRouteIsBestMatch()
     {
-        $post_bar = $this->map->addPost('bar', '/bar');
+        $expect = $this->map->addPost('bar', '/bar');
         $this->map->add('foo', '/foo');
-        $route = $this->matcher->match('/bar', array());
-        $this->assertFalse($route);
-        $failed_route = $this->matcher->getFailedRoute();
-        $this->assertSame($post_bar, $failed_route);
+        $match = $this->matcher->match('/bar', array());
+        $this->assertFalse($match);
+        $actual = $this->matcher->getFailedRoute();
+        $this->assertSame($expect, $actual);
     }
 
     public function testGetFailedRouteIsBestMatchWithPriorityGivenToThoseAddedFirst()
     {
-        $post_bar = $this->map->addPost('post_bar', '/bar');
-        $delete_bar = $this->map->addDelete('delete_bar', '/bar');
+        $expect = $this->map->addPost('post_bar', '/bar');
+        $other = $this->map->addDelete('delete_bar', '/bar');
 
-        $route = $this->matcher->match('/bar', array());
+        $match = $this->matcher->match('/bar', array());
 
-        $this->assertFalse($route);
-        $this->assertSame($post_bar, $this->matcher->getFailedRoute());
-        $this->assertEquals($post_bar->score, $delete_bar->score, "Assert scores were actually equal");
+        $this->assertFalse($match);
+        $this->assertSame($expect, $this->matcher->getFailedRoute());
+        $this->assertEquals($expect->score, $other->score, "Assert scores were actually equal");
     }
 }

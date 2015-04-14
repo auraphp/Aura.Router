@@ -19,9 +19,7 @@ use IteratorAggregate;
  * @package Aura.Router
  *
  */
-class Map extends AbstractSpec implements
-    Countable,
-    IteratorAggregate
+class Map extends AbstractSpec implements Countable, IteratorAggregate
 {
     /**
      *
@@ -39,7 +37,7 @@ class Map extends AbstractSpec implements
      * @var RouteFactory
      *
      */
-    protected $route_factory;
+    protected $routeFactory;
 
     /**
      *
@@ -48,7 +46,7 @@ class Map extends AbstractSpec implements
      * @var string
      *
      */
-    protected $name_prefix = null;
+    protected $namePrefix = null;
 
     /**
      *
@@ -57,7 +55,7 @@ class Map extends AbstractSpec implements
      * @var string
      *
      */
-    protected $path_prefix = null;
+    protected $pathPrefix = null;
 
     /**
      *
@@ -68,7 +66,7 @@ class Map extends AbstractSpec implements
      * @see attachResource()
      *
      */
-    protected $resource_callable = null;
+    protected $resourceCallable = null;
 
     /**
      *
@@ -79,18 +77,18 @@ class Map extends AbstractSpec implements
      * @see add()
      *
      */
-    protected $route_callable = null;
+    protected $routeCallable = null;
 
     /**
      *
      * Constructor.
      *
-     * @param RouteFactory $route_factory A factory to create route objects.
+     * @param RouteFactory $routeFactory A factory to create route objects.
      *
      */
-    public function __construct(RouteFactory $route_factory)
+    public function __construct(RouteFactory $routeFactory)
     {
-        $this->route_factory = $route_factory;
+        $this->routeFactory = $routeFactory;
         $this->setResourceCallable(array($this, 'resourceCallable'));
         $this->setRouteCallable(array($this, 'routeCallable'));
     }
@@ -197,7 +195,7 @@ class Map extends AbstractSpec implements
     public function add($name, $path, $action = null)
     {
         // create the route with the full path, name, and spec
-        $route = $this->route_factory->newInstance(
+        $route = $this->routeFactory->newInstance(
             $path,
             $name,
             $this->getSpec($action)
@@ -211,7 +209,7 @@ class Map extends AbstractSpec implements
         }
 
         // modify newly-added route
-        call_user_func($this->route_callable, $route);
+        call_user_func($this->routeCallable, $route);
 
         // done; return for further modification
         return $route;
@@ -369,7 +367,7 @@ class Map extends AbstractSpec implements
      */
     public function setRouteCallable($callable)
     {
-        $this->route_callable = $callable;
+        $this->routeCallable = $callable;
         return $this;
     }
 
@@ -414,13 +412,13 @@ class Map extends AbstractSpec implements
         $spec = $this->getSpec();
 
         // append to the name prefix, with delimiter if needed
-        if ($this->name_prefix) {
-            $this->name_prefix .= '.';
+        if ($this->namePrefix) {
+            $this->namePrefix .= '.';
         }
-        $this->name_prefix .= $name;
+        $this->namePrefix .= $name;
 
         // append to the path prefix
-        $this->path_prefix .= $path;
+        $this->pathPrefix .= $path;
 
         // invoke the callable, passing this Map as the only attribute
         call_user_func($callable, $this);
@@ -449,10 +447,10 @@ class Map extends AbstractSpec implements
             'secure',
             'wildcard',
             'routable',
-            'name_prefix',
-            'path_prefix',
-            'resource_callable',
-            'route_callable',
+            'namePrefix',
+            'pathPrefix',
+            'resourceCallable',
+            'routeCallable',
         );
 
         $spec = array();
@@ -496,7 +494,7 @@ class Map extends AbstractSpec implements
      */
     public function attachResource($name, $path)
     {
-        $this->attach($name, $path, $this->resource_callable);
+        $this->attach($name, $path, $this->resourceCallable);
     }
 
     /**
@@ -510,7 +508,7 @@ class Map extends AbstractSpec implements
      */
     public function setResourceCallable($resource)
     {
-        $this->resource_callable = $resource;
+        $this->resourceCallable = $resource;
         return $this;
     }
 
