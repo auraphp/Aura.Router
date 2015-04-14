@@ -143,20 +143,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
-     * Does a route name exist?
-     *
-     * @param string $offset The route name.
-     *
-     * @return bool
-     *
-     */
-    public function hasRoute($name)
-    {
-        return isset($this->routes[$name]);
-    }
-
-    /**
-     *
      * Countable: returns the number of routes in the collection.
      *
      * @return int
