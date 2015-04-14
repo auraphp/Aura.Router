@@ -45,8 +45,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = clone $proto;
         $actual = $route->isMatch('/foo/bar/baz', $this->server);
         $this->assertTrue($actual);
-        $this->assertEquals('zim', $route->params['controller']);
-        $this->assertEquals('dib', $route->params['action']);
+        $this->assertEquals('zim', $route->attributes['controller']);
+        $this->assertEquals('dib', $route->attributes['action']);
 
         // wrong path
         $route = clone $proto;
@@ -74,7 +74,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => 42,
             'format' => '.html'
         );
-        $this->assertEquals($expect, $route->params);
+        $this->assertEquals($expect, $route->attributes);
     }
 
     public function testIsServerMatch()
@@ -265,7 +265,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => '42',
             'format' => null
         );
-        $this->assertSame($expect, $route->params);
+        $this->assertSame($expect, $route->attributes);
     }
 
     public function testIsNotRoutable()
@@ -298,7 +298,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'param1' => 'foo @+%/',
             'param2' => 'sales and marketing/Miami',
         );
-        $this->assertEquals($expect, $route->params);
+        $this->assertEquals($expect, $route->attributes);
     }
 
    public function testGithubIssue7()
@@ -345,7 +345,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'id' => 42,
             'format' => '.json'
         );
-        $this->assertEquals($expect, $route->params);
+        $this->assertEquals($expect, $route->attributes);
     }
 
     public function testIsMatchOnlWildcard()
@@ -356,34 +356,34 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         // right path with wildcard values
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
-        $this->assertSame('bar', $route->params['zim']);
-        $this->assertSame(array('baz', 'dib'), $route->params['wild']);
+        $this->assertSame('bar', $route->attributes['zim']);
+        $this->assertSame(array('baz', 'dib'), $route->attributes['wild']);
 
         // right path with trailing slash but no wildcard values
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
-        $this->assertSame('bar', $route->params['zim']);
-        $this->assertSame(array(), $route->params['wild']);
+        $this->assertSame('bar', $route->attributes['zim']);
+        $this->assertSame(array(), $route->attributes['wild']);
 
         // right path without trailing slash
         $route = clone $proto;
         $this->assertTrue($route->isMatch('/foo/bar', $this->server));
-        $this->assertSame(array(), $route->params['wild']);
+        $this->assertSame(array(), $route->attributes['wild']);
 
         // wrong path
         $route = clone $proto;
         $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
     }
 
-    public function testIsMatchOnOptionalParams()
+    public function testIsMatchOnOptionalAttributes()
     {
         $route = $this->factory->newInstance('/foo/{bar}{/baz,dib,zim}');
 
-        // not enough params
+        // not enough attributes
         $actual = $route->isMatch('/foo', $this->server);
         $this->assertFalse($actual);
 
-        // just enough params
+        // just enough attributes
         $actual = $route->isMatch('/foo/bar', $this->server);
         $this->assertTrue($actual);
 
@@ -399,12 +399,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $actual = $route->isMatch('/foo/bar/baz/dib/zim', $this->server);
         $this->assertTrue($actual);
 
-        // too many params
+        // too many attributes
         $actual = $route->isMatch('/foo/bar/baz/dib/zim/gir', $this->server);
         $this->assertFalse($actual);
     }
 
-    public function testCaptureServerParams()
+    public function testCaptureServerAttributes()
     {
         $route = $this->factory->newInstance('/foo')
             ->setServer(array(
@@ -415,14 +415,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $actual = $route->isMatch('/foo', $server);
         $this->assertTrue($actual);
 
-        $actual = $route->params;
+        $actual = $route->attributes;
         $expect = array(
             'HTTP_ACCEPT' => 'application/json;q=0.9',
         );
         $this->assertEquals($expect, $actual);
     }
 
-    public function testIsMatchOnOnlyOptionalParams()
+    public function testIsMatchOnOnlyOptionalAttributes()
     {
         $route = $this->factory->newInstance('{/foo,bar,baz}');
 

@@ -59,8 +59,8 @@ class Regex
     {
         $this->route = $route;
         $this->regex = $this->route->path;
-        $this->setRegexOptionalParams();
-        $this->setRegexParams();
+        $this->setRegexOptionalAttributes();
+        $this->setRegexAttributes();
         $this->setRegexWildcard();
         $this->regex = '#^' . $this->regex . '$#';
         return preg_match($this->regex, $path, $this->matches);
@@ -80,34 +80,34 @@ class Regex
 
     /**
      *
-     * Expands optional params in the regex from ``{/foo,bar,baz}` to
+     * Expands optional attributes in the regex from ``{/foo,bar,baz}` to
      * `(/{foo}(/{bar}(/{baz})?)?)?`.
      *
      * @return null
      *
      */
-    protected function setRegexOptionalParams()
+    protected function setRegexOptionalAttributes()
     {
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
         if ($matches) {
-            $repl = $this->getRegexOptionalParamsReplacement($matches[1]);
+            $repl = $this->getRegexOptionalAttributesReplacement($matches[1]);
             $this->regex = str_replace($matches[0], $repl, $this->regex);
         }
     }
 
     /**
      *
-     * Gets the replacement for optional params in the regex.
+     * Gets the replacement for optional attributes in the regex.
      *
-     * @param array $list The optional params.
+     * @param array $list The optional attributes.
      *
      * @return string
      *
      */
-    protected function getRegexOptionalParamsReplacement($list)
+    protected function getRegexOptionalAttributesReplacement($list)
     {
         $list = explode(',', $list);
-        $head = $this->getRegexOptionalParamsReplacementHead($list);
+        $head = $this->getRegexOptionalAttributesReplacementHead($list);
         $tail = '';
         foreach ($list as $name) {
             $head .= "(/{{$name}}";
@@ -119,14 +119,14 @@ class Regex
 
     /**
      *
-     * Gets the leading portion of the optional params replacement.
+     * Gets the leading portion of the optional attributes replacement.
      *
-     * @param array $list The optional params.
+     * @param array $list The optional attributes.
      *
      * @return string
      *
      */
-    protected function getRegexOptionalParamsReplacementHead(&$list)
+    protected function getRegexOptionalAttributesReplacementHead(&$list)
     {
         // if the optional set is the first part of the path, make sure there
         // is a leading slash in the replacement before the optional param.
@@ -145,7 +145,7 @@ class Regex
      * @return null
      *
      */
-    protected function setRegexParams()
+    protected function setRegexAttributes()
     {
         $find = '#{([a-z][a-zA-Z0-9_]*)}#';
         preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);

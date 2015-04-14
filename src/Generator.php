@@ -170,14 +170,14 @@ class Generator
 
     /**
      *
-     * Builds replacements for params in the generated path.
+     * Builds replacements for attributes in the generated path.
      *
      * @return string
      *
      */
     protected function buildOptionalReplacements()
     {
-        // replacements for optional params, if any
+        // replacements for optional attributes, if any
         preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->path, $matches);
         if (! $matches) {
             return;

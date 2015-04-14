@@ -211,9 +211,9 @@ class AbstractSpec
 
     /**
      *
-     * Sets the default values for params.
+     * Sets the default values for attributes.
      *
-     * @param array $values Default values for params.
+     * @param array $values Default values for attributes.
      *
      * @return $this
      *
@@ -226,9 +226,9 @@ class AbstractSpec
 
     /**
      *
-     * Merges with the existing default values for params.
+     * Merges with the existing default values for attributes.
      *
-     * @param array $values Default values for params.
+     * @param array $values Default values for attributes.
      *
      * @return $this
      *

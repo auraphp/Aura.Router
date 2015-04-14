@@ -13,7 +13,7 @@ use Closure;
 
 /**
  *
- * Represents an individual route with a name, path, params, values, etc.
+ * Represents an individual route with a name, path, attributes, values, etc.
  *
  * In general, you should never need to instantiate a Route directly. Use the
  * RouteFactory instead, or the Router.
@@ -24,15 +24,15 @@ use Closure;
  *
  * @property-read string $path The route path.
  *
- * @property-read array $values Default values for params.
+ * @property-read array $values Default values for attributes.
  *
- * @property-read array $params The matched params.
+ * @property-read array $attributes The matched attributes.
  *
  * @property-read Regex $regex The regular expression for the route.
  *
  * @property-read array $tokens The regular expression for the route.
  *
- * @property-read ArrayObject $matches All params found during `isMatch()`.
+ * @property-read ArrayObject $matches All attributes found during `isMatch()`.
  *
  * @property-read array $debug Debugging messages.
  *
@@ -120,7 +120,7 @@ class Route extends AbstractSpec
      * @var array
      *
      */
-    protected $params = array();
+    protected $attributes = array();
 
     /**
      *
@@ -133,7 +133,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * All params found during the `isMatch()` process, both from the path
+     * All attributes found during the `isMatch()` process, both from the path
      * tokens and from matched server values.
      *
      * @var ArrayObject
@@ -233,11 +233,11 @@ class Route extends AbstractSpec
     public function isMatch($path, array $server)
     {
         $this->debug = array();
-        $this->params = array();
+        $this->attributes = array();
         $this->score = 0;
         $this->failed = null;
         if ($this->isFullMatch($path, $server)) {
-            $this->setParams();
+            $this->setAttributes();
             return true;
         }
         return false;
@@ -524,34 +524,34 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Sets the route params from the matched values.
+     * Sets the route attributes from the matched values.
      *
      * @return null
      *
      */
-    protected function setParams()
+    protected function setAttributes()
     {
-        $this->params = $this->values;
-        $this->setParamsWithMatches();
-        $this->setParamsWithWildcard();
+        $this->attributes = $this->values;
+        $this->setAttributesWithMatches();
+        $this->setAttributesWithWildcard();
 
     }
 
     /**
      *
-     * Set the params with their matched values.
+     * Set the attributes with their matched values.
      *
      * @return null
      *
      */
-    protected function setParamsWithMatches()
+    protected function setAttributesWithMatches()
     {
         // populate the path matches into the route values. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
         // to support optional ".format" param values.)
         foreach ($this->matches as $key => $val) {
             if (is_string($key) && $val !== '') {
-                $this->params[$key] = rawurldecode($val);
+                $this->attributes[$key] = rawurldecode($val);
             }
         }
     }
@@ -563,20 +563,20 @@ class Route extends AbstractSpec
      * @return null
      *
      */
-    protected function setParamsWithWildcard()
+    protected function setAttributesWithWildcard()
     {
         if (! $this->wildcard) {
             return;
         }
 
-        if (empty($this->params[$this->wildcard])) {
-            $this->params[$this->wildcard] = array();
+        if (empty($this->attributes[$this->wildcard])) {
+            $this->attributes[$this->wildcard] = array();
             return;
         }
 
-        $this->params[$this->wildcard] = array_map(
+        $this->attributes[$this->wildcard] = array_map(
             'rawurldecode',
-            explode('/', $this->params[$this->wildcard])
+            explode('/', $this->attributes[$this->wildcard])
         );
     }
 }
