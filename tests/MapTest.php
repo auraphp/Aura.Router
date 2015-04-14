@@ -40,7 +40,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
             $router->setSecure(true);
             $router->setWildcard('other');
             $router->setRoutable(false);
-            $router->setGenerateCallable(function () { });
             $router->add('bar', '/bar');
         });
 
@@ -249,24 +248,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testArrayAccess()
-    {
-        $foo = $this->map->add('foo', '/foo');
-
-        $this->map->offsetUnset('foo');
-        $this->assertFalse($this->map->offsetExists('foo'));
-
-        $this->map->offsetSet('foo', $foo);
-        $this->assertTrue($this->map->offsetExists('foo'));
-
-        $this->setExpectedException('Aura\Router\Exception\UnexpectedValue');
-        $this->map->offsetSet('bar', 'not a route');
-    }
-
     public function testAddWithAction()
     {
         $this->map->add('foo.bar', '/foo/bar', 'DirectAction');
-        $actual = $this->map->offsetGet('foo.bar');
+        $actual = $this->map->getRoute('foo.bar');
         $this->assertSame('DirectAction', $actual->values['action']);
     }
 }

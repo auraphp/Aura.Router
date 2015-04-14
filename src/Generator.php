@@ -103,7 +103,7 @@ class Generator
      */
     public function generate($name, $data = array())
     {
-        $route = $this->getRouteForGenerate($name);
+        $route = $this->map->getRoute($name);
         $this->raw = false;
         return $this->buildPath($route, $data);
     }
@@ -125,29 +125,9 @@ class Generator
      */
     public function generateRaw($name, $data = array())
     {
-        $route = $this->getRouteForGenerate($name);
+        $route = $this->map->getRoute($name);
         $this->raw = true;
         return $this->buildPath($route, $data);
-    }
-
-    /**
-     *
-     * Gets a Route for generation.
-     *
-     * @param string $name Get this route name.
-     *
-     * @return Route
-     *
-     * @throws Exception\RouteNotFound when the named route does not exist.
-     *
-     */
-    protected function getRouteForGenerate($name)
-    {
-        if (! $this->map->offsetExists($name)) {
-            throw new Exception\RouteNotFound($name);
-        }
-
-        return $this->map->offsetGet($name);
     }
 
     /**
@@ -168,26 +148,14 @@ class Generator
         $this->data = $data;
         $this->path = $this->route->path;
         $this->repl = array();
+        $this->data = array_merge($this->route->values, $this->data);
 
-        $this->buildData();
         $this->buildTokenReplacements();
         $this->buildOptionalReplacements();
         $this->path = strtr($this->path, $this->repl);
         $this->buildWildcardReplacement();
 
         return $this->path;
-    }
-
-    /**
-     *
-     * Builds the data for token replacements.
-     *
-     * @return array
-     *
-     */
-    protected function buildData()
-    {
-        $this->data = array_merge($this->route->values, $this->data);
     }
 
     /**

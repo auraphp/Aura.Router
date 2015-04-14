@@ -8,7 +8,6 @@
  */
 namespace Aura\Router;
 
-use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
@@ -21,7 +20,6 @@ use IteratorAggregate;
  *
  */
 class Map extends AbstractSpec implements
-    ArrayAccess,
     Countable,
     IteratorAggregate
 {
@@ -129,64 +127,34 @@ class Map extends AbstractSpec implements
 
     /**
      *
-     * ArrayAccess: gets a route by name.
+     * Gets a route by name.
      *
      * @param string $name The route name.
      *
      * @return Route
      *
      */
-    public function offsetGet($name)
+    public function getRoute($name)
     {
+        if (! isset($this->routes[$name])) {
+            throw new Exception\RouteNotFound($name);
+        }
+
         return $this->routes[$name];
     }
 
     /**
      *
-     * ArrayAccess: sets a route by name.
+     * Does a route name exist?
      *
-     * @param string $name The route name.
-     *
-     * @param Route $route The route object.
-     *
-     * @return null
-     *
-     */
-    public function offsetSet($name, $route)
-    {
-        if (! $route instanceof Route) {
-            throw new Exception\UnexpectedValue();
-        }
-
-        $this->routes[$name] = $route;
-    }
-
-    /**
-     *
-     * ArrayAccess: does a route name exist?
-     *
-     * @param string $name The route name.
+     * @param string $offset The route name.
      *
      * @return bool
      *
      */
-    public function offsetExists($name)
+    public function hasRoute($name)
     {
         return isset($this->routes[$name]);
-    }
-
-    /**
-     *
-     * ArrayAccess: removes a route by name.
-     *
-     * @param string $name The route name to remove.
-     *
-     * @return null
-     *
-     */
-    public function offsetUnset($name)
-    {
-        unset($this->routes[$name]);
     }
 
     /**
