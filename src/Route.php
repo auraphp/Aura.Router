@@ -9,7 +9,7 @@
 namespace Aura\Router;
 
 use ArrayObject;
-use Closure;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  *
@@ -230,12 +230,14 @@ class Route extends AbstractSpec
      * @return bool
      *
      */
-    public function isMatch($path, array $server)
+    public function isMatch(ServerRequestInterface $request)
     {
         $this->debug = null;
         $this->attributes = array();
         $this->score = 0;
         $this->failed = null;
+        $path = $request->getUri()->getPath();
+        $server = $request->getServerParams();
         if ($this->isFullMatch($path, $server)) {
             $this->setAttributes();
             return true;

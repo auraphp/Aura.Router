@@ -1,11 +1,14 @@
 <?php
 namespace Aura\Router;
 
+use Phly\Http\ServerRequestFactory;
+
 class MatcherTest extends \PHPUnit_Framework_TestCase
 {
     protected $map;
     protected $matcher;
     protected $logger;
+    protected $request;
 
     protected function setUp()
     {
@@ -18,6 +21,13 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->map = $container->getMap();
         $this->matcher = $container->getMatcher();
         $this->logger = $container->getLogger();
+    }
+
+    protected function newRequest($path, array $server = [])
+    {
+        $server['REQUEST_URI'] = $path;
+        $server = array_merge($_SERVER, $server);
+        return ServerRequestFactory::fromGlobals($server);
     }
 
     protected function assertIsRoute($actual)
@@ -56,21 +66,22 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         });
 
         // fail to match
-        $actual = $this->matcher->match('/foo/bar/baz/dib');
+        $request = $this->newRequest('/foo/bar/baz/dib');
+        $actual = $this->matcher->match($request);
         $this->assertFalse($actual);
         $this->assertFalse($this->matcher->getMatchedRoute());
 
         // unnamed browse
-        $server = array('REQUEST_METHOD' => 'GET');
-        $actual = $this->matcher->match('/resource/', $server);
+        $request = $this->newRequest('/resource/', ['REQUEST_METHOD' => 'GET']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('browse', $actual->attributes['action']);
         $this->assertSame(null, $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
 
         // head
-        $server = array('REQUEST_METHOD' => 'HEAD');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'HEAD']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.head', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
@@ -81,8 +92,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
 
         // read
-        $server = array('REQUEST_METHOD' => 'GET');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'GET']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.read', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
@@ -93,8 +104,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
 
         // edit
-        $server = array('REQUEST_METHOD' => 'POST');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'POST']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.edit', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
@@ -105,8 +116,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
 
         // add
-        $server = array('REQUEST_METHOD' => 'PUT');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'PUT']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.add', $actual->attributes['action']);
         $this->assertSame('resource.add', $actual->name);
@@ -118,8 +129,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
 
         // delete
-        $server = array('REQUEST_METHOD' => 'DELETE');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'DELETE']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.delete', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
@@ -130,8 +141,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
 
         // patch
-        $server = array('REQUEST_METHOD' => 'PATCH');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'PATCH']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.patch', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
@@ -142,8 +153,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
 
         // options
-        $server = array('REQUEST_METHOD' => 'OPTIONS');
-        $actual = $this->matcher->match('/resource/42', $server);
+        $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'OPTIONS']);
+        $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('resource.options', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
@@ -160,7 +171,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $bar = $this->map->add('bar', '/bar');
         $baz = $this->map->add('baz', '/baz');
 
-        $this->matcher->match('/bar');
+        $request = $this->newRequest('/bar');
+        $this->matcher->match($request);
 
         $expect = [
             'debug: /bar FAILED_REGEX ON foo',
@@ -176,7 +188,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->add(null, '{/controller,action,id}');
 
-        $actual = $this->matcher->match('/', array());
+        $request = $this->newRequest('/');
+        $actual = $this->matcher->match($request);
         $expect = array(
             'attributes' => array(
                 'controller' => null,
@@ -187,7 +200,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
 
-        $actual = $this->matcher->match('/foo', array());
+        $request = $this->newRequest('/foo');
+        $actual = $this->matcher->match($request);
         $expect = array(
             'attributes' => array(
                 'controller' => 'foo',
@@ -198,7 +212,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
 
-        $actual = $this->matcher->match('/foo/bar', array());
+        $request = $this->newRequest('/foo/bar');
+        $actual = $this->matcher->match($request);
         $expect = array(
             'attributes' => array(
                 'controller' => 'foo',
@@ -209,7 +224,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
 
-        $actual = $this->matcher->match('/foo/bar/baz', array());
+        $request = $this->newRequest('/foo/bar/baz');
+        $actual = $this->matcher->match($request);
         $expect = array(
             'attributes' => array(
                 'controller' => 'foo',
@@ -225,8 +241,11 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
     {
         $expect = $this->map->addPost('bar', '/bar');
         $this->map->add('foo', '/foo');
-        $match = $this->matcher->match('/bar', array());
+
+        $request = $this->newRequest('/bar');
+        $match = $this->matcher->match($request);
         $this->assertFalse($match);
+
         $actual = $this->matcher->getFailedRoute();
         $this->assertSame($expect, $actual);
     }
@@ -236,9 +255,10 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $expect = $this->map->addPost('post_bar', '/bar');
         $other = $this->map->addDelete('delete_bar', '/bar');
 
-        $match = $this->matcher->match('/bar', array());
-
+        $request = $this->newRequest('/bar');
+        $match = $this->matcher->match($request);
         $this->assertFalse($match);
+
         $this->assertSame($expect, $this->matcher->getFailedRoute());
         $this->assertEquals($expect->score, $other->score, "Assert scores were actually equal");
     }

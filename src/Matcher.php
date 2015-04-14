@@ -9,6 +9,7 @@
 namespace Aura\Router;
 
 use Aura\Router\Exception;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -83,15 +84,15 @@ class Matcher
      * boolean false if there is no match.
      *
      */
-    public function match($path, array $server = array())
+    public function match(ServerRequestInterface $request)
     {
         $this->failedRoute = null;
 
         foreach ($this->map as $name => $route) {
 
-            $match = $route->isMatch($path, $server);
+            $match = $route->isMatch($request);
             $context = [
-                'path' => $path,
+                'path' => $request->getUri()->getPath(),
                 'name' => $name,
             ];
             if ($match) {

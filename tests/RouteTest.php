@@ -1,7 +1,7 @@
 <?php
 namespace Aura\Router;
 
-use ArrayObject;
+use Phly\Http\ServerRequestFactory;
 
 class RouteTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,6 +14,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
         $this->factory = new RouteFactory();
         $this->server = $_SERVER;
+    }
+
+    protected function newRequest($path, array $server = [])
+    {
+        $server['REQUEST_URI'] = $path;
+        $server = array_merge($_SERVER, $server);
+        return ServerRequestFactory::fromGlobals($server);
     }
 
     protected function tearDown()
@@ -43,14 +50,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // right path
         $route = clone $proto;
-        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $request = $this->newRequest('/foo/bar/baz');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
         $this->assertEquals('zim', $route->attributes['controller']);
         $this->assertEquals('dib', $route->attributes['action']);
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+        $request = $this->newRequest('/zim/dib/gir');
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsMatchOnDynamicPath()
@@ -66,7 +75,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'format' => '.html',
             ));
 
-        $actual = $route->isMatch('/foo/bar/42', $this->server);
+        $request = $this->newRequest('/foo/bar/42');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
         $expect = array(
             'controller' => 'foo',
@@ -89,21 +99,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'POST']);
+        $this->assertTrue($route->isMatch($request));
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['REQUEST_METHOD' => 'POST']);
+        $this->assertFalse($route->isMatch($request));
 
         // wrong REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'GET',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'GET']);
+        $this->assertFalse($route->isMatch($request));
 
         /**
          * try many REQUEST_METHOD
@@ -115,35 +122,31 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'GET',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'GET']);
+        $this->assertTrue($route->isMatch($request));
 
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'POST']);
+        $this->assertTrue($route->isMatch($request));
 
         // wrong path, right REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'REQUEST_METHOD' => 'GET',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['REQUEST_METHOD' => 'GET']);
+        $this->assertFalse($route->isMatch($request));
 
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['REQUEST_METHOD' => 'POST']);
+        $this->assertFalse($route->isMatch($request));
 
         // right path, wrong REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'PUT',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'PUT']);
+        $this->assertFalse($route->isMatch($request));
 
         // no REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array()));
+        $request = $this->newRequest('/foo/bar/baz', []);
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsSecureMatch_https()
@@ -156,21 +159,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'HTTPS' => 'on',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['HTTPS' => 'on']);
+        $this->assertTrue($route->isMatch($request));
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'HTTPS' => 'on',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['HTTPS' => 'on']);
+        $this->assertFalse($route->isMatch($request));
 
         // not secure
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'HTTPS' => 'off',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['HTTPS' => 'off']);
+        $this->assertFalse($route->isMatch($request));
 
         /**
          * not-secure required
@@ -180,21 +180,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'HTTPS' => 'off',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['HTTPS' => 'off']);
+        $this->assertTrue($route->isMatch($request));
 
         // secured when it should not be
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'HTTPS' => 'on',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['HTTPS' => 'on']);
+        $this->assertFalse($route->isMatch($request));
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'HTTPS' => 'off',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['HTTPS' => 'off']);
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsSecureMatch_serverPort()
@@ -207,21 +204,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'SERVER_PORT' => '443',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['SERVER_PORT' => '443']);
+        $this->assertTrue($route->isMatch($request));
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'SERVER_PORT' => '443',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['SERVER_PORT' => '443']);
+        $this->assertFalse($route->isMatch($request));
 
         // not secure
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'SERVER_PORT' => '80',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['SERVER_PORT' => '80']);
+        $this->assertFalse($route->isMatch($request));
 
         /**
          * not-secure required
@@ -231,21 +225,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'SERVER_PORT' => '80',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['SERVER_PORT' => '80']);
+        $this->assertTrue($route->isMatch($request));
 
         // secured when it should not be
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'SERVER_PORT' => '443',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['SERVER_PORT' => '443']);
+        $this->assertFalse($route->isMatch($request));
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'SERVER_PORT' => '80',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['SERVER_PORT' => '80']);
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
@@ -257,7 +248,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ));
 
-        $actual = $route->isMatch('/any-value/read/42', $this->server);
+        $request = $this->newRequest('/any-value/read/42');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
         $expect = array(
             'controller' => 'any-value',
@@ -278,11 +270,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ->setRoutable(false);
 
         // right path
-        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $request = $this->newRequest('/foo/bar/baz');
+        $actual = $route->isMatch($request);
         $this->assertFalse($actual);
 
         // wrong path
-        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+        $request = $this->newRequest('/zim/dib/gir');
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsMatchOnRFC3986Paths()
@@ -290,7 +284,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = $this->factory->newInstance('/{controller}/{action}/{attribute1}/{attribute2}');
 
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
-        $actual = $route->isMatch('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami', $this->server);
+        $request = $this->newRequest('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
         $expect = array(
             'controller' => 'some-controller',
@@ -337,7 +332,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'format' => '.html',
             ));
 
-        $actual = $route->isMatch('/blog/read/42.json', $server);
+
+        $request = $this->newRequest('/blog/read/42.json', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
         $expect = array(
             'controller' => 'blog',
@@ -355,24 +352,28 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // right path with wildcard values
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz/dib', $this->server));
+        $request = $this->newRequest('/foo/bar/baz/dib');
+        $this->assertTrue($route->isMatch($request));
         $this->assertSame('bar', $route->attributes['zim']);
         $this->assertSame(array('baz', 'dib'), $route->attributes['wild']);
 
         // right path with trailing slash but no wildcard values
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/', $this->server));
+        $request = $this->newRequest('/foo/bar/');
+        $this->assertTrue($route->isMatch($request));
         $this->assertSame('bar', $route->attributes['zim']);
         $this->assertSame(array(), $route->attributes['wild']);
 
         // right path without trailing slash
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar', $this->server));
+        $request = $this->newRequest('/foo/bar');
+        $this->assertTrue($route->isMatch($request));
         $this->assertSame(array(), $route->attributes['wild']);
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', $this->server));
+        $request = $this->newRequest('/zim/dib/gir');
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsMatchOnOptionalAttributes()
@@ -380,27 +381,33 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = $this->factory->newInstance('/foo/{bar}{/baz,dib,zim}');
 
         // not enough attributes
-        $actual = $route->isMatch('/foo', $this->server);
+        $request = $this->newRequest('/foo');
+        $actual = $route->isMatch($request);
         $this->assertFalse($actual);
 
         // just enough attributes
-        $actual = $route->isMatch('/foo/bar', $this->server);
+        $request = $this->newRequest('/foo/bar');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // optional attribute 1
-        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $request = $this->newRequest('/foo/bar/baz');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // optional attribute 2
-        $actual = $route->isMatch('/foo/bar/baz/dib', $this->server);
+        $request = $this->newRequest('/foo/bar/baz/dib');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // optional attribute 3
-        $actual = $route->isMatch('/foo/bar/baz/dib/zim', $this->server);
+        $request = $this->newRequest('/foo/bar/baz/dib/zim');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // too many attributes
-        $actual = $route->isMatch('/foo/bar/baz/dib/zim/gir', $this->server);
+        $request = $this->newRequest('/foo/bar/baz/dib/zim/gir');
+        $actual = $route->isMatch($request);
         $this->assertFalse($actual);
     }
 
@@ -412,7 +419,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             ));
 
         $server = array('HTTP_ACCEPT' => 'application/json;q=0.9,text/csv;q=0.5,application/xml;q=0.7');
-        $actual = $route->isMatch('/foo', $server);
+
+        $request = $this->newRequest('/foo', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         $actual = $route->attributes;
@@ -426,16 +435,20 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = $this->factory->newInstance('{/foo,bar,baz}');
 
-        $actual = $route->isMatch('/', $this->server);
+        $request = $this->newRequest('/');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
-        $actual = $route->isMatch('/foo', $this->server);
+        $request = $this->newRequest('/foo');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
-        $actual = $route->isMatch('/foo/bar', $this->server);
+        $request = $this->newRequest('/foo/bar');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
-        $actual = $route->isMatch('/foo/bar/baz', $this->server);
+        $request = $this->newRequest('/foo/bar/baz');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
     }
 
@@ -446,21 +459,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', array('REQUEST_METHOD' => 'POST'));
+        $this->assertTrue($route->isMatch($request));
 
         // wrong path
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['REQUEST_METHOD' => 'POST']);
+        $this->assertFalse($route->isMatch($request));
 
         // wrong REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'GET',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'GET']);
+        $this->assertFalse($route->isMatch($request));
         $this->assertTrue($route->failedMethod());
 
         /**
@@ -471,36 +481,32 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         // correct
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'GET',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'GET']);
+        $this->assertTrue($route->isMatch($request));
 
         $route = clone $proto;
-        $this->assertTrue($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'POST']);
+        $this->assertTrue($route->isMatch($request));
 
         // wrong path, right REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'REQUEST_METHOD' => 'GET',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['REQUEST_METHOD' => 'GET']);
+        $this->assertFalse($route->isMatch($request));
 
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/zim/dib/gir', array(
-            'REQUEST_METHOD' => 'POST',
-        )));
+        $request = $this->newRequest('/zim/dib/gir', ['REQUEST_METHOD' => 'POST']);
+        $this->assertFalse($route->isMatch($request));
 
         // right path, wrong REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array(
-            'REQUEST_METHOD' => 'PUT',
-        )));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'PUT']);
+        $this->assertFalse($route->isMatch($request));
         $this->assertTrue($route->failedMethod());
 
         // no REQUEST_METHOD
         $route = clone $proto;
-        $this->assertFalse($route->isMatch('/foo/bar/baz', array()));
+        $request = $this->newRequest('/foo/bar/baz', []);
+        $this->assertFalse($route->isMatch($request));
     }
 
     public function testIsAcceptMatch()
@@ -510,22 +516,24 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         // match when no HTTP_ACCEPT
         $route = clone $proto;
         $route->addAccept(array('zim/gir'));
-        $server = array();
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz');
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // match */*
         $route = clone $proto;
         $route->addAccept(array('zim/gir'));
         $server = array('HTTP_ACCEPT' => 'text/*;q=0.9,application/json,*/*;q=0.1,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // do not match */* when q=0.0
         $route = clone $proto;
         $route->setAccept(array('zim/gir'));
         $server = array('HTTP_ACCEPT' => 'text/*;q=0.9,application/json,*/*;q=0.0,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertFalse($actual);
         $this->assertTrue($route->failedAccept());
 
@@ -533,14 +541,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = clone $proto;
         $route->setAccept(array('text/csv'));
         $server = array('HTTP_ACCEPT' => 'text/csv;q=0.9,application/json,*/*;q=0.0,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // do not match text/csv when q=0
         $route = clone $proto;
         $route->setAccept(array('text/csv'));
         $server = array('HTTP_ACCEPT' => 'application/json,text/csv;q=0.0,*/*;q=0.0,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertFalse($actual);
         $this->assertTrue($route->failedAccept());
 
@@ -548,42 +558,49 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = clone $proto;
         $route->setAccept(array('text/csv'));
         $server = array('HTTP_ACCEPT' => 'application/json,text/*;q=0.9,*/*;q=0.1,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // do not match text/* when q=0
         $route = clone $proto;
         $route->setAccept(array('text/csv'));
         $server = array('HTTP_ACCEPT' => 'application/json,text/*;q=0.0,*/*;q=0.1,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // match application/json without q score
         $route = clone $proto;
         $route->setAccept(array('application/json'));
         $server = array('HTTP_ACCEPT' => 'application/json,text/*;q=0.0,*/*;q=0.1,application/xml');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // match application/json in simplest case
         $route = clone $proto;
         $route->setAccept(array('application/json'));
         $server = array('HTTP_ACCEPT' => 'application/json');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertTrue($actual);
 
         // do not match application/json in simplest case
         $route = clone $proto;
         $route->setAccept(array('application/json'));
         $server = array('HTTP_ACCEPT' => 'text/html');
-        $actual = $route->isMatch('/foo/bar/baz', $server);
+        $request = $this->newRequest('/foo/bar/baz', $server);
+        $actual = $route->isMatch($request);
         $this->assertFalse($actual);
     }
 
     public function testIsMatchOnOptionalEndingSlash()
     {
         $route = $this->factory->newInstance('/foo(/)?');
-        $this->assertTrue($route->isMatch('/foo', array()));
-        $this->assertTrue($route->isMatch('/foo/', array()));
+        $request = $this->newRequest('/foo', []);
+        $this->assertTrue($route->isMatch($request));
+        $request = $this->newRequest('/foo/', []);
+        $this->assertTrue($route->isMatch($request));
     }
 }
