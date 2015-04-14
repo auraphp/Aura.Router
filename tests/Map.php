@@ -1,19 +1,19 @@
 <?php
 namespace Aura\Router;
 
-class RouteCollectionTest extends \PHPUnit_Framework_TestCase
+class MapTest extends \PHPUnit_Framework_TestCase
 {
-    protected $routes;
+    protected $map;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->routes = $this->newRoutes();
+        $this->map = $this->newRoutes();
     }
 
     protected function newRoutes()
     {
-        return new RouteCollection(new RouteFactory());
+        return new Map(new RouteFactory());
     }
 
     protected function assertIsRoute($actual)
@@ -31,9 +31,9 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testBeforeAndAfterAttach()
     {
-        $this->routes->add('before', '/foo');
+        $this->map->add('before', '/foo');
 
-        $this->routes->attach('during', '/during', function ($router) {
+        $this->map->attach('during', '/during', function ($router) {
             $router->setTokens(array('id' => '\d+'));
             $router->setMethod('GET');
             $router->setValues(array('zim' => 'gir'));
@@ -45,9 +45,9 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
             $router->add('bar', '/bar');
         });
 
-        $this->routes->add('after', '/baz');
+        $this->map->add('after', '/baz');
 
-        $routes = $this->routes->getRoutes();
+        $map = $this->map->getRoutes();
 
         $expect = array(
             'tokens' => array(),
@@ -60,12 +60,12 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
             'is_match' => null,
             'generate' => null,
         );
-        $this->assertRoute($expect, $routes['before']);
+        $this->assertRoute($expect, $map['before']);
 
         $expect['values']['action'] = 'after';
-        $this->assertRoute($expect, $routes['after']);
+        $this->assertRoute($expect, $map['after']);
 
-        $actual = $routes['during.bar'];
+        $actual = $map['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
             'method' => array('GET'),
@@ -81,22 +81,22 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testAttachInAttach()
     {
-        $this->routes->attach('foo', '/foo', function ($router) {
+        $this->map->attach('foo', '/foo', function ($router) {
             $router->add('index', '/index');
             $router->attach('bar', '/bar', function ($router) {
                 $router->add('index', '/index');
             });
         });
 
-        $routes = $this->routes->getRoutes();
+        $map = $this->map->getRoutes();
 
-        $this->assertSame('/foo/index', $routes['foo.index']->path);
-        $this->assertSame('/foo/bar/index', $routes['foo.bar.index']->path);
+        $this->assertSame('/foo/index', $map['foo.index']->path);
+        $this->assertSame('/foo/bar/index', $map['foo.bar.index']->path);
     }
 
     public function testGetAndSetRoutes()
     {
-        $this->routes->attach('page', '/page', function ($router) {
+        $this->map->attach('page', '/page', function ($router) {
             $router->setTokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
@@ -111,9 +111,9 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
             $router->add('read', '/{id}{format}');
         });
 
-        $actual = $this->routes->getRoutes();
+        $actual = $this->map->getRoutes();
         $this->assertTrue(is_array($actual));
-        $this->assertTrue(count($actual) == count($this->routes));
+        $this->assertTrue(count($actual) == count($this->map));
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.read']);
@@ -128,7 +128,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
         $router->setRoutes($restored);
         $actual = $router->getRoutes();
         $this->assertTrue(is_array($actual));
-        $this->assertTrue(count($actual) == count($this->routes));
+        $this->assertTrue(count($actual) == count($this->map));
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
         $this->assertInstanceOf('Aura\Router\Route', $actual['page.read']);
@@ -137,8 +137,8 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
 
     public function testAttachResource()
     {
-        $this->routes->attachResource('blog', '/api/v1/blog');
-        $routes = $this->routes->getRoutes();
+        $this->map->attachResource('blog', '/api/v1/blog');
+        $map = $this->map->getRoutes();
 
         $expect = array(
             'name' => 'blog.browse',
@@ -152,7 +152,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.browse',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.browse']);
+        $this->assertRoute($expect, $map['blog.browse']);
 
         $expect = array(
             'name' => 'blog.read',
@@ -166,7 +166,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.read',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.read']);
+        $this->assertRoute($expect, $map['blog.read']);
 
         $expect = array(
             'name' => 'blog.add',
@@ -180,7 +180,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.add',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.add']);
+        $this->assertRoute($expect, $map['blog.add']);
 
         $expect = array(
             'name' => 'blog.edit',
@@ -194,7 +194,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.edit',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.edit']);
+        $this->assertRoute($expect, $map['blog.edit']);
 
         $expect = array(
             'name' => 'blog.delete',
@@ -208,7 +208,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.delete',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.delete']);
+        $this->assertRoute($expect, $map['blog.delete']);
 
         $expect = array(
             'name' => 'blog.create',
@@ -222,7 +222,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.create',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.create']);
+        $this->assertRoute($expect, $map['blog.create']);
 
         $expect = array(
             'name' => 'blog.update',
@@ -236,7 +236,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.update',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.update']);
+        $this->assertRoute($expect, $map['blog.update']);
 
         $expect = array(
             'name' => 'blog.replace',
@@ -250,28 +250,28 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
                 'action' => 'blog.replace',
             ),
         );
-        $this->assertRoute($expect, $routes['blog.replace']);
+        $this->assertRoute($expect, $map['blog.replace']);
 
     }
 
     public function testArrayAccess()
     {
-        $foo = $this->routes->add('foo', '/foo');
+        $foo = $this->map->add('foo', '/foo');
 
-        $this->routes->offsetUnset('foo');
-        $this->assertFalse($this->routes->offsetExists('foo'));
+        $this->map->offsetUnset('foo');
+        $this->assertFalse($this->map->offsetExists('foo'));
 
-        $this->routes->offsetSet('foo', $foo);
-        $this->assertTrue($this->routes->offsetExists('foo'));
+        $this->map->offsetSet('foo', $foo);
+        $this->assertTrue($this->map->offsetExists('foo'));
 
         $this->setExpectedException('Aura\Router\Exception\UnexpectedValue');
-        $this->routes->offsetSet('bar', 'not a route');
+        $this->map->offsetSet('bar', 'not a route');
     }
 
     public function testAddWithAction()
     {
-        $this->routes->add('foo.bar', '/foo/bar', 'DirectAction');
-        $actual = $this->routes->offsetGet('foo.bar');
+        $this->map->add('foo.bar', '/foo/bar', 'DirectAction');
+        $actual = $this->map->offsetGet('foo.bar');
         $this->assertSame('DirectAction', $actual->values['action']);
     }
 }

@@ -20,7 +20,7 @@ use IteratorAggregate;
  * @package Aura.Router
  *
  */
-class RouteCollection extends AbstractSpec implements
+class Map extends AbstractSpec implements
     ArrayAccess,
     Countable,
     IteratorAggregate
@@ -122,7 +122,7 @@ class RouteCollection extends AbstractSpec implements
      *
      * Gets the route collection.
      *
-     * @return RouteCollection
+     * @return Map
      *
      * @see setRoutes()
      *
@@ -459,7 +459,7 @@ class RouteCollection extends AbstractSpec implements
         // append to the path prefix
         $this->path_prefix .= $path;
 
-        // invoke the callable, passing this RouteCollection as the only param
+        // invoke the callable, passing this Map as the only param
         call_user_func($callable, $this);
 
         // restore previous spec
@@ -557,12 +557,12 @@ class RouteCollection extends AbstractSpec implements
      *
      * Callable for `attachResource()` that adds resource routes.
      *
-     * @param RouteCollection $router A RouteCollection, probably $this.
+     * @param Map $router A Map, probably $this.
      *
      * @return null
      *
      */
-    protected function resourceCallable(RouteCollection $router)
+    protected function resourceCallable(Map $router)
     {
         // add 'id' and 'format' if not already defined
         $tokens = array();

@@ -27,7 +27,7 @@ class RouterFactory
     public function newInstance()
     {
         return new Router(
-            new RouteCollection(new RouteFactory),
+            new Map(new RouteFactory),
             new Generator
         );
     }

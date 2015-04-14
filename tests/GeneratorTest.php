@@ -5,14 +5,14 @@ use ArrayObject;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
-    protected $routes;
+    protected $map;
     protected $generator;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->routes = new RouteCollection(new RouteFactory());
-        $this->generator = new Generator($this->routes);
+        $this->map = new Map(new RouteFactory());
+        $this->generator = new Generator($this->map);
     }
 
     /**
@@ -20,7 +20,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateControllerAsClosureIssue19()
     {
-        $this->routes->add('issue19', '/blog/{id}/edit')
+        $this->map->add('issue19', '/blog/{id}/edit')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
@@ -39,7 +39,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerate()
     {
-        $this->routes->add('test', '/blog/{id}/edit')
+        $this->map->add('test', '/blog/{id}/edit')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ));
@@ -56,7 +56,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithClosure()
     {
-        $this->routes->add('test', '/blog/{id}/edit')
+        $this->map->add('test', '/blog/{id}/edit')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
@@ -70,7 +70,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithCallback()
     {
-        $this->routes->add('test', '/blog/{id}/edit')
+        $this->map->add('test', '/blog/{id}/edit')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
@@ -82,7 +82,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithWildcard()
     {
-        $this->routes->add('test', '/blog/{id}')
+        $this->map->add('test', '/blog/{id}')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
@@ -102,7 +102,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithOptional()
     {
-        $this->routes->add('test', '/archive/{category}{/year,month,day}');
+        $this->map->add('test', '/archive/{category}{/year,month,day}');
 
         $url = $this->generator->generate('test', array(
             'category' => 'foo',
@@ -120,7 +120,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateOnFullUri()
     {
-        $this->routes->add('test', 'http://google.com/?q={q}', 'google-search')
+        $this->map->add('test', 'http://google.com/?q={q}', 'google-search')
             ->setRoutable(false);
 
         $actual = $this->generator->generate('test', array('q' => "what's up doc?"));
@@ -130,7 +130,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateRFC3986()
     {
-        $this->routes->add('test', '/path/{string}', 'rfc3986')
+        $this->map->add('test', '/path/{string}', 'rfc3986')
             ->setRoutable(false);
 
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
@@ -145,7 +145,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateRaw()
     {
-        $this->routes->add('test', '/{vendor}/{package}/{file}');
+        $this->map->add('test', '/{vendor}/{package}/{file}');
         $data = array(
             'vendor' => 'vendor+name',
             'package' => 'package+name',

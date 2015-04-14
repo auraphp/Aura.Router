@@ -21,12 +21,12 @@ class Generator
 {
     /**
      *
-     * The collection of all routes.
+     * The map of all routes.
      *
-     * @var RouteCollection
+     * @var Map
      *
      */
-    protected $routes;
+    protected $map;
 
     /**
      *
@@ -77,12 +77,12 @@ class Generator
      *
      * Constructor.
      *
-     * @param RouteCollection $routes A route collection object.
+     * @param Map $map A route collection object.
      *
      */
-    public function __construct(RouteCollection $routes)
+    public function __construct(Map $map)
     {
-        $this->routes = $routes;
+        $this->map = $map;
     }
 
     /**
@@ -143,11 +143,11 @@ class Generator
      */
     protected function getRouteForGenerate($name)
     {
-        if (! $this->routes->offsetExists($name)) {
+        if (! $this->map->offsetExists($name)) {
             throw new Exception\RouteNotFound($name);
         }
 
-        return $this->routes->offsetGet($name);
+        return $this->map->offsetGet($name);
     }
 
     /**

@@ -1,7 +1,5 @@
 - Remove "custom" match/generate
 
-- Rename "RouteCollection" to "map"
-
 - Use a PSR-3 logger instead of a debug stack
 
 - actually convert to PSR-7
