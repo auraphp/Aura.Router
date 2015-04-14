@@ -224,8 +224,7 @@ class Route extends AbstractSpec
      *
      * @param string $path The path to check against this Route.
      *
-     * @param array $server A copy of $_SERVER so that this Route can check
-     * against the server values.
+     * @param ServerRequestInterface $request The HTTP request.
      *
      * @return bool
      *
@@ -249,15 +248,13 @@ class Route extends AbstractSpec
      *
      * @param string $path The path to check against this route
      *
-     * @param array $server A copy of $_SERVER so that this Route can check
-     * against the server values.
+     * @param ServerRequestInterface $request The HTTP request.
      *
      * @return bool
      *
      */
     protected function isFullMatch(ServerRequestInterface $request)
     {
-        $server = $request->getServerParams();
         return $this->isRoutableMatch()
             && $this->isSecureMatch($request)
             && $this->isRegexMatch($request)
@@ -341,12 +338,12 @@ class Route extends AbstractSpec
      *
      * Checks that the Route `$secure` matches the corresponding server values.
      *
-     * @param array $server A copy of $_SERVER.
+     * @param ServerRequestInterface $request The HTTP request.
      *
      * @return bool True on a match, false if not.
      *
      */
-    protected function isSecureMatch($request)
+    protected function isSecureMatch(ServerRequestInterface $request)
     {
         if ($this->secure === null) {
             return $this->pass();
@@ -367,7 +364,7 @@ class Route extends AbstractSpec
      *
      * Checks that the path matches the Route regex.
      *
-     * @param string $path The path to match against.
+     * @param ServerRequestInterface $request The HTTP request.
      *
      * @return bool True on a match, false if not.
      *
@@ -388,9 +385,9 @@ class Route extends AbstractSpec
      *
      * Is the requested method matching? If no REQUEST_METHOD default to GET.
      *
-     * @param array $server
+     * @param ServerRequestInterface $request The HTTP request.
      *
-     * @return bool
+     * @return bool True on a match, false if not.
      *
      */
     protected function isMethodMatch(ServerRequestInterface $request)
@@ -409,9 +406,9 @@ class Route extends AbstractSpec
      *
      * Is the Accept header a match.
      *
-     * @param array $server
+     * @param ServerRequestInterface $request The HTTP request.
      *
-     * @return bool
+     * @return bool True on a match, false if not.
      *
      */
     protected function isAcceptMatch(ServerRequestInterface $request)
@@ -445,7 +442,7 @@ class Route extends AbstractSpec
      *
      * @param string $header
      *
-     * @return bool
+     * @return bool True on a match, false if not.
      *
      */
     protected function isAcceptMatchHeader($type, $header)
@@ -471,7 +468,7 @@ class Route extends AbstractSpec
      *
      * Checks that $_SERVER values match their related regular expressions.
      *
-     * @param array $server A copy of $_SERVER.
+     * @param ServerRequestInterface $request The HTTP request. A copy of $_SERVER.
      *
      * @return bool True if they all match, false if not.
      *
@@ -494,13 +491,13 @@ class Route extends AbstractSpec
      *
      * Does a server key match a regex?
      *
-     * @param array $server The server values.
+     * @param ServerRequestInterface $request The HTTP request.
      *
      * @param string $name The server key.
      *
      * @param string $regex The regex to match against.
      *
-     * @return array
+     * @return array The matches.
      *
      */
     protected function isServerMatchRegex($server, $name, $regex)
