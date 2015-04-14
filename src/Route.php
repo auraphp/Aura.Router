@@ -8,7 +8,6 @@
  */
 namespace Aura\Router;
 
-use ArrayObject;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -32,7 +31,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @property-read array $tokens The regular expression for the route.
  *
- * @property-read ArrayObject $matches All attributes found during `isMatch()`.
+ * @property-read array $matches All attributes found during `isMatch()`.
  *
  * @property-read string $debug Debugging messages.
  *
@@ -136,7 +135,7 @@ class Route extends AbstractSpec
      * All attributes found during the `isMatch()` process, both from the path
      * tokens and from matched server values.
      *
-     * @var ArrayObject
+     * @var array
      *
      * @see isMatch()
      *
@@ -377,7 +376,7 @@ class Route extends AbstractSpec
         if (! $match) {
             return $this->fail(self::FAILED_REGEX);
         }
-        $this->matches = new ArrayObject($regex->getMatches());
+        $this->matches = $regex->getMatches();
         return $this->pass();
     }
 

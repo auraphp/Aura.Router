@@ -1,8 +1,6 @@
 <?php
 namespace Aura\Router;
 
-use ArrayObject;
-
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
     protected $map;
@@ -86,11 +84,6 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->assertEquals('/archive/foo/1979/11', $url);
-    }
-
-    public function callbackForGenerate(ArrayObject $data)
-    {
-        $data['id'] = 99;
     }
 
     public function testGenerateOnFullUri()

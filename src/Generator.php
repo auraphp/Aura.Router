@@ -8,8 +8,6 @@
  */
 namespace Aura\Router;
 
-use ArrayObject;
-
 /**
  *
  * Generates URL paths from routes.
