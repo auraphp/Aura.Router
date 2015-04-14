@@ -262,7 +262,7 @@ class Route extends AbstractSpec
             && $this->isSecureMatch($request)
             && $this->isRegexMatch($request)
             && $this->isMethodMatch($request)
-            && $this->isAcceptMatch($server)
+            && $this->isAcceptMatch($request)
             && $this->isServerMatch($server);
     }
 
@@ -414,8 +414,10 @@ class Route extends AbstractSpec
      * @return bool
      *
      */
-    protected function isAcceptMatch($server)
+    protected function isAcceptMatch(ServerRequestInterface $request)
     {
+        $server = $request->getServerParams();
+
         if (! $this->accept || ! isset($server['HTTP_ACCEPT'])) {
             return $this->pass();
         }
