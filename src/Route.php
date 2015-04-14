@@ -263,7 +263,7 @@ class Route extends AbstractSpec
             && $this->isRegexMatch($request)
             && $this->isMethodMatch($request)
             && $this->isAcceptMatch($request)
-            && $this->isServerMatch($server);
+            && $this->isServerMatch($request);
     }
 
     /**
@@ -476,8 +476,9 @@ class Route extends AbstractSpec
      * @return bool True if they all match, false if not.
      *
      */
-    protected function isServerMatch($server)
+    protected function isServerMatch(ServerRequestInterface $request)
     {
+        $server = $request->getServerParams();
         foreach ($this->server as $name => $regex) {
             $matches = $this->isServerMatchRegex($server, $name, $regex);
             if (! $matches) {
