@@ -8,17 +8,13 @@ class MapTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->map = $this->newRoutes();
-    }
-
-    protected function newRoutes()
-    {
-        return new Map(new RouteFactory());
+        $container = new RouterContainer();
+        $this->map = $container->getMap();
     }
 
     protected function assertIsRoute($actual)
     {
-        $this->assertInstanceOf('Aura\Router\Route', $actual);
+        $this->assertInstanceof('Aura\Router\Route', $actual);
     }
 
     protected function assertRoute($expect, $actual)
@@ -33,14 +29,14 @@ class MapTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->add('before', '/foo');
 
-        $this->map->attach('during', '/during', function ($router) {
-            $router->setTokens(array('id' => '\d+'));
-            $router->setMethod('GET');
-            $router->setDefaults(array('zim' => 'gir'));
-            $router->setSecure(true);
-            $router->setWildcard('other');
-            $router->setRoutable(false);
-            $router->add('bar', '/bar');
+        $this->map->attach('during', '/during', function ($map) {
+            $map->setTokens(array('id' => '\d+'));
+            $map->setMethod('GET');
+            $map->setDefaults(array('zim' => 'gir'));
+            $map->setSecure(true);
+            $map->setWildcard('other');
+            $map->setRoutable(false);
+            $map->add('bar', '/bar');
         });
 
         $this->map->add('after', '/baz');
@@ -75,10 +71,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testAttachInAttach()
     {
-        $this->map->attach('foo', '/foo', function ($router) {
-            $router->add('index', '/index');
-            $router->attach('bar', '/bar', function ($router) {
-                $router->add('index', '/index');
+        $this->map->attach('foo', '/foo', function ($map) {
+            $map->add('index', '/index');
+            $map->attach('bar', '/bar', function ($map) {
+                $map->add('index', '/index');
             });
         });
 
@@ -90,42 +86,43 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAndSetRoutes()
     {
-        $this->map->attach('page', '/page', function ($router) {
-            $router->setTokens(array(
+        $this->map->attach('page', '/page', function ($map) {
+            $map->setTokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
             ));
 
-            $router->setDefaults(array(
+            $map->setDefaults(array(
                 'controller' => 'page',
                 'format' => null,
             ));
 
-            $router->add('browse', '/');
-            $router->add('read', '/{id}{format}');
+            $map->add('browse', '/');
+            $map->add('read', '/{id}{format}');
         });
 
         $actual = $this->map->getRoutes();
         $this->assertTrue(is_array($actual));
         $this->assertTrue(count($actual) == count($this->map));
-        $this->assertInstanceOf('Aura\Router\Route', $actual['page.browse']);
+        $this->assertIsRoute($actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
-        $this->assertInstanceOf('Aura\Router\Route', $actual['page.read']);
+        $this->assertIsRoute($actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
 
         // emulate caching the values
         $saved = serialize($actual);
         $restored = unserialize($saved);
 
-        // set routes from the restored values
-        $router = $this->newRoutes();
-        $router->setRoutes($restored);
-        $actual = $router->getRoutes();
+        // set routes in new map from the restored values
+        $container = new RouterContainer();
+        $map = $container->getMap();
+        $map->setRoutes($restored);
+        $actual = $map->getRoutes();
         $this->assertTrue(is_array($actual));
         $this->assertTrue(count($actual) == count($this->map));
-        $this->assertInstanceOf('Aura\Router\Route', $actual['page.browse']);
+        $this->assertIsRoute($actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
-        $this->assertInstanceOf('Aura\Router\Route', $actual['page.read']);
+        $this->assertIsRoute($actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
     }
 

@@ -8,6 +8,8 @@
  */
 namespace Aura\Router;
 
+use Psr\Log\NullLogger;
+
 /**
  *
  * A library-specific container.
@@ -17,27 +19,58 @@ namespace Aura\Router;
  */
 class RouterContainer
 {
+    protected $generator;
+    protected $logger;
+    protected $loggerFactory;
+    protected $matcher;
     protected $map;
+    protected $routeFactory;
+
+    public function __construct()
+    {
+        $this->loggerFactory = function () { return new NullLogger(); };
+        $this->routeFactory = function () { return new RouteFactory(); };
+    }
+
+    public function setLoggerFactory(callable $loggerFactory)
+    {
+        $this->loggerFactory = $loggerFactory;
+    }
+
+    public function setRouteFactory(callable $routeFactory)
+    {
+        $this->routeFactory = $routeFactory;
+    }
 
     public function getMap()
     {
         if (! $this->map) {
-            $this->map = new Map($this->newRouteFactory());
+            $this->map = new Map(call_user_func($this->routeFactory));
         }
+        return $this->map;
     }
 
-    public function newRouteFactory()
+    public function getMatcher()
     {
-        return new RouteFactory();
+        if (! $this->matcher) {
+            $this->matcher = new Matcher($this->getMap(), $this->getLogger());
+        }
+        return $this->matcher;
     }
 
-    public function newMatcher()
+    public function getGenerator()
     {
-        return new Matcher($this->getMap());
+        if (! $this->generator) {
+            $this->generator = new Generator($this->getMap());
+        }
+        return $this->generator;
     }
 
-    public function newGenerator()
+    public function getLogger()
     {
-        return new Generator($this->getMap());
+        if (! $this->logger) {
+            $this->logger = call_user_func($this->loggerFactory);
+        }
+        return $this->logger;
     }
 }

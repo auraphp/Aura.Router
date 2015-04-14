@@ -11,8 +11,9 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->map = new Map(new RouteFactory());
-        $this->generator = new Generator($this->map);
+        $container = new RouterContainer();
+        $this->map = $container->getMap();
+        $this->generator = $container->getGenerator();
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace Aura\Router;
 
 use Aura\Router\Exception;
+use Psr\Log\LoggerInterface;
 
 /**
  *
@@ -26,7 +27,7 @@ class Matcher
      * @var array
      *
      */
-    protected $debug = array();
+    protected $logger;
 
     /**
      *
@@ -64,9 +65,10 @@ class Matcher
      * @param Generator $generator A URL path generator.
      *
      */
-    public function __construct(Map $map)
+    public function __construct(Map $map, LoggerInterface $logger)
     {
         $this->map = $map;
+        $this->logger = $logger;
     }
 
     /**

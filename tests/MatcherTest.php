@@ -9,8 +9,9 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->map = new Map(new RouteFactory());
-        $this->matcher = new Matcher($this->map);
+        $container = new RouterContainer();
+        $this->map = $container->getMap();
+        $this->matcher = $container->getMatcher();
     }
 
     protected function assertIsRoute($actual)
