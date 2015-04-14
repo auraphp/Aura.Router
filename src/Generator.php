@@ -103,9 +103,7 @@ class Generator
      */
     public function generate($name, $data = array())
     {
-        $route = $this->map->getRoute($name);
-        $this->raw = false;
-        return $this->buildPath($route, $data);
+        return $this->buildPath($name, $data, false);
     }
 
     /**
@@ -125,16 +123,14 @@ class Generator
      */
     public function generateRaw($name, $data = array())
     {
-        $route = $this->map->getRoute($name);
-        $this->raw = true;
-        return $this->buildPath($route, $data);
+        return $this->buildPath($name, $data, true);
     }
 
     /**
      *
      * Gets the path for a Route.
      *
-     * @param Route $route The route to generate a path for.
+     * @param string $name The route name to look up.
      *
      * @param array $data An array of key-value pairs to interpolate into the
      * param tokens in the path for the Route.
@@ -142,13 +138,13 @@ class Generator
      * @return string
      *
      */
-    protected function buildPath(Route $route, $data = array())
+    protected function buildPath($name, $data, $raw)
     {
-        $this->route = $route;
-        $this->data = $data;
+        $this->raw = $raw;
+        $this->route = $this->map->getRoute($name);
         $this->path = $this->route->path;
         $this->repl = array();
-        $this->data = array_merge($this->route->values, $this->data);
+        $this->data = array_merge($this->route->values, $data);
 
         $this->buildTokenReplacements();
         $this->buildOptionalReplacements();
