@@ -89,15 +89,10 @@ class Map extends AbstractSpec implements
      *
      * @param RouteFactory $route_factory A factory to create route objects.
      *
-     * @param array $routes An array of route objects.
-     *
      */
-    public function __construct(
-        RouteFactory $route_factory,
-        array $routes = array()
-    ) {
+    public function __construct(RouteFactory $route_factory)
+    {
         $this->route_factory = $route_factory;
-        $this->routes = $routes;
         $this->setResourceCallable(array($this, 'resourceCallable'));
         $this->setRouteCallable(array($this, 'routeCallable'));
     }
