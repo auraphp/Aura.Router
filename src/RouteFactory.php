@@ -28,15 +28,6 @@ class RouteFactory
 
     /**
      *
-     * A reusable Regex object.
-     *
-     * @param Regex
-     *
-     */
-    protected $regex;
-
-    /**
-     *
      * The default route specification.
      *
      * @var array
@@ -65,7 +56,6 @@ class RouteFactory
     public function __construct($class = 'Aura\Router\Route')
     {
         $this->class = $class;
-        $this->regex = new Regex();
     }
 
     /**
@@ -92,7 +82,7 @@ class RouteFactory
               : $name;
 
         $class = $this->class;
-        $route = new $class($this->regex, $path, $name);
+        $route = new $class($path, $name);
         $route->addTokens($spec['tokens']);
         $route->addServer($spec['server']);
         $route->addMethod($spec['method']);

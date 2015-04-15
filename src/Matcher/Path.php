@@ -6,20 +6,16 @@
  * @license http://opensource.org/licenses/bsd-license.php BSD
  *
  */
-namespace Aura\Router;
+namespace Aura\Router\Matcher;
 
-/**
- *
- * A regular-expression tracker for a Route.
- *
- * @package Aura.Router
- *
- */
-class Regex
+use Aura\Router\Route;
+use Psr\Http\Message\ServerRequestInterface;
+
+class Path implements MatcherInterface
 {
     /**
      *
-     * The Route this regex is associated with.
+     * Use this Route to build the regex.
      *
      * @var Route
      *
@@ -28,7 +24,7 @@ class Regex
 
     /**
      *
-     * The regular expression.
+     * The regular expression for the path.
      *
      * @var string
      *
@@ -37,25 +33,52 @@ class Regex
 
     /**
      *
-     * Matches from the regex.
+     * Checks that the Request path matches the Route path.
      *
-     * @var array
+     * @param ServerRequestInterface $request The HTTP request.
+     *
+     * @param Route $route The route.
+     *
+     * @return bool True on success, false on failure.
      *
      */
-    protected $matches;
+    public function __invoke(ServerRequestInterface $request, Route $route)
+    {
+        $match = preg_match(
+            $this->buildRegex($route),
+            $request->getUri()->getPath(),
+            $matches
+        );
 
-    /**
-     *
-     * Does the Route match the requested URL path?
-     *
-     * @param Route $route The route being checked.
-     *
-     * @param string $path The requested URL path.
-     *
-     * @return bool
-     *
-     */
-    public function match(Route $route, $path)
+        if (! $match) {
+            return false;
+        }
+
+        // populate the path matches into the route defaults. if the path match
+        // is exactly an empty string, treat it as missing/unset. (this is
+        // to support optional ".format" attribute values.)
+        $attributes = [];
+        foreach ($matches as $key => $val) {
+            if (is_string($key) && $val !== '') {
+                $attributes[$key] = rawurldecode($val);
+            }
+        }
+
+        if ($route->wildcard) {
+            $attributes[$route->wildcard] = array();
+            if (! empty($matches[$route->wildcard])) {
+                $attributes[$route->wildcard] = array_map(
+                    'rawurldecode',
+                    explode('/', $matches[$route->wildcard])
+                );
+            }
+        }
+
+        $route->addMatches($attributes);
+        return true;
+    }
+
+    protected function buildRegex(Route $route)
     {
         $this->route = $route;
         $this->regex = $this->route->path;
@@ -63,19 +86,7 @@ class Regex
         $this->setRegexAttributes();
         $this->setRegexWildcard();
         $this->regex = '#^' . $this->regex . '$#';
-        return preg_match($this->regex, $path, $this->matches);
-    }
-
-    /**
-     *
-     * Returns the matches.
-     *
-     * @return array
-     *
-     */
-    public function getMatches()
-    {
-        return $this->matches;
+        return $this->regex;
     }
 
     /**

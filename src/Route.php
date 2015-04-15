@@ -42,39 +42,12 @@ class Route extends AbstractSpec
 {
     /**
      *
-     * The route failed to match at isRoutableMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_ROUTABLE = 'FAILED_ROUTABLE';
-
-    /**
-     *
-     * The route failed to match at isSecureMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_SECURE = 'FAILED_SECURE';
-
-    /**
-     *
-     * The route failed to match at isRegexMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_REGEX = 'FAILED_REGEX';
-
-    /**
-     *
      * The route failed to match at isMethodMatch().
      *
      * @const string
      *
      */
-    const FAILED_METHOD = 'FAILED_METHOD';
+    const FAILED_METHOD = 'Aura\Router\Matcher\Method';
 
     /**
      *
@@ -83,16 +56,7 @@ class Route extends AbstractSpec
      * @const string
      *
      */
-    const FAILED_ACCEPT = 'FAILED_ACCEPT';
-
-    /**
-     *
-     * The route failed to match at isServerMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_SERVER = 'FAILED_SERVER';
+    const FAILED_ACCEPT = 'Aura\Router\Matcher\Accept';
 
     /**
      *
@@ -140,7 +104,7 @@ class Route extends AbstractSpec
      * @see isMatch()
      *
      */
-    protected $matches;
+    protected $matches = [];
 
     /**
      *
@@ -173,17 +137,14 @@ class Route extends AbstractSpec
      *
      * Constructor.
      *
-     * @param Regex $regex A regular expression support object.
-     *
      * @param string $path The path for this Route with attribute token
      * placeholders.
      *
      * @param string $name The name for this route.
      *
      */
-    public function __construct(Regex $regex, $path, $name = null)
+    public function __construct($path, $name = null)
     {
-        $this->regex = $regex;
         $this->path = $path;
         $this->name = $name;
     }
@@ -214,6 +175,11 @@ class Route extends AbstractSpec
     public function __isset($key)
     {
         return isset($this->$key);
+    }
+
+    public function addMatches(array $matches)
+    {
+        $this->matches = array_merge($this->matches, $matches);
     }
 
     /**
@@ -254,12 +220,23 @@ class Route extends AbstractSpec
      */
     protected function isFullMatch(ServerRequestInterface $request)
     {
-        return $this->isRoutableMatch()
-            && $this->isSecureMatch($request)
-            && $this->isRegexMatch($request)
-            && $this->isMethodMatch($request)
-            && $this->isAcceptMatch($request)
-            && $this->isServerMatch($request);
+        $matchers = [
+            new \Aura\Router\Matcher\Routable(),
+            new \Aura\Router\Matcher\Secure(),
+            new \Aura\Router\Matcher\Path(),
+            new \Aura\Router\Matcher\Method(),
+            new \Aura\Router\Matcher\Accept(),
+            new \Aura\Router\Matcher\Server(),
+        ];
+
+        foreach ($matchers as $matcher) {
+            if (! $matcher($request, $this)) {
+                return $this->fail(get_class($matcher));
+            }
+            $this->pass();
+        }
+
+        return true;
     }
 
     /**
@@ -319,198 +296,6 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Check whether a failure happened due to route not match
-     *
-     * @return bool
-     *
-     */
-    protected function isRoutableMatch()
-    {
-        if ($this->routable) {
-            return $this->pass();
-        }
-
-        return $this->fail(self::FAILED_ROUTABLE);
-    }
-
-    /**
-     *
-     * Checks that the Route `$secure` matches the corresponding server values.
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isSecureMatch(ServerRequestInterface $request)
-    {
-        if ($this->secure === null) {
-            return $this->pass();
-        }
-
-        $server = $request->getServerParams();
-        $secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-               || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
-
-        if ($this->secure != $secure) {
-            return $this->fail(self::FAILED_SECURE);
-        }
-
-        return $this->pass();
-    }
-
-    /**
-     *
-     * Checks that the path matches the Route regex.
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isRegexMatch(ServerRequestInterface $request)
-    {
-        $path = $request->getUri()->getPath();
-        $regex = clone $this->regex;
-        $match = $regex->match($this, $path);
-        if (! $match) {
-            return $this->fail(self::FAILED_REGEX);
-        }
-        $this->matches = $regex->getMatches();
-        return $this->pass();
-    }
-
-    /**
-     *
-     * Is the requested method matching? If no REQUEST_METHOD default to GET.
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isMethodMatch(ServerRequestInterface $request)
-    {
-        if (! $this->method) {
-            return $this->pass();
-        }
-
-        $request_method = $request->getMethod() ?: 'GET';
-        return in_array($request_method, $this->method)
-             ? $this->pass()
-             : $this->fail(self::FAILED_METHOD);
-    }
-
-    /**
-     *
-     * Is the Accept header a match.
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isAcceptMatch(ServerRequestInterface $request)
-    {
-        $server = $request->getServerParams();
-
-        if (! $this->accept || ! isset($server['HTTP_ACCEPT'])) {
-            return $this->pass();
-        }
-
-        $header = str_replace(' ', '', $server['HTTP_ACCEPT']);
-
-        if ($this->isAcceptMatchHeader('*/*', $header)) {
-            return $this->pass();
-        }
-
-        foreach ($this->accept as $type) {
-            if ($this->isAcceptMatchHeader($type, $header)) {
-                return $this->pass();
-            }
-        }
-
-        return $this->fail(self::FAILED_ACCEPT);
-    }
-
-    /**
-     *
-     * Is the accept method matching
-     *
-     * @param string $type
-     *
-     * @param string $header
-     *
-     * @return bool True on a match, false if not.
-     *
-     */
-    protected function isAcceptMatchHeader($type, $header)
-    {
-        list($type, $subtype) = explode('/', $type);
-        $type = preg_quote($type);
-        $subtype = preg_quote($subtype);
-        $regex = "#$type/($subtype|\*)(;q=(\d\.\d))?#";
-
-        $found = preg_match($regex, $header, $matches);
-        if (! $found) {
-            return false;
-        }
-
-        if (isset($matches[3])) {
-            return $matches[3] !== '0.0';
-        }
-
-        return true;
-    }
-
-    /**
-     *
-     * Checks that $_SERVER values match their related regular expressions.
-     *
-     * @param ServerRequestInterface $request The HTTP request. A copy of $_SERVER.
-     *
-     * @return bool True if they all match, false if not.
-     *
-     */
-    protected function isServerMatch(ServerRequestInterface $request)
-    {
-        $server = $request->getServerParams();
-        foreach ($this->server as $name => $regex) {
-            $matches = $this->isServerMatchRegex($server, $name, $regex);
-            if (! $matches) {
-                return $this->fail(self::FAILED_SERVER, " ($name)");
-            }
-            $this->matches[$name] = $matches[$name];
-        }
-
-        return $this->pass();
-    }
-
-    /**
-     *
-     * Does a server key match a regex?
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @param string $name The server key.
-     *
-     * @param string $regex The regex to match against.
-     *
-     * @return array The matches.
-     *
-     */
-    protected function isServerMatchRegex($server, $name, $regex)
-    {
-        $value = isset($server[$name])
-               ? $server[$name]
-               : '';
-        $regex = "#(?P<{$name}>{$regex})#";
-        preg_match($regex, $value, $matches);
-        return $matches;
-    }
-
-    /**
-     *
      * Sets the route attributes from the matched values.
      *
      * @return null
@@ -518,51 +303,6 @@ class Route extends AbstractSpec
      */
     protected function setAttributes()
     {
-        $this->attributes = $this->defaults;
-        $this->setAttributesWithMatches();
-        $this->setAttributesWithWildcard();
-    }
-
-    /**
-     *
-     * Set the attributes with their matched values.
-     *
-     * @return null
-     *
-     */
-    protected function setAttributesWithMatches()
-    {
-        // populate the path matches into the route defaults. if the path match
-        // is exactly an empty string, treat it as missing/unset. (this is
-        // to support optional ".format" attribute values.)
-        foreach ($this->matches as $key => $val) {
-            if (is_string($key) && $val !== '') {
-                $this->attributes[$key] = rawurldecode($val);
-            }
-        }
-    }
-
-    /**
-     *
-     * Set the wildcard attribute value.
-     *
-     * @return null
-     *
-     */
-    protected function setAttributesWithWildcard()
-    {
-        if (! $this->wildcard) {
-            return;
-        }
-
-        if (empty($this->attributes[$this->wildcard])) {
-            $this->attributes[$this->wildcard] = array();
-            return;
-        }
-
-        $this->attributes[$this->wildcard] = array_map(
-            'rawurldecode',
-            explode('/', $this->attributes[$this->wildcard])
-        );
+        $this->attributes = array_merge($this->defaults, $this->matches);
     }
 }

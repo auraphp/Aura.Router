@@ -107,7 +107,7 @@ class Matcher
             }
 
             $context['debug'] = $route->debug;
-            $this->logger->debug("{path} {debug} ON {name}", $context);
+            $this->logger->debug("{path} FAILED {debug} ON {name}", $context);
         }
 
         $this->matchedRoute = false;
