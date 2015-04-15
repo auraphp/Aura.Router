@@ -24,6 +24,7 @@ class RouterContainer
     protected $loggerFactory;
     protected $matcher;
     protected $map;
+    protected $matchers = [];
     protected $routeFactory;
 
     public function __construct()
@@ -42,6 +43,26 @@ class RouterContainer
         $this->routeFactory = $routeFactory;
     }
 
+    public function setMatchers(array $matchers)
+    {
+        $this->matchers = $matchers;
+    }
+
+    public function getMatchers()
+    {
+        if (! $this->matchers) {
+            $this->matchers = [
+                new \Aura\Router\Matcher\Routable(),
+                new \Aura\Router\Matcher\Secure(),
+                new \Aura\Router\Matcher\Path(),
+                new \Aura\Router\Matcher\Method(),
+                new \Aura\Router\Matcher\Accept(),
+                new \Aura\Router\Matcher\Server(),
+            ];
+        }
+        return $this->matchers;
+    }
+
     public function getMap()
     {
         if (! $this->map) {
@@ -53,7 +74,11 @@ class RouterContainer
     public function getMatcher()
     {
         if (! $this->matcher) {
-            $this->matcher = new Matcher($this->getMap(), $this->getLogger());
+            $this->matcher = new Matcher(
+                $this->getMap(),
+                $this->getLogger(),
+                $this->getMatchers()
+            );
         }
         return $this->matcher;
     }

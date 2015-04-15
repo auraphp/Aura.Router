@@ -1,0 +1,172 @@
+<?php
+namespace Aura\Router\Matcher;
+
+class PathTest extends AbstractMatcherTest
+{
+    public function setup()
+    {
+        parent::setup();
+        $this->matcher = new Path();
+    }
+
+    public function testIsMatchOnStaticPath()
+    {
+        $proto = $this->newRoute('/foo/bar/baz');
+
+        // right path
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz');
+        $this->assertIsMatch($request, $route);
+
+        // wrong path
+        $route = clone $proto;
+        $request = $this->newRequest('/zim/dib/gir');
+        $this->assertIsNotMatch($request, $route);
+    }
+
+    public function testIsMatchOnDynamicPath()
+    {
+        $route = $this->newRoute('/{controller}/{action}/{id}{format}')
+            ->setTokens(array(
+                'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
+                'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
+                'id' => '([0-9]+)',
+                'format' => '(\.[^/]+)?',
+            ));
+
+        $request = $this->newRequest('/foo/bar/42');
+
+        $this->assertIsMatch($request, $route);
+
+        $expect = array(
+            'controller' => 'foo',
+            'action' => 'bar',
+            'id' => '42',
+        );
+        $this->assertEquals($expect, $route->matches);
+    }
+
+    public function testIsMatchOnDefaultAndDefinedSubpatterns()
+    {
+        $route = $this->newRoute('/{controller}/{action}/{id}{format}')
+            ->setTokens(array(
+                'action' => '(browse|read|edit|add|delete)',
+                'id' => '(\d+)',
+                'format' => '(\.[^/]+)?',
+            ));
+
+        $request = $this->newRequest('/any-value/read/42');
+        $this->assertIsMatch($request, $route);
+        $expect = array(
+            'controller' => 'any-value',
+            'action' => 'read',
+            'id' => '42',
+        );
+        $this->assertSame($expect, $route->matches);
+    }
+
+    public function testIsMatchOnRFC3986Paths()
+    {
+        $route = $this->newRoute('/{controller}/{action}/{attribute1}/{attribute2}');
+
+        // examples taken from http://php.net/manual/en/function.rawurlencode.php
+        $request = $this->newRequest('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami');
+        $this->assertIsMatch($request, $route);
+        $expect = array(
+            'controller' => 'some-controller',
+            'action' => 'some action',
+            'attribute1' => 'foo @+%/',
+            'attribute2' => 'sales and marketing/Miami',
+        );
+        $this->assertEquals($expect, $route->matches);
+    }
+
+    public function testIsMatchOnWildcard()
+    {
+        $proto = $this->newRoute('/foo/{zim}/')
+            ->setWildcard('wild');
+
+        // right path with wildcard values
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz/dib');
+        $this->assertIsMatch($request, $route);
+        $this->assertSame('bar', $route->matches['zim']);
+        $this->assertSame(array('baz', 'dib'), $route->matches['wild']);
+
+        // right path with trailing slash but no wildcard values
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/');
+        $this->assertIsMatch($request, $route);
+        $this->assertSame('bar', $route->matches['zim']);
+        $this->assertSame(array(), $route->matches['wild']);
+
+        // right path without trailing slash
+        $route = clone $proto;
+        $this->assertIsMatch($request, $route);
+        $this->assertSame(array(), $route->matches['wild']);
+
+        // wrong path
+        $route = clone $proto;
+        $request = $this->newRequest('/zim/dib/gir');
+        $this->assertIsNotMatch($request, $route);
+    }
+
+    public function testIsMatchOnOptionalAttributes()
+    {
+        $route = $this->newRoute('/foo/{bar}{/baz,dib,zim}');
+
+        // not enough attributes
+        $request = $this->newRequest('/foo');
+        $this->assertIsNotMatch($request, $route);
+
+        // just enough attributes
+        $request = $this->newRequest('/foo/bar');
+        $this->assertIsMatch($request, $route);
+
+        // optional attribute 1
+        $request = $this->newRequest('/foo/bar/baz');
+        $this->assertIsMatch($request, $route);
+
+        // optional attribute 2
+        $request = $this->newRequest('/foo/bar/baz/dib');
+        $this->assertIsMatch($request, $route);
+
+        // optional attribute 3
+        $request = $this->newRequest('/foo/bar/baz/dib/zim');
+        $this->assertIsMatch($request, $route);
+
+        // too many attributes
+        $request = $this->newRequest('/foo/bar/baz/dib/zim/gir');
+        $this->assertIsNotMatch($request, $route);
+    }
+
+    public function testIsMatchOnOnlyOptionalAttributes()
+    {
+        $route = $this->newRoute('{/foo,bar,baz}');
+
+        $request = $this->newRequest('/');
+        $this->assertIsMatch($request, $route);
+
+        $request = $this->newRequest('/foo');
+        $this->assertIsMatch($request, $route);
+
+        $request = $this->newRequest('/foo/bar');
+        $this->assertIsMatch($request, $route);
+
+        $request = $this->newRequest('/foo/bar/baz');
+        $this->assertIsMatch($request, $route);
+
+        $request = $this->newRequest('/foo/bar/baz/dib');
+        $this->assertIsNotMatch($request, $route);
+    }
+
+    public function testIsMatchOnOptionalEndingSlash()
+    {
+        $route = $this->newRoute('/foo(/)?');
+        $request = $this->newRequest('/foo');
+        $this->assertIsMatch($request, $route);
+
+        $request = $this->newRequest('/foo/');
+        $this->assertIsMatch($request, $route);
+    }
+}

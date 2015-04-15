@@ -386,8 +386,8 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      * attached.
      *
      * @param callable $callable A callable that uses the Router to add new
-     * routes. Its signature is `function (\Aura\Router\Router $router)`; this
-     * Router instance will be passed to the callable.
+     * routes. Its signature is `function (\Aura\Router\Map $map)`; this
+     * Map instance will be passed to the callable.
      *
      * @return null
      *
@@ -502,34 +502,34 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Callable for `attachResource()` that adds resource routes.
      *
-     * @param Map $router A Map, probably $this.
+     * @param Map $map A Map, probably $this.
      *
      * @return null
      *
      */
-    protected function resourceCallable(Map $router)
+    protected function resourceCallable(Map $map)
     {
         // add 'id' and 'format' if not already defined
         $tokens = array();
-        if (! isset($router->tokens['id'])) {
+        if (! isset($map->tokens['id'])) {
             $tokens['id'] = '\d+';
         }
-        if (! isset($router->tokens['format'])) {
+        if (! isset($map->tokens['format'])) {
             $tokens['format'] = '(\.[^/]+)?';
         }
         if ($tokens) {
-            $router->addTokens($tokens);
+            $map->addTokens($tokens);
         }
 
         // add the routes
-        $router->addGet('browse', '{format}');
-        $router->addGet('read', '/{id}{format}');
-        $router->addGet('edit', '/{id}/edit{format}');
-        $router->addGet('add', '/add');
-        $router->addDelete('delete', '/{id}');
-        $router->addPost('create', '');
-        $router->addPatch('update', '/{id}');
-        $router->addPut('replace', '/{id}');
-        $router->addOptions('options', '');
+        $map->addGet('browse', '{format}');
+        $map->addGet('read', '/{id}{format}');
+        $map->addGet('edit', '/{id}/edit{format}');
+        $map->addGet('add', '/add');
+        $map->addDelete('delete', '/{id}');
+        $map->addPost('create', '');
+        $map->addPatch('update', '/{id}');
+        $map->addPut('replace', '/{id}');
+        $map->addOptions('options', '');
     }
 }

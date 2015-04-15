@@ -39,6 +39,8 @@ class Matcher
      */
     protected $map;
 
+    protected $matchers;
+
     /**
      *
      * The Route object matched by the router.
@@ -66,10 +68,11 @@ class Matcher
      * @param Generator $generator A URL path generator.
      *
      */
-    public function __construct(Map $map, LoggerInterface $logger)
+    public function __construct(Map $map, LoggerInterface $logger, array $matchers)
     {
         $this->map = $map;
         $this->logger = $logger;
+        $this->matchers = $matchers;
     }
 
     /**
@@ -86,15 +89,6 @@ class Matcher
      */
     public function match(ServerRequestInterface $request)
     {
-        $matchers = [
-            new \Aura\Router\Matcher\Routable(),
-            new \Aura\Router\Matcher\Secure(),
-            new \Aura\Router\Matcher\Path(),
-            new \Aura\Router\Matcher\Method(),
-            new \Aura\Router\Matcher\Accept(),
-            new \Aura\Router\Matcher\Server(),
-        ];
-
         $this->failedRoute = null;
         $context = ['path' => $request->getUri()->getPath()];
 
@@ -102,7 +96,7 @@ class Matcher
 
             $context['name'] = $name;
 
-            $match = $route->isMatch($request, $matchers);
+            $match = $route->isMatch($request, $this->matchers);
             if ($match) {
                 $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;
