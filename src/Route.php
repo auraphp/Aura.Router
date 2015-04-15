@@ -194,40 +194,12 @@ class Route extends AbstractSpec
      * @return bool
      *
      */
-    public function isMatch(ServerRequestInterface $request)
+    public function isMatch(ServerRequestInterface $request, array $matchers)
     {
         $this->debug = null;
         $this->attributes = array();
         $this->score = 0;
         $this->failed = null;
-        if ($this->isFullMatch($request)) {
-            $this->setAttributes();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     *
-     * Is the route a full match?
-     *
-     * @param string $path The path to check against this route
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @return bool
-     *
-     */
-    protected function isFullMatch(ServerRequestInterface $request)
-    {
-        $matchers = [
-            new \Aura\Router\Matcher\Routable(),
-            new \Aura\Router\Matcher\Secure(),
-            new \Aura\Router\Matcher\Path(),
-            new \Aura\Router\Matcher\Method(),
-            new \Aura\Router\Matcher\Accept(),
-            new \Aura\Router\Matcher\Server(),
-        ];
 
         foreach ($matchers as $matcher) {
             if (! $matcher($request, $this)) {
@@ -236,6 +208,7 @@ class Route extends AbstractSpec
             $this->pass();
         }
 
+        $this->setAttributes();
         return true;
     }
 

@@ -86,6 +86,15 @@ class Matcher
      */
     public function match(ServerRequestInterface $request)
     {
+        $matchers = [
+            new \Aura\Router\Matcher\Routable(),
+            new \Aura\Router\Matcher\Secure(),
+            new \Aura\Router\Matcher\Path(),
+            new \Aura\Router\Matcher\Method(),
+            new \Aura\Router\Matcher\Accept(),
+            new \Aura\Router\Matcher\Server(),
+        ];
+
         $this->failedRoute = null;
         $context = ['path' => $request->getUri()->getPath()];
 
@@ -93,7 +102,7 @@ class Matcher
 
             $context['name'] = $name;
 
-            $match = $route->isMatch($request);
+            $match = $route->isMatch($request, $matchers);
             if ($match) {
                 $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;
