@@ -25,6 +25,7 @@ class RouterContainer
     protected $matcher;
     protected $map;
     protected $rules = [];
+    protected $protoRoute;
 
     public function __construct()
     {
@@ -34,6 +35,11 @@ class RouterContainer
     public function setLoggerFactory(callable $loggerFactory)
     {
         $this->loggerFactory = $loggerFactory;
+    }
+
+    public function setProtoRoute(Route $protoRoute)
+    {
+        $this->protoRoute = $protoRoute;
     }
 
     public function setRules(array $rules)
@@ -59,7 +65,7 @@ class RouterContainer
     public function getMap()
     {
         if (! $this->map) {
-            $this->map = new Map(new Route);
+            $this->map = new Map($this->getProtoRoute());
         }
         return $this->map;
     }
@@ -90,5 +96,13 @@ class RouterContainer
             $this->logger = call_user_func($this->loggerFactory);
         }
         return $this->logger;
+    }
+
+    public function getProtoRoute()
+    {
+        if (! $this->protoRoute) {
+            $this->protoRoute = new Route();
+        }
+        return $this->protoRoute;
     }
 }
