@@ -12,7 +12,7 @@ class MethodTest extends AbstractRuleTest
     public function testIsMethodMatch()
     {
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setMethod('POST');
+            ->setMethods('POST');
 
         // correct
         $route = clone $proto;
@@ -28,7 +28,7 @@ class MethodTest extends AbstractRuleTest
          * try many REQUEST_METHOD
          */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setMethod(array('GET', 'POST'));
+            ->setMethods(array('GET', 'POST'));
 
         // correct
         $route = clone $proto;

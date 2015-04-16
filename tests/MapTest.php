@@ -44,7 +44,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $this->map->attach('/during', 'during.', function ($map) {
             $map->setTokens(array('id' => '\d+'));
-            $map->setMethod('GET');
+            $map->setMethods('GET');
             $map->setDefaults(array('zim' => 'gir'));
             $map->setSecure(true);
             $map->setWildcard('other');

@@ -290,10 +290,10 @@ class Route
      * @return $this
      *
      */
-    public function setMethod($method)
+    public function setMethods($method)
     {
         $this->method = array();
-        return $this->addMethod($method);
+        return $this->addMethods($method);
     }
 
     /**
@@ -305,7 +305,7 @@ class Route
      * @return $this
      *
      */
-    public function addMethod($method)
+    public function addMethods($method)
     {
         $this->method = array_merge($this->method, (array) $method);
         return $this;

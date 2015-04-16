@@ -172,7 +172,7 @@ class Map implements IteratorAggregate
     public function get($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('GET');
+        $route->addMethods('GET');
         return $route;
     }
 
@@ -192,7 +192,7 @@ class Map implements IteratorAggregate
     public function delete($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('DELETE');
+        $route->addMethods('DELETE');
         return $route;
     }
 
@@ -212,7 +212,7 @@ class Map implements IteratorAggregate
     public function head($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('HEAD');
+        $route->addMethods('HEAD');
         return $route;
     }
 
@@ -232,7 +232,7 @@ class Map implements IteratorAggregate
     public function options($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('OPTIONS');
+        $route->addMethods('OPTIONS');
         return $route;
     }
 
@@ -252,7 +252,7 @@ class Map implements IteratorAggregate
     public function patch($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('PATCH');
+        $route->addMethods('PATCH');
         return $route;
     }
 
@@ -272,7 +272,7 @@ class Map implements IteratorAggregate
     public function post($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('POST');
+        $route->addMethods('POST');
         return $route;
     }
 
@@ -292,7 +292,7 @@ class Map implements IteratorAggregate
     public function put($path, $name, array $defaults = [])
     {
         $route = $this->route($path, $name, $defaults);
-        $route->addMethod('PUT');
+        $route->addMethods('PUT');
         return $route;
     }
 
