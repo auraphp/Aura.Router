@@ -42,8 +42,6 @@ class RouteFactory
         'secure' => null,
         'wildcard' => null,
         'routable' => true,
-        'namePrefix' => null,
-        'pathPrefix' => null,
     );
 
     /**
@@ -74,13 +72,6 @@ class RouteFactory
     public function newInstance($path, $name = null, array $spec = array())
     {
         $spec = array_merge($this->spec, $spec);
-
-        $path = $spec['pathPrefix'] . $path;
-
-        $name = ($spec['namePrefix'] && $name)
-              ? $spec['namePrefix'] . $name
-              : $name;
-
         $class = $this->class;
         $route = new $class($path, $name);
         $route->addTokens($spec['tokens']);

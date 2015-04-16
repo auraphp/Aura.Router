@@ -156,7 +156,9 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      */
     public function route($name, $path, array $defaults = [])
     {
-        // create the route with the full path, name, and spec
+        $name = $this->namePrefix . $name;
+        $path = $this->pathPrefix . $path;
+
         $route = $this->routeFactory->newInstance(
             $path,
             $name,

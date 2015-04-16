@@ -51,10 +51,9 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
             ));
 
-            $map->get(null, '/')
-                ->addDefaults(array(
-                    'action' => 'browse'
-                ));
+            $map->get('browse', '/', array(
+                'action' => 'browse'
+            ));
 
             $map->head('head', '/{id}');
             $map->get('read', '/{id}');
@@ -71,12 +70,12 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($actual);
         $this->assertFalse($this->matcher->getMatchedRoute());
 
-        // unnamed browse
+        // browse
         $request = $this->newRequest('/resource/', ['REQUEST_METHOD' => 'GET']);
         $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
         $this->assertSame('browse', $actual->attributes['action']);
-        $this->assertSame(null, $actual->name);
+        $this->assertSame('resource.browse', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
 
         // head

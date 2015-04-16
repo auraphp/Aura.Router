@@ -4,5 +4,4 @@
 
 - Add cookie and host matching
 
-- Pull prefixing out of RouteFactory
-
+- Reversw path and name in API signatures, and always use a name
