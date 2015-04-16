@@ -27,7 +27,7 @@ abstract class AbstractMatcherTest extends \PHPUnit_Framework_TestCase
 
     protected function newRoute($path)
     {
-        return $this->routeFactory->newInstance($path, 'test');
+        return $this->routeFactory->newInstance($path);
     }
 
     protected function assertIsMatch($request, $route)

@@ -25,6 +25,13 @@ class MapTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testRouteAlreadyExists()
+    {
+        $this->map->route('/foo', 'foo');
+        $this->setExpectedException('Aura\Router\Exception\RouteAlreadyExists');
+        $this->map->route('/foo', 'foo');
+    }
+
     public function testBeforeAndAfterAttach()
     {
         $this->map->route('/foo', 'before');

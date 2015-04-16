@@ -120,7 +120,7 @@ class Map extends AbstractSpec implements IteratorAggregate
         }
 
         if (isset($this->routes[$name])) {
-            throw new Exception\RouteAlreadySet($name);
+            throw new Exception\RouteAlreadyExists($name);
         }
 
         $this->routes[$name] = $route;
