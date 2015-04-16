@@ -102,17 +102,11 @@ class Matcher
             $context['name'] = $name;
             $route = clone $proto;
 
-            $match = $this->applyRules($request, $route, $score);
+            $match = $this->applyRules($request, $route);
             if ($match) {
                 $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;
                 return $route;
-            }
-
-            // retain a better-matching failure
-            if (! $this->failedRoute || $score > $this->failedScore) {
-                $this->failedRoute = $route;
-                $this->failedScore = $score;
             }
 
             // log the failure
@@ -123,12 +117,16 @@ class Matcher
         return false;
     }
 
-    protected function applyRules($request, $route, &$score)
+    protected function applyRules($request, $route)
     {
         $score = 0;
         foreach ($this->rules as $rule) {
             if (! $rule($request, $route)) {
                 $route->setFailedRule(get_class($rule));
+                if (! $this->failedRoute || $score > $this->failedScore) {
+                    $this->failedRoute = $route;
+                    $this->failedScore = $score;
+                }
                 return false;
             }
             $score ++;
