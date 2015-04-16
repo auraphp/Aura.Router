@@ -32,6 +32,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map->route('/foo', 'foo');
     }
 
+    public function testRouteWithoutName()
+    {
+        $route = $this->map->route('/foo', null);
+        $this->assertEmpty($route->name);
+    }
+
     public function testBeforeAndAfterAttach()
     {
         $this->map->route('/foo', 'before');
