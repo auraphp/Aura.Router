@@ -35,13 +35,13 @@ params are placed inside braces in the path.
 ```php
 <?php
 // add a simple named route without params
-$router->add('home', '/');
+$map->route('home', '/');
 
 // add a simple unnamed route with params
-$router->add(null, '/{controller}/{action}/{id}');
+$map->route(null, '/{controller}/{action}/{id}');
 
 // add a named route with an extended specification
-$router->add('blog.read', '/blog/read/{id}{format}')
+$map->route('blog.read', '/blog/read/{id}{format}')
     ->addTokens(array(
         'id'     => '\d+',
         'format' => '(\.[^/]+)?',
@@ -57,13 +57,13 @@ You can create a route that matches only against a particular HTTP method
 as well. The following _Router_ methods are identical to `add()` but require
 the related HTTP method:
 
-- `$router->addHead()`
-- `$router->addGet()`
-- `$router->addDelete()`
-- `$router->addOptions()`
-- `$router->addPatch()`
-- `$router->addPost()`
-- `$router->addPut()`
+- `$map->head()`
+- `$map->get()`
+- `$map->delete()`
+- `$map->options()`
+- `$map->patch()`
+- `$map->post()`
+- `$map->put()`
 
 ### Matching A Route
 
@@ -76,7 +76,7 @@ and the `$_SERVER` values.
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // get the route based on the path and server
-$route = $router->match($path, $_SERVER);
+$route = $map->match($path, $_SERVER);
 ?>
 ```
 
@@ -94,12 +94,12 @@ keys.
 
 ### Handling Failure To Match
 
-When `$router->match()` returns empty, it means there was no matching route for the URL path and server variables. However, we can still discover something about the matching process; in particular, whether the failure is related to an HTTP method or an `Accept` header.
+When `$map->match()` returns empty, it means there was no matching route for the URL path and server variables. However, we can still discover something about the matching process; in particular, whether the failure is related to an HTTP method or an `Accept` header.
 
 ```php
 <?php
 // get the first of the best-available non-matched routes
-$failure = $router->getFailedRoute();
+$failure = $map->getFailedRoute();
 
 // inspect the failed route
 if ($failure->failedMethod()) {
@@ -158,7 +158,7 @@ To generate a URL path from a route so that you can create links, call
 ```php
 <?php
 // $path => "/blog/read/42.atom"
-$path = $router->generate('read', array(
+$path = $generator->generate('read', array(
     'id' => 42,
     'format' => '.atom',
 ));
@@ -255,7 +255,7 @@ Here is a full extended route specification named `read`:
 
 ```php
 <?php
-$router->add('blog.read', '/blog/read/{id}{format}')
+$map->route('blog.read', '/blog/read/{id}{format}')
     ->addTokens(array(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
@@ -293,34 +293,34 @@ methods; the values will apply to all routes added thereafter.
 ```php
 <?php
 // add to the default 'tokens' expressions; setTokens() is also available
-$router->addTokens(array(
+$map->addTokens(array(
     'id' => '\d+',
 ));
 
 // add to the default 'server' expressions; setServer() is also available
-$router->addServer(array(
+$map->addServer(array(
     'REQUEST_METHOD' => 'PUT|PATCH',
 ));
 
 // add to the default param values; setValues() is also available
-$router->addValues(array(
+$map->addValues(array(
     'format' => null,
 ));
 
 // set the default 'secure' value
-$router->setSecure(true);
+$map->setSecure(true);
 
 // set the default wildcard param name
-$router->setWildcard('other');
+$map->setWildcard('other');
 
 // set the default 'routable' flag
-$router->setRoutable(false);
+$map->setRoutable(false);
 
 // set the default 'isMatch()' callable
-$router->setIsMatchCallable(function (...) { ... });
+$map->setIsMatchCallable(function (...) { ... });
 
 // set the default 'generate()' callable
-$router->setGenerateCallable(function (...) { ... });
+$map->setGenerateCallable(function (...) { ... });
 ?>
 ```
 
@@ -331,7 +331,7 @@ simple route ...
 
 ```php
 <?php
-$router->add('archive', '/archive/{year}/{month}/{day}');
+$map->route('archive', '/archive/{year}/{month}/{day}');
 ?>
 ```
 
@@ -341,7 +341,7 @@ following extended route:
 
 ```php
 <?php
-$router->add('archive', '/archive/{year}/{month}/{day}')
+$map->route('archive', '/archive/{year}/{month}/{day}')
     ->setValues(array(
         'action' => 'archive',
     ))
@@ -361,14 +361,14 @@ route param if one is not set manually.
 ```php
 <?php
 // ['action' => 'foo.bar'] because it has not been set otherwise
-$router->add('foo.bar', '/path/to/bar');
+$map->route('foo.bar', '/path/to/bar');
 
 // ['action' => 'zim'] because we add it explicitly
-$router->add('foo.dib', '/path/to/dib')
+$map->route('foo.dib', '/path/to/dib')
        ->addValues(array('action' => 'zim'));
 
 // the 'action' param here will be whatever the path value for {action} is
-$router->add('/path/to/{action}');
+$map->route('/path/to/{action}');
 ?>
 ```
 
@@ -382,7 +382,7 @@ path. For example:
 
 ```php
 <?php
-$router->add('archive', '/archive{/year,month,day}')
+$map->route('archive', '/archive{/year,month,day}')
     ->addTokens(array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
@@ -417,14 +417,14 @@ first missing one:
 
 ```php
 <?php
-$router->add('archive', '/archive{/year,month,day}')
+$map->route('archive', '/archive{/year,month,day}')
     ->addTokens(array(
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
     ));
 
-$link = $router->generate('archive', array(
+$link = $generator->generate('archive', array(
     'year' => '1979',
     'month' => '11',
 )); // "/archive/1979/11"
@@ -435,7 +435,7 @@ Similarly, optional params can be used as a generic catchall route:
 
 ```php
 <?php
-$router->add('generic', '{/controller,action,id}')
+$map->route('generic', '{/controller,action,id}')
     ->setValues(array(
         'controller' => 'index',
         'action' => 'browse',
@@ -461,21 +461,21 @@ arbitrary trailing param values will be stored.
 
 ```php
 <?php
-$router->add('wild_post', '/post/{id}')
+$map->route('wild_post', '/post/{id}')
     ->setWildcard('other');
 
 // this matches, with the following values
-$route = $router->match('/post/88/foo/bar/baz', $_SERVER);
+$route = $map->match('/post/88/foo/bar/baz', $_SERVER);
 // $route->params['id'] = 88;
 // $route->params['other'] = array('foo', 'bar', 'baz')
 
 // this also matches, with the following values; note the trailing slash
-$route = $router->match('/post/88/', $_SERVER);
+$route = $map->match('/post/88/', $_SERVER);
 // $route->params['id'] = 88;
 // $route->params['other'] = array();
 
 // this also matches, with the following values; note the missing slash
-$route = $router->match('/post/88', $_SERVER);
+$route = $map->match('/post/88', $_SERVER);
 // $route->params['id'] = 88;
 // $route->params['other'] = array();
 ?>
@@ -486,10 +486,10 @@ will be used for the trailing arbitrary param values:
 
 ```php
 <?php
-$router->add('wild_post', '/post/{id}')
+$map->route('wild_post', '/post/{id}')
     ->setWildcard('other');
 
-$link = $router->generate('wild_post', array(
+$link = $generator->generate('wild_post', array(
     'id' => '88',
     'other' => array(
         'foo',
@@ -511,9 +511,9 @@ mounted at `/blog` in your application, you can do this:
 $name_prefix = 'blog';
 $path_prefix = '/blog';
 
-$router->attach($name_prefix, $path_prefix, function ($router) {
+$map->attach($name_prefix, $path_prefix, function ($router) {
 
-    $router->add('browse', '{format}')
+    $map->route('browse', '{format}')
         ->addTokens(array(
             'format' => '(\.json|\.atom|\.html)?'
         ))
@@ -521,7 +521,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'format' => '.html',
         ));
 
-    $router->add('read', '/{id}{format}')
+    $map->route('read', '/{id}{format}')
         ->addTokens(array(
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
@@ -530,7 +530,7 @@ $router->attach($name_prefix, $path_prefix, function ($router) {
             'format' => '.html',
         ));
 
-    $router->add('edit', '/{id}/edit{format}')
+    $map->route('edit', '/{id}/edit{format}')
         ->addTokens(array(
             'id' => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
@@ -559,20 +559,20 @@ not affect routes outside the attached group.)
 $name_prefix = 'blog';
 $path_prefix = '/blog';
 
-$router->attach($name_prefix, $path_prefix, function ($router) {
+$map->attach($name_prefix, $path_prefix, function ($router) {
 
-    $router->setTokens(array(
+    $map->setTokens(array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?'
     ));
 
-    $router->setValues(array(
+    $map->setValues(array(
         'format' => '.html',
     ));
 
-    $router->add('browse', '');
-    $router->add('read', '/{id}{format}');
-    $router->add('edit', '/{id}/edit');
+    $map->route('browse', '');
+    $map->route('read', '/{id}{format}');
+    $map->route('edit', '/{id}/edit');
 });
 ?>
 ```
@@ -584,7 +584,7 @@ The router can attach a series of REST resource routes for you with the
 
 ```php
 <?php
-$router->attachResource('blog', '/blog');
+$map->attachResource('blog', '/blog');
 ?>
 ```
 
@@ -615,14 +615,14 @@ create them.
 
 ```php
 <?php
-$router->setResourceCallable(function ($router) {
-    $router->setTokens(array(
+$map->setResourceCallable(function ($router) {
+    $map->setTokens(array(
         'id' => '([a-f0-9]+)'
     ));
-    $router->addPost('create', '/{id}');
-    $router->addGet('read', '/{id}');
-    $router->addPatch('update', '/{id}');
-    $router->addDelete('delete', '/{id}');
+    $map->post('create', '/{id}');
+    $map->get('read', '/{id}');
+    $map->patch('update', '/{id}');
+    $map->delete('delete', '/{id}');
 });
 ?>
 ```
@@ -650,14 +650,14 @@ if (file_exists($cache)) {
 
     // restore from the cache
     $routes = unserialize(file_get_contents($cache));
-    $router->setRoutes($routes);
+    $map->setRoutes($routes);
 
 } else {
 
     // build the routes using add() and attach() ...
     // ... ... ...
     // ... then save to the cache for the next page load
-    $routes = $router->getRoutes();
+    $routes = $map->getRoutes();
     file_put_contents($cache, serialize($routes));
 
 }
@@ -679,7 +679,7 @@ then calling that param to dispatch it.
 
 ```php
 <?php
-$router->add('read', '/blog/read/{id}{format}')
+$map->route('read', '/blog/read/{id}{format}')
     ->addTokens(array(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
@@ -704,7 +704,7 @@ Alternatively, and perhaps more easily, you may specify a third parameter to the
 
 ```php
 <?php
-$router->add(
+$map->route(
     'read',
     '/blog/read/{id}{format}',
     function ($params) {

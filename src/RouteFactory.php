@@ -78,7 +78,7 @@ class RouteFactory
         $path = $spec['pathPrefix'] . $path;
 
         $name = ($spec['namePrefix'] && $name)
-              ? $spec['namePrefix'] . '.' . $name
+              ? $spec['namePrefix'] . $name
               : $name;
 
         $class = $this->class;

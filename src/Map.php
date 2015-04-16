@@ -149,19 +149,21 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function add($name, $path, $action = null)
+    public function route($name, $path, array $defaults = [])
     {
         // create the route with the full path, name, and spec
         $route = $this->routeFactory->newInstance(
             $path,
             $name,
-            $this->getSpec($action)
+            $this->getSpec()
         );
+
+        $route->addDefaults($defaults);
 
         // add the route
         if (! $route->name) {
@@ -182,14 +184,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addGet($name, $path, $action = null)
+    public function get($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('GET');
         return $route;
     }
@@ -202,14 +204,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addDelete($name, $path, $action = null)
+    public function delete($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('DELETE');
         return $route;
     }
@@ -222,14 +224,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addHead($name, $path, $action = null)
+    public function head($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('HEAD');
         return $route;
     }
@@ -242,14 +244,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addOptions($name, $path, $action = null)
+    public function options($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('OPTIONS');
         return $route;
     }
@@ -262,14 +264,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addPatch($name, $path, $action = null)
+    public function patch($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('PATCH');
         return $route;
     }
@@ -282,14 +284,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addPost($name, $path, $action = null)
+    public function post($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('POST');
         return $route;
     }
@@ -302,14 +304,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param mixed $action A value for $route->defaults['action'].
+     * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function addPut($name, $path, $action = null)
+    public function put($name, $path, array $defaults = [])
     {
-        $route = $this->add($name, $path, $action);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethod('PUT');
         return $route;
     }
@@ -319,11 +321,9 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      * Attaches routes to a specific path prefix, and prefixes the attached
      * route names.
      *
-     * @param string $name The prefix for all route names being
-     * attached.
+     * @param string $name The prefix for all route names being attached.
      *
-     * @param string $path The prefix for all route paths being
-     * attached.
+     * @param string $path The prefix for all route paths being attached.
      *
      * @param callable $callable A callable that uses the Router to add new
      * routes. Its signature is `function (\Aura\Router\Map $map)`; this
@@ -332,22 +332,15 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      * @return null
      *
      */
-    public function attach($name, $path, $callable)
+    public function attach($namePrefix, $pathPrefix, $callable)
     {
-        // save current spec
+        // retain current spec
         $spec = $this->getSpec();
 
-        // append to the name prefix, with delimiter if needed
-        if ($this->namePrefix) {
-            $this->namePrefix .= '.';
-        }
-        $this->namePrefix .= $name;
-
-        // append to the path prefix
-        $this->pathPrefix .= $path;
-
-        // invoke the callable, passing this Map as the only attribute
-        call_user_func($callable, $this);
+        // add to existing prefixes, then run the callable
+        $this->namePrefix .= $namePrefix;
+        $this->pathPrefix .= $pathPrefix;
+        $callable($this);
 
         // restore previous spec
         $this->setSpec($spec);
@@ -355,14 +348,12 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
-     * Gets the existing default route specification.
-     *
-     * @param mixed $action A value for $route->defaults['action'].
+     * Gets the default route specification.
      *
      * @return array
      *
      */
-    protected function getSpec($action = null)
+    protected function getSpec()
     {
         $vars = array(
             'tokens',
@@ -382,18 +373,14 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
             $spec[$var] = $this->$var;
         }
 
-        if ($action) {
-            $spec['defaults']['action'] = $action;
-        }
-
         return $spec;
     }
 
     /**
      *
-     * Sets the existing default route specification.
+     * Sets the default route specification.
      *
-     * @param array $spec The new default route specification.
+     * @param array $spec The default route specification.
      *
      * @return null
      *
