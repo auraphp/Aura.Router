@@ -59,17 +59,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
-     * A callable to use for each resource attached to the collection.
-     *
-     * @var callable
-     *
-     * @see attachResource()
-     *
-     */
-    protected $resourceCallable = null;
-
-    /**
-     *
      * Constructor.
      *
      * @param RouteFactory $routeFactory A factory to create route objects.
@@ -78,7 +67,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
     public function __construct(RouteFactory $routeFactory)
     {
         $this->routeFactory = $routeFactory;
-        $this->setResourceCallable(array($this, 'resourceCallable'));
     }
 
     /**
@@ -387,7 +375,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
             'routable',
             'namePrefix',
             'pathPrefix',
-            'resourceCallable'
         );
 
         $spec = array();
@@ -416,71 +403,5 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
         foreach ($spec as $key => $val) {
             $this->$key = $val;
         }
-    }
-    /**
-     *
-     * Use the `$resourceCallable` to attach a resource.
-     *
-     * @param string $name The resource name; used as a route name prefix.
-     *
-     * @param string $path The path to the resource; used as a route path
-     * prefix.
-     *
-     * @return null
-     *
-     */
-    public function attachResource($name, $path)
-    {
-        $this->attach($name, $path, $this->resourceCallable);
-    }
-
-    /**
-     *
-     * Sets the callable for attaching resource routes.
-     *
-     * @param callable $resource The resource callable.
-     *
-     * @return $this
-     *
-     */
-    public function setResourceCallable($resource)
-    {
-        $this->resourceCallable = $resource;
-        return $this;
-    }
-
-    /**
-     *
-     * Callable for `attachResource()` that adds resource routes.
-     *
-     * @param Map $map A Map, probably $this.
-     *
-     * @return null
-     *
-     */
-    protected function resourceCallable(Map $map)
-    {
-        // add 'id' and 'format' if not already defined
-        $tokens = array();
-        if (! isset($map->tokens['id'])) {
-            $tokens['id'] = '\d+';
-        }
-        if (! isset($map->tokens['format'])) {
-            $tokens['format'] = '(\.[^/]+)?';
-        }
-        if ($tokens) {
-            $map->addTokens($tokens);
-        }
-
-        // add the routes
-        $map->addGet('browse', '{format}');
-        $map->addGet('read', '/{id}{format}');
-        $map->addGet('edit', '/{id}/edit{format}');
-        $map->addGet('add', '/add');
-        $map->addDelete('delete', '/{id}');
-        $map->addPost('create', '');
-        $map->addPatch('update', '/{id}');
-        $map->addPut('replace', '/{id}');
-        $map->addOptions('options', '');
     }
 }
