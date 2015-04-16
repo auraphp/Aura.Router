@@ -63,12 +63,12 @@ class Route
 
     /**
      *
-     * Server keys and regexes.
+     * Header names and regexes.
      *
      * @var array
      *
      */
-    protected $server = array();
+    protected $headers = array();
 
     /**
      *
@@ -253,31 +253,31 @@ class Route
 
     /**
      *
-     * Sets the regular expressions for server values.
+     * Sets the regular expressions for header values.
      *
-     * @param array $server The regular expressions for server values.
+     * @param array $headers The regular expressions for header values.
      *
      * @return $this
      *
      */
-    public function setServer(array $server)
+    public function setHeaders(array $headers)
     {
-        $this->server = array();
-        return $this->addServer($server);
+        $this->headers = array();
+        return $this->addHeaders($headers);
     }
 
     /**
      *
-     * Merges with the existing regular expressions for server values.
+     * Merges with the existing regular expressions for header values.
      *
-     * @param array $server Regular expressions for server values.
+     * @param array $headers Regular expressions for header values.
      *
      * @return $this
      *
      */
-    public function addServer(array $server)
+    public function addHeaders(array $headers)
     {
-        $this->server = array_merge($this->server, $server);
+        $this->headers = array_merge($this->headers, $headers);
         return $this;
     }
 

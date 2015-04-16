@@ -4,6 +4,7 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
+// must match **at least one** accept value
 class Accept implements RuleInterface
 {
     /**

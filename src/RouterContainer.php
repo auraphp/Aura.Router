@@ -56,7 +56,7 @@ class RouterContainer
                 new \Aura\Router\Rule\Path(),
                 new \Aura\Router\Rule\Method(),
                 new \Aura\Router\Rule\Accept(),
-                new \Aura\Router\Rule\Server(),
+                new \Aura\Router\Rule\Headers(),
             ];
         }
         return $this->rules;

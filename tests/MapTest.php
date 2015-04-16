@@ -58,7 +58,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $expect = array(
             'tokens' => array(),
-            'server' => array(),
+            'headers' => array(),
             'method' => array(),
             'defaults' => array(),
             'secure' => null,

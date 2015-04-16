@@ -195,14 +195,14 @@ You can extend a route specification with the following methods:
     previous subpatterns entirely, instead of merging with the existing
     subpatterns.
 
-- `addServer()` -- Adds regular expressions that server values must
+- `addHeaders()` -- Adds regular expressions that server values must
   match.
 
-        addServer(array(
+        addHeaders(array(
             'REQUEST_METHOD' => 'PUT|PATCH',
         ))
 
-    Note that `setServer()` is also available, but this will replace any
+    Note that `setHeaders()` is also available, but this will replace any
     previous expressions entirely, instead of merging with the existing
     expressions.
 
@@ -297,8 +297,8 @@ $map->addTokens(array(
     'id' => '\d+',
 ));
 
-// add to the default 'server' expressions; setServer() is also available
-$map->addServer(array(
+// add to the default 'server' expressions; setHeaders() is also available
+$map->addHeaders(array(
     'REQUEST_METHOD' => 'PUT|PATCH',
 ));
 
