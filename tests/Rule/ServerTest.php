@@ -69,7 +69,7 @@ class ServerTest extends AbstractMatcherTest
         $request = $this->newRequest('/foo', $server);
         $this->assertIsMatch($request, $route);
 
-        $actual = $route->matches;
+        $actual = $route->attributes;
         $expect = array(
             'HTTP_ACCEPT' => 'application/json;q=0.9',
         );

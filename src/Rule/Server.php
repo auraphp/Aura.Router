@@ -29,7 +29,7 @@ class Server implements RuleInterface
             $attributes[$name] = $matches[$name];
         }
 
-        $route->addMatches($attributes);
+        $route->addAttributes($attributes);
         return true;
     }
 

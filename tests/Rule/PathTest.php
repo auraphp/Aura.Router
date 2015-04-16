@@ -42,8 +42,9 @@ class PathTest extends AbstractMatcherTest
             'controller' => 'foo',
             'action' => 'bar',
             'id' => '42',
+            'format' => null,
         );
-        $this->assertEquals($expect, $route->matches);
+        $this->assertEquals($expect, $route->attributes);
     }
 
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
@@ -61,8 +62,9 @@ class PathTest extends AbstractMatcherTest
             'controller' => 'any-value',
             'action' => 'read',
             'id' => '42',
+            'format' => null,
         );
-        $this->assertSame($expect, $route->matches);
+        $this->assertSame($expect, $route->attributes);
     }
 
     public function testIsMatchOnRFC3986Paths()
@@ -78,7 +80,7 @@ class PathTest extends AbstractMatcherTest
             'attribute1' => 'foo @+%/',
             'attribute2' => 'sales and marketing/Miami',
         );
-        $this->assertEquals($expect, $route->matches);
+        $this->assertEquals($expect, $route->attributes);
     }
 
     public function testIsMatchOnWildcard()
@@ -90,20 +92,20 @@ class PathTest extends AbstractMatcherTest
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/baz/dib');
         $this->assertIsMatch($request, $route);
-        $this->assertSame('bar', $route->matches['zim']);
-        $this->assertSame(array('baz', 'dib'), $route->matches['wild']);
+        $this->assertSame('bar', $route->attributes['zim']);
+        $this->assertSame(array('baz', 'dib'), $route->attributes['wild']);
 
         // right path with trailing slash but no wildcard values
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/');
         $this->assertIsMatch($request, $route);
-        $this->assertSame('bar', $route->matches['zim']);
-        $this->assertSame(array(), $route->matches['wild']);
+        $this->assertSame('bar', $route->attributes['zim']);
+        $this->assertSame(array(), $route->attributes['wild']);
 
         // right path without trailing slash
         $route = clone $proto;
         $this->assertIsMatch($request, $route);
-        $this->assertSame(array(), $route->matches['wild']);
+        $this->assertSame(array(), $route->attributes['wild']);
 
         // wrong path
         $route = clone $proto;

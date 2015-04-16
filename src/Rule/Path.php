@@ -54,7 +54,7 @@ class Path implements RuleInterface
             return false;
         }
 
-        // populate the path matches into the route defaults. if the path match
+        // populate the matches into the route attributes. if the path match
         // is exactly an empty string, treat it as missing/unset. (this is
         // to support optional ".format" attribute values.)
         $attributes = [];
@@ -74,7 +74,7 @@ class Path implements RuleInterface
             }
         }
 
-        $route->addMatches($attributes);
+        $route->addAttributes($attributes);
         return true;
     }
 
@@ -151,7 +151,8 @@ class Path implements RuleInterface
 
     /**
      *
-     * Expands attribute names in the regex to named subpatterns.
+     * Expands attribute names in the regex to named subpatterns; adds default
+     * `null` values for attributes without defaults.
      *
      * @return null
      *
@@ -159,15 +160,18 @@ class Path implements RuleInterface
     protected function setRegexAttributes()
     {
         $find = '#{([a-z][a-zA-Z0-9_]*)}#';
+        $attributes = $this->route->attributes;
+        $newAttributes = [];
         preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $name = $match[1];
             $subpattern = $this->getSubpattern($name);
             $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
-            if (! isset($this->route->defaults[$name])) {
-                $this->route->addDefaults(array($name => null));
+            if (! isset($attributes[$name])) {
+                $newAttributes[$name] = null;
             }
         }
+        $this->route->addAttributes($newAttributes);
     }
 
     /**

@@ -25,21 +25,24 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @property-read array $defaults Default values for attributes.
  *
- * @property-read array $attributes The matched attributes.
- *
- * @property-read Regex $regex The regular expression for the route.
+ * @property-read array $attributes Attribute values added by the rules.
  *
  * @property-read array $tokens The regular expression for the route.
- *
- * @property-read array $matches All attributes found during `isMatch()`.
- *
- * @property-read string $debug Debugging messages.
  *
  * @property-read string $wildcard The name of the wildcard attribute.
  *
  */
 class Route extends AbstractSpec
 {
+    /**
+     *
+     * Attribute values added by the rules.
+     *
+     * @var array
+     *
+     */
+    protected $attributes = [];
+
     /**
      *
      * The name for this Route.
@@ -60,28 +63,7 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Matched attribute values.
-     *
-     * @var array
-     *
-     */
-    protected $attributes = array();
-
-    /**
-     *
-     * All attributes found during the `isMatch()` process, both from the path
-     * tokens and from matched server values.
-     *
-     * @var array
-     *
-     * @see isMatch()
-     *
-     */
-    protected $matches = [];
-
-    /**
-     *
-     * The matching score for this route (+1 for each is*Match() that passes).
+     * The matching score for this route (+1 for each rule that passes).
      *
      * @var int
      *
@@ -141,11 +123,6 @@ class Route extends AbstractSpec
         return isset($this->$key);
     }
 
-    public function addMatches(array $matches)
-    {
-        $this->matches = array_merge($this->matches, $matches);
-    }
-
     /**
      *
      * Checks if a given path and server values are a match for this
@@ -160,8 +137,7 @@ class Route extends AbstractSpec
      */
     public function isMatch(ServerRequestInterface $request, array $rules)
     {
-        $this->matches = array();
-        $this->attributes = array();
+        $this->attributes = $this->defaults;
         $this->score = 0;
         $this->failedRule = null;
 
@@ -173,8 +149,21 @@ class Route extends AbstractSpec
             $this->score ++;
         }
 
-        $this->attributes = array_merge($this->defaults, $this->matches);
         return true;
+    }
+
+    /**
+     *
+     * Adds attributes to the Route.
+     *
+     * @param array $attributes The attributes to add.
+     *
+     * @return null
+     *
+     */
+    public function addAttributes(array $attributes)
+    {
+        $this->attributes = array_merge($this->attributes, $attributes);
     }
 
     /**
