@@ -164,5 +164,6 @@ class Route extends AbstractSpec
     public function addAttributes(array $attributes)
     {
         $this->attributes = array_merge($this->attributes, $attributes);
+        return $this;
     }
 }
