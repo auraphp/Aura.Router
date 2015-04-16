@@ -94,44 +94,57 @@ class Matcher
         $this->matchedRoute = false;
         $this->failedRoute = null;
         $this->failedScore = 0;
+        $path = $request->getUri()->getPath();
 
-        $context = ['path' => $request->getUri()->getPath()];
-
-        foreach ($this->map as $name => $proto) {
-
-            $context['name'] = $name;
-            $route = clone $proto;
-
-            $match = $this->applyRules($request, $route);
-            if ($match) {
-                $this->logger->debug("{path} MATCHED ON {name}", $context);
-                $this->matchedRoute = $route;
-                return $route;
+        foreach ($this->map as $name => $originalRoute) {
+            $route = clone $originalRoute;
+            if ($this->applyRules($request, $route, $name, $path)) {
+                return $this->routeMatched($route, $name, $path);
             }
-
-            // log the failure
-            $context['debug'] = $route->failedRule;
-            $this->logger->debug("{path} FAILED {debug} ON {name}", $context);
         }
 
         return false;
     }
 
-    protected function applyRules($request, $route)
+    protected function applyRules($request, $route, $name, $path)
     {
         $score = 0;
         foreach ($this->rules as $rule) {
             if (! $rule($request, $route)) {
-                $route->setFailedRule(get_class($rule));
-                if (! $this->failedRoute || $score > $this->failedScore) {
-                    $this->failedRoute = $route;
-                    $this->failedScore = $score;
-                }
-                return false;
+                return $this->ruleFailed($request, $route, $name, $path, $rule, $score);
             }
             $score ++;
         }
         return true;
+    }
+
+    protected function ruleFailed($request, $route, $name, $path, $rule, $score)
+    {
+        $ruleClass = get_class($rule);
+        $route->setFailedRule($ruleClass);
+
+        if (! $this->failedRoute || $score > $this->failedScore) {
+            $this->failedRoute = $route;
+            $this->failedScore = $score;
+        }
+
+        $this->logger->debug("{path} FAILED {ruleClass} ON {name}", [
+            'path' => $path,
+            'ruleClass' => $ruleClass,
+            'name' => $name
+        ]);
+
+        return false;
+    }
+
+    protected function routeMatched($route, $name, $path)
+    {
+        $this->logger->debug("{path} MATCHED ON {name}", [
+            'path' => $path,
+            'name' => $name,
+        ]);
+        $this->matchedRoute = $route;
+        return $route;
     }
 
     /**
