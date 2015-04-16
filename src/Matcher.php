@@ -39,7 +39,7 @@ class Matcher
      */
     protected $map;
 
-    protected $matchers;
+    protected $rules;
 
     /**
      *
@@ -68,11 +68,11 @@ class Matcher
      * @param Generator $generator A URL path generator.
      *
      */
-    public function __construct(Map $map, LoggerInterface $logger, array $matchers)
+    public function __construct(Map $map, LoggerInterface $logger, array $rules)
     {
         $this->map = $map;
         $this->logger = $logger;
-        $this->matchers = $matchers;
+        $this->rules = $rules;
     }
 
     /**
@@ -96,7 +96,7 @@ class Matcher
 
             $context['name'] = $name;
 
-            $match = $route->isMatch($request, $this->matchers);
+            $match = $route->isMatch($request, $this->rules);
             if ($match) {
                 $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;
