@@ -42,24 +42,6 @@ class Route extends AbstractSpec
 {
     /**
      *
-     * The route failed to match at isMethodMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_METHOD = 'Aura\Router\Rule\Method';
-
-    /**
-     *
-     * The route failed to match at isAcceptMatch().
-     *
-     * @const string
-     *
-     */
-    const FAILED_ACCEPT = 'Aura\Router\Rule\Accept';
-
-    /**
-     *
      * The name for this Route.
      *
      * @var string
@@ -87,15 +69,6 @@ class Route extends AbstractSpec
 
     /**
      *
-     * A Regex object for the path.
-     *
-     * @var Regex
-     *
-     */
-    protected $regex;
-
-    /**
-     *
      * All attributes found during the `isMatch()` process, both from the path
      * tokens and from matched server values.
      *
@@ -108,15 +81,6 @@ class Route extends AbstractSpec
 
     /**
      *
-     * Debugging information about why the route did not match.
-     *
-     * @var null|string
-     *
-     */
-    protected $debug;
-
-    /**
-     *
      * The matching score for this route (+1 for each is*Match() that passes).
      *
      * @var int
@@ -126,12 +90,12 @@ class Route extends AbstractSpec
 
     /**
      *
-     * The failure code, if any, during matching.
+     * The rule that failed, if any, during matching.
      *
      * @var string
      *
      */
-    protected $failed = null;
+    protected $failedRule;
 
     /**
      *
@@ -194,88 +158,34 @@ class Route extends AbstractSpec
      * @return bool
      *
      */
-    public function isMatch(ServerRequestInterface $request, array $matchers)
+    public function isMatch(ServerRequestInterface $request, array $rules)
     {
-        $this->debug = null;
+        $this->matches = array();
         $this->attributes = array();
         $this->score = 0;
-        $this->failed = null;
+        $this->failedRule = null;
 
-        foreach ($matchers as $matcher) {
-            if (! $matcher($request, $this)) {
-                return $this->fail(get_class($matcher));
+        foreach ($rules as $rule) {
+            if (! $rule($request, $this)) {
+                $this->failedRule = get_class($rule);
+                return false;
             }
-            $this->pass();
+            $this->score ++;
         }
 
-        $this->setAttributes();
-        return true;
-    }
-
-    /**
-     *
-     * A partial match passed.
-     *
-     * @return bool
-     *
-     */
-    protected function pass()
-    {
-        $this->score ++;
-        return true;
-    }
-
-    /**
-     *
-     * A partial match failed.
-     *
-     * @param string $failed The reason of failure
-     *
-     * @param string $append
-     *
-     * @return bool
-     *
-     */
-    protected function fail($failed, $append = null)
-    {
-        $this->debug = $failed . $append;
-        $this->failed = $failed;
-        return false;
-    }
-
-    /**
-     *
-     * Check whether a failure happened due to accept header
-     *
-     * @return bool
-     *
-     */
-    public function failedAccept()
-    {
-        return $this->failed == self::FAILED_ACCEPT;
-    }
-
-    /**
-     *
-     * Check whether a failure happened due to http method
-     *
-     * @return bool
-     *
-     */
-    public function failedMethod()
-    {
-        return $this->failed == self::FAILED_METHOD;
-    }
-
-    /**
-     *
-     * Sets the route attributes from the matched values.
-     *
-     * @return null
-     *
-     */
-    protected function setAttributes()
-    {
         $this->attributes = array_merge($this->defaults, $this->matches);
+        return true;
+    }
+
+    /**
+     *
+     * Get the rule that failed, if any.
+     *
+     * @return bool
+     *
+     */
+    public function getFailedRule()
+    {
+        return $this->failedRule;
     }
 }
