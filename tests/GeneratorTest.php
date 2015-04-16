@@ -19,17 +19,16 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateControllerAsClosureIssue19()
     {
-        $this->map->route('issue19', '/blog/{id}/edit')
-            ->setTokens(array(
-                'id' => '([0-9]+)',
-            ))
-            ->setDefaults(array(
+        $this->map->route('/blog/{id}/edit', 'issue19', array(
                 "controller" => function ($attributes) {
                     $id = (int) $attributes['id'];
                     return "Hello World";
                 },
                 'action' => 'read',
                 'format' => '.html',
+            ))
+            ->setTokens(array(
+                'id' => '([0-9]+)',
             ));
 
         $url = $this->generator->generate('issue19', array('id' => 42, 'foo' => 'bar'));
@@ -38,7 +37,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerate()
     {
-        $this->map->route('test', '/blog/{id}/edit')
+        $this->map->route('/blog/{id}/edit', 'test')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ));
@@ -55,7 +54,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithWildcard()
     {
-        $this->map->route('test', '/blog/{id}')
+        $this->map->route('/blog/{id}', 'test')
             ->setTokens(array(
                 'id' => '([0-9]+)',
             ))
@@ -75,7 +74,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateWithOptional()
     {
-        $this->map->route('test', '/archive/{category}{/year,month,day}');
+        $this->map->route('/archive/{category}{/year,month,day}', 'test');
 
         $url = $this->generator->generate('test', array(
             'category' => 'foo',
@@ -88,7 +87,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateOnFullUri()
     {
-        $this->map->route('test', 'http://google.com/?q={q}', ['action' => 'google-search'])
+        $this->map->route('http://google.com/?q={q}', 'test', ['action' => 'google-search'])
             ->setRoutable(false);
 
         $actual = $this->generator->generate('test', array('q' => "what's up doc?"));
@@ -98,7 +97,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateRFC3986()
     {
-        $this->map->route('test', '/path/{string}', ['action' => 'rfc3986'])
+        $this->map->route('/path/{string}', 'test', ['action' => 'rfc3986'])
             ->setRoutable(false);
 
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
@@ -113,7 +112,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateRaw()
     {
-        $this->map->route('test', '/{vendor}/{package}/{file}');
+        $this->map->route('/{vendor}/{package}/{file}', 'test');
         $data = array(
             'vendor' => 'vendor+name',
             'package' => 'package+name',

@@ -69,7 +69,7 @@ class RouteFactory
      * @return Route
      *
      */
-    public function newInstance($path, $name = null, array $spec = array())
+    public function newInstance($path, $name, array $spec = array())
     {
         $spec = array_merge($this->spec, $spec);
         $class = $this->class;

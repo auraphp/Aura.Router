@@ -4,4 +4,4 @@
 
 - Add cookie and host matching
 
-- Reversw path and name in API signatures, and always use a name
+- Make all Spec elements additive

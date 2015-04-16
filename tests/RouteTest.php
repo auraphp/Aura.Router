@@ -25,7 +25,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     public function test__isset()
     {
-        $route = $this->factory->newInstance('/foo/bar/baz')
+        $route = $this->factory->newInstance('/foo/bar/baz', 'test')
             ->setDefaults(array(
                 'controller' => 'zim',
                 'action' => 'dib',

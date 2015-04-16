@@ -9,7 +9,6 @@
 namespace Aura\Router;
 
 use ArrayIterator;
-use Countable;
 use IteratorAggregate;
 
 /**
@@ -19,7 +18,7 @@ use IteratorAggregate;
  * @package Aura.Router
  *
  */
-class Map extends AbstractSpec implements Countable, IteratorAggregate
+class Map extends AbstractSpec implements IteratorAggregate
 {
     /**
      *
@@ -71,6 +70,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
+     * IteratorAggregate: returns the iterator object.
+     *
+     * @return ArrayIterator
+     *
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->routes);
+    }
+
+    /**
+     *
      * Sets the array of route objects to use.
      *
      * @param array $routes Use this array of routes.
@@ -99,6 +110,22 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
         return $this->routes;
     }
 
+    public function addRoute(Route $route)
+    {
+        $name = $route->name;
+
+        if (! $name) {
+            $this->routes[] = $route;
+            return;
+        }
+
+        if (isset($this->routes[$name])) {
+            throw new Exception\RouteAlreadySet($name);
+        }
+
+        $this->routes[$name] = $route;
+    }
+
     /**
      *
      * Gets a route by name.
@@ -119,62 +146,24 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
-     * Countable: returns the number of routes in the collection.
-     *
-     * @return int
-     *
-     */
-    public function count()
-    {
-        return count($this->routes);
-    }
-
-    /**
-     *
-     * IteratorAggregate: returns the iterator object.
-     *
-     * @return ArrayIterator
-     *
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->routes);
-    }
-
-    /**
-     *
-     * Adds a route.
-     *
-     * @param string $name The route name.
+     * Adds a generic route.
      *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function route($name, $path, array $defaults = [])
+    public function route($path, $name, array $defaults = [])
     {
-        $name = $this->namePrefix . $name;
         $path = $this->pathPrefix . $path;
-
-        $route = $this->routeFactory->newInstance(
-            $path,
-            $name,
-            $this->getSpec()
-        );
-
+        $name = $this->namePrefix . $name;
+        $route = $this->routeFactory->newInstance($path, $name, $this->getSpec());
         $route->addDefaults($defaults);
-
-        // add the route
-        if (! $route->name) {
-            $this->routes[] = $route;
-        } else {
-            $this->routes[$route->name] = $route;
-        }
-
-        // done
+        $this->addRoute($route);
         return $route;
     }
 
@@ -182,18 +171,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds a GET route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function get($name, $path, array $defaults = [])
+    public function get($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('GET');
         return $route;
     }
@@ -202,18 +191,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds a DELETE route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function delete($name, $path, array $defaults = [])
+    public function delete($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('DELETE');
         return $route;
     }
@@ -222,18 +211,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds a HEAD route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function head($name, $path, array $defaults = [])
+    public function head($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('HEAD');
         return $route;
     }
@@ -242,18 +231,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds an OPTIONS route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function options($name, $path, array $defaults = [])
+    public function options($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('OPTIONS');
         return $route;
     }
@@ -262,18 +251,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds a PATCH route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function patch($name, $path, array $defaults = [])
+    public function patch($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('PATCH');
         return $route;
     }
@@ -282,18 +271,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds a POST route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function post($name, $path, array $defaults = [])
+    public function post($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('POST');
         return $route;
     }
@@ -302,18 +291,18 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      *
      * Adds a PUT route.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The route path.
+     *
+     * @param string $name The route name.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function put($name, $path, array $defaults = [])
+    public function put($path, $name, array $defaults = [])
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($path, $name, $defaults);
         $route->addMethod('PUT');
         return $route;
     }
@@ -323,9 +312,9 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      * Attaches routes to a specific path prefix, and prefixes the attached
      * route names.
      *
-     * @param string $name The prefix for all route names being attached.
+     * @param string $pathPrefix The prefix for all route paths being attached.
      *
-     * @param string $path The prefix for all route paths being attached.
+     * @param string $namePrefix The prefix for all route names being attached.
      *
      * @param callable $callable A callable that uses the Router to add new
      * routes. Its signature is `function (\Aura\Router\Map $map)`; this
@@ -334,7 +323,7 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
      * @return null
      *
      */
-    public function attach($namePrefix, $pathPrefix, $callable)
+    public function attach($pathPrefix, $namePrefix, $callable)
     {
         // retain current spec
         $spec = $this->getSpec();

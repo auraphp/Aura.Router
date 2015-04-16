@@ -27,19 +27,19 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testBeforeAndAfterAttach()
     {
-        $this->map->route('before', '/foo');
+        $this->map->route('/foo', 'before');
 
-        $this->map->attach('during.', '/during', function ($map) {
+        $this->map->attach('/during', 'during.', function ($map) {
             $map->setTokens(array('id' => '\d+'));
             $map->setMethod('GET');
             $map->setDefaults(array('zim' => 'gir'));
             $map->setSecure(true);
             $map->setWildcard('other');
             $map->setRoutable(false);
-            $map->route('bar', '/bar');
+            $map->route('/bar', 'bar');
         });
 
-        $this->map->route('after', '/baz');
+        $this->map->route('/baz', 'after');
 
         $map = $this->map->getRoutes();
 
@@ -69,10 +69,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testAttachInAttach()
     {
-        $this->map->attach('foo.', '/foo', function ($map) {
-            $map->route('index', '/index');
-            $map->attach('bar.', '/bar', function ($map) {
-                $map->route('index', '/index');
+        $this->map->attach('/foo', 'foo.', function ($map) {
+            $map->route('/index', 'index');
+            $map->attach('/bar', 'bar.', function ($map) {
+                $map->route('/index', 'index');
             });
         });
 
@@ -84,7 +84,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAndSetRoutes()
     {
-        $this->map->attach('page.', '/page', function ($map) {
+        $this->map->attach('/page', 'page.', function ($map) {
             $map->setTokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
@@ -95,13 +95,13 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => null,
             ));
 
-            $map->route('browse', '/');
-            $map->route('read', '/{id}{format}');
+            $map->route('/', 'browse');
+            $map->route('/{id}{format}', 'read');
         });
 
         $actual = $this->map->getRoutes();
         $this->assertTrue(is_array($actual));
-        $this->assertTrue(count($actual) == count($this->map));
+        $this->assertCount(2, $actual);
         $this->assertIsRoute($actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
         $this->assertIsRoute($actual['page.read']);
@@ -117,7 +117,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $map->setRoutes($restored);
         $actual = $map->getRoutes();
         $this->assertTrue(is_array($actual));
-        $this->assertTrue(count($actual) == count($this->map));
+        $this->assertCount(2, $actual);
         $this->assertIsRoute($actual['page.browse']);
         $this->assertEquals('/page/', $actual['page.browse']->path);
         $this->assertIsRoute($actual['page.read']);
@@ -126,7 +126,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testAddWithAction()
     {
-        $this->map->route('foo.bar', '/foo/bar', ['action' => 'DirectAction']);
+        $this->map->route('/foo/bar', 'foo.bar', ['action' => 'DirectAction']);
         $actual = $this->map->getRoute('foo.bar');
         $this->assertSame('DirectAction', $actual->defaults['action']);
     }

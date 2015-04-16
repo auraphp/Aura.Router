@@ -45,23 +45,20 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testAttach()
     {
-        $this->map->attach('resource.', '/resource', function ($map) {
+        $this->map->attach('/resource', 'resource.', function ($map) {
 
             $map->setTokens(array(
                 'id' => '(\d+)',
             ));
 
-            $map->get('browse', '/', array(
-                'action' => 'browse'
-            ));
-
-            $map->head('head', '/{id}');
-            $map->get('read', '/{id}');
-            $map->post('edit', '/{id}');
-            $map->put('add', '/{id}');
-            $map->delete('delete', '/{id}');
-            $map->patch('patch', '/{id}');
-            $map->options('options', '/{id}');
+            $map->get('/', 'browse', ['action' => 'browse']);
+            $map->head('/{id}', 'head');
+            $map->get('/{id}', 'read');
+            $map->post('/{id}', 'edit');
+            $map->put('/{id}', 'add');
+            $map->delete('/{id}', 'delete');
+            $map->patch('/{id}', 'patch');
+            $map->options('/{id}', 'options');
         });
 
         // fail to match
@@ -158,9 +155,9 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testLogger()
     {
-        $foo = $this->map->route('foo', '/foo');
-        $bar = $this->map->route('bar', '/bar');
-        $baz = $this->map->route('baz', '/baz');
+        $foo = $this->map->route('/foo', 'foo');
+        $bar = $this->map->route('/bar', 'bar');
+        $baz = $this->map->route('/baz', 'baz');
 
         $request = $this->newRequest('/bar');
         $this->matcher->match($request);
@@ -177,7 +174,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testCatchAll()
     {
-        $this->map->route(null, '{/controller,action,id}');
+        $this->map->route('{/controller,action,id}', 'catchall');
 
         $request = $this->newRequest('/');
         $actual = $this->matcher->match($request);
@@ -230,8 +227,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFailedRouteIsBestMatch()
     {
-        $expect = $this->map->post('bar', '/bar');
-        $this->map->route('foo', '/foo');
+        $expect = $this->map->post('/bar', 'bar');
+        $this->map->route('/foo', 'foo');
 
         $request = $this->newRequest('/bar');
         $match = $this->matcher->match($request);
@@ -243,8 +240,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFailedRouteIsBestMatchWithPriorityGivenToThoseAddedFirst()
     {
-        $expect = $this->map->post('post_bar', '/bar');
-        $other = $this->map->delete('delete_bar', '/bar');
+        $expect = $this->map->post('/bar', 'post_bar');
+        $other = $this->map->delete('/bar', 'delete_bar');
 
         $request = $this->newRequest('/bar');
         $match = $this->matcher->match($request);
