@@ -92,9 +92,10 @@ class Matcher
         $this->failedRoute = null;
         $context = ['path' => $request->getUri()->getPath()];
 
-        foreach ($this->map as $name => $route) {
+        foreach ($this->map as $name => $proto) {
 
             $context['name'] = $name;
+            $route = clone $proto;
 
             $match = $route->isMatch($request, $this->rules);
             if ($match) {

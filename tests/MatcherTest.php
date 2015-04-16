@@ -235,7 +235,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($match);
 
         $actual = $this->matcher->getFailedRoute();
-        $this->assertSame($expect, $actual);
+        $this->assertSame($expect->name, $actual->name);
     }
 
     public function testGetFailedRouteIsBestMatchWithPriorityGivenToThoseAddedFirst()
@@ -247,7 +247,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $match = $this->matcher->match($request);
         $this->assertFalse($match);
 
-        $this->assertSame($expect, $this->matcher->getFailedRoute());
+        $failed = $this->matcher->getFailedRoute();
+        $this->assertSame($expect->name, $failed->name);
         $this->assertEquals($expect->score, $other->score, "Assert scores were actually equal");
     }
 }
