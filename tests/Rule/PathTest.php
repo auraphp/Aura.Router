@@ -1,12 +1,12 @@
 <?php
 namespace Aura\Router\Rule;
 
-class PathTest extends AbstractMatcherTest
+class PathTest extends AbstractRuleTest
 {
     public function setup()
     {
         parent::setup();
-        $this->matcher = new Path();
+        $this->rule = new Path();
     }
 
     public function testIsMatchOnStaticPath()

@@ -18,7 +18,7 @@ use IteratorAggregate;
  * @package Aura.Router
  *
  */
-class Map extends AbstractSpec implements IteratorAggregate
+class Map implements IteratorAggregate
 {
     /**
      *
@@ -31,41 +31,29 @@ class Map extends AbstractSpec implements IteratorAggregate
 
     /**
      *
-     * A factory to create route objects.
+     * A prototype Route.
      *
-     * @var RouteFactory
-     *
-     */
-    protected $routeFactory;
-
-    /**
-     *
-     * A prefix to add to each route name added to the collection.
-     *
-     * @var string
+     * @var Route
      *
      */
-    protected $namePrefix = null;
-
-    /**
-     *
-     * A prefix to add to each route path added to the collection.
-     *
-     * @var string
-     *
-     */
-    protected $pathPrefix = null;
+    protected $protoRoute;
 
     /**
      *
      * Constructor.
      *
-     * @param RouteFactory $routeFactory A factory to create route objects.
+     * @param Route $protoRoute A prototype Route.
      *
      */
-    public function __construct(RouteFactory $routeFactory)
+    public function __construct(Route $protoRoute)
     {
-        $this->routeFactory = $routeFactory;
+        $this->protoRoute = $protoRoute;
+    }
+
+    public function __call($method, $params)
+    {
+        call_user_func_array([$this->protoRoute, $method], $params);
+        return $this;
     }
 
     /**
@@ -159,10 +147,11 @@ class Map extends AbstractSpec implements IteratorAggregate
      */
     public function route($path, $name, array $defaults = [])
     {
-        $path = $this->pathPrefix . $path;
-        $name = $this->namePrefix . $name;
-        $route = $this->routeFactory->newInstance($path, $name, $this->getSpec());
+        $route = clone $this->protoRoute;
+        $route->setPath($path);
+        $route->setName($name);
         $route->addDefaults($defaults);
+
         $this->addRoute($route);
         return $route;
     }
@@ -325,61 +314,16 @@ class Map extends AbstractSpec implements IteratorAggregate
      */
     public function attach($pathPrefix, $namePrefix, $callable)
     {
-        // retain current spec
-        $spec = $this->getSpec();
+        // retain current prototype and replace with a clone
+        $previous = $this->protoRoute;
 
         // add to existing prefixes, then run the callable
-        $this->namePrefix .= $namePrefix;
-        $this->pathPrefix .= $pathPrefix;
+        $this->protoRoute = clone $this->protoRoute;
+        $this->protoRoute->appendPathPrefix($pathPrefix);
+        $this->protoRoute->appendNamePrefix($namePrefix);
         $callable($this);
 
-        // restore previous spec
-        $this->setSpec($spec);
-    }
-
-    /**
-     *
-     * Gets the default route specification.
-     *
-     * @return array
-     *
-     */
-    protected function getSpec()
-    {
-        $vars = array(
-            'tokens',
-            'server',
-            'method',
-            'accept',
-            'defaults',
-            'secure',
-            'wildcard',
-            'routable',
-            'namePrefix',
-            'pathPrefix',
-        );
-
-        $spec = array();
-        foreach ($vars as $var) {
-            $spec[$var] = $this->$var;
-        }
-
-        return $spec;
-    }
-
-    /**
-     *
-     * Sets the default route specification.
-     *
-     * @param array $spec The default route specification.
-     *
-     * @return null
-     *
-     */
-    protected function setSpec($spec)
-    {
-        foreach ($spec as $key => $val) {
-            $this->$key = $val;
-        }
+        // restore previous prototype
+        $this->protoRoute = $previous;
     }
 }

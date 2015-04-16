@@ -5,33 +5,54 @@ use Phly\Http\ServerRequestFactory;
 
 class RouteTest extends \PHPUnit_Framework_TestCase
 {
-    protected $factory;
-
-    protected $server;
-
-    protected function setUp()
+    public function test__get()
     {
-        parent::setUp();
-        $this->factory = new RouteFactory();
-        $this->server = $_SERVER;
+        $route = new Route();
+        $route->setPath('/foo/bar/baz');
+        $this->assertSame('/foo/bar/baz', $route->path);
     }
 
-    protected function newRequest($path, array $server = [])
+    public function testImmutablePath()
     {
-        $server['REQUEST_URI'] = $path;
-        $server = array_merge($_SERVER, $server);
-        return ServerRequestFactory::fromGlobals($server);
+        $route = new Route();
+        $route->setPath('/foo');
+        $this->setExpectedException(
+            'Aura\Router\Exception\ImmutableProperty',
+            'Aura\Router\Route::$path'
+        );
+        $route->setPath('/bar');
     }
 
-    public function test__isset()
+    public function testImmutablePathPrefix()
     {
-        $route = $this->factory->newInstance('/foo/bar/baz')
-            ->setDefaults(array(
-                'controller' => 'zim',
-                'action' => 'dib',
-            ));
+        $route = new Route();
+        $route->setPath('/foo');
+        $this->setExpectedException(
+            'Aura\Router\Exception\ImmutableProperty',
+            'Aura\Router\Route::$pathPrefix'
+        );
+        $route->appendPathPrefix('/bar');
+    }
 
-        $this->assertTrue(isset($route->path));
-        $this->assertFalse(isset($route->no_such_property));
+    public function testImmutableName()
+    {
+        $route = new Route();
+        $route->setName('/foo');
+        $this->setExpectedException(
+            'Aura\Router\Exception\ImmutableProperty',
+            'Aura\Router\Route::$name'
+        );
+        $route->setName('/bar');
+    }
+
+    public function testImmutableNamePrefix()
+    {
+        $route = new Route();
+        $route->setName('/foo');
+        $this->setExpectedException(
+            'Aura\Router\Exception\ImmutableProperty',
+            'Aura\Router\Route::$namePrefix'
+        );
+        $route->appendNamePrefix('/bar');
     }
 }

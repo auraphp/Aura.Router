@@ -1,12 +1,12 @@
 <?php
 namespace Aura\Router\Rule;
 
-class SecureTest extends AbstractMatcherTest
+class SecureTest extends AbstractRuleTest
 {
     public function setup()
     {
         parent::setup();
-        $this->matcher = new Secure();
+        $this->rule = new Secure();
     }
 
     public function testIsSecureMatch_https()

@@ -1,12 +1,12 @@
 <?php
 namespace Aura\Router\Rule;
 
-class MethodTest extends AbstractMatcherTest
+class MethodTest extends AbstractRuleTest
 {
     public function setup()
     {
         parent::setup();
-        $this->matcher = new Method();
+        $this->rule = new Method();
     }
 
     public function testIsMethodMatch()

@@ -1,12 +1,12 @@
 <?php
 namespace Aura\Router\Rule;
 
-class ServerTest extends AbstractMatcherTest
+class ServerTest extends AbstractRuleTest
 {
     public function setup()
     {
         parent::setup();
-        $this->matcher = new Server();
+        $this->rule = new Server();
     }
 
     public function testIsServerMatch()

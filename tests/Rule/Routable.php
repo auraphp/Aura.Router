@@ -1,12 +1,12 @@
 <?php
 namespace Aura\Router\Rule;
 
-class RoutableTest extends AbstractMatcherTest
+class RoutableTest extends AbstractRuleTest
 {
     public function setup()
     {
         parent::setup();
-        $this->matcher = new Routable();
+        $this->rule = new Routable();
     }
 
     public function testIsNotRoutable()
