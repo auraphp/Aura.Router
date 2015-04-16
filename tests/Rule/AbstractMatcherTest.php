@@ -1,5 +1,5 @@
 <?php
-namespace Aura\Router\Matcher;
+namespace Aura\Router\Rule;
 
 use Aura\Router\RouteFactory;
 use Phly\Http\ServerRequestFactory;

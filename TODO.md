@@ -4,7 +4,5 @@
 
 - Add cookie and host matching
 
-- Rename "Matchers" to something else, or "Matcher" to something else
-
-- Allow different prefixes/separators when attaching routes
+- Pull prefixing out of RouteFactory
 

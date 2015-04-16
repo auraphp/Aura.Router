@@ -167,7 +167,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->matcher->match($request);
 
         $expect = [
-            'debug: /bar FAILED Aura\Router\Matcher\Path ON foo',
+            'debug: /bar FAILED Aura\Router\Rule\Path ON foo',
             'debug: /bar MATCHED ON bar',
         ];
         $actual = $this->logger->lines;

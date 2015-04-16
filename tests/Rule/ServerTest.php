@@ -1,5 +1,5 @@
 <?php
-namespace Aura\Router\Matcher;
+namespace Aura\Router\Rule;
 
 class ServerTest extends AbstractMatcherTest
 {

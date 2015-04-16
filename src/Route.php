@@ -47,7 +47,7 @@ class Route extends AbstractSpec
      * @const string
      *
      */
-    const FAILED_METHOD = 'Aura\Router\Matcher\Method';
+    const FAILED_METHOD = 'Aura\Router\Rule\Method';
 
     /**
      *
@@ -56,7 +56,7 @@ class Route extends AbstractSpec
      * @const string
      *
      */
-    const FAILED_ACCEPT = 'Aura\Router\Matcher\Accept';
+    const FAILED_ACCEPT = 'Aura\Router\Rule\Accept';
 
     /**
      *

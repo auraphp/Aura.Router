@@ -1,10 +1,10 @@
 <?php
-namespace Aura\Router\Matcher;
+namespace Aura\Router\Rule;
 
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Secure implements MatcherInterface
+class Secure implements RuleInterface
 {
     /**
      *

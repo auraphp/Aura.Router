@@ -52,12 +52,12 @@ class RouterContainer
     {
         if (! $this->matchers) {
             $this->matchers = [
-                new \Aura\Router\Matcher\Routable(),
-                new \Aura\Router\Matcher\Secure(),
-                new \Aura\Router\Matcher\Path(),
-                new \Aura\Router\Matcher\Method(),
-                new \Aura\Router\Matcher\Accept(),
-                new \Aura\Router\Matcher\Server(),
+                new \Aura\Router\Rule\Routable(),
+                new \Aura\Router\Rule\Secure(),
+                new \Aura\Router\Rule\Path(),
+                new \Aura\Router\Rule\Method(),
+                new \Aura\Router\Rule\Accept(),
+                new \Aura\Router\Rule\Server(),
             ];
         }
         return $this->matchers;
