@@ -123,33 +123,12 @@ class Route extends AbstractSpec
         return isset($this->$key);
     }
 
-    /**
-     *
-     * Checks if a given path and server values are a match for this
-     * Route.
-     *
-     * @param string $path The path to check against this Route.
-     *
-     * @param ServerRequestInterface $request The HTTP request.
-     *
-     * @return bool
-     *
-     */
-    public function isMatch(ServerRequestInterface $request, array $rules)
+    public function __clone()
     {
+        // $this is the cloned instance, not the original
         $this->attributes = $this->defaults;
-        $this->score = 0;
         $this->failedRule = null;
-
-        foreach ($rules as $rule) {
-            if (! $rule($request, $this)) {
-                $this->failedRule = get_class($rule);
-                return false;
-            }
-            $this->score ++;
-        }
-
-        return true;
+        $this->score = 0;
     }
 
     /**
@@ -165,5 +144,15 @@ class Route extends AbstractSpec
     {
         $this->attributes = array_merge($this->attributes, $attributes);
         return $this;
+    }
+
+    public function setFailedRule($failedRule)
+    {
+        $this->failedRule = $failedRule;
+    }
+
+    public function incrementScore()
+    {
+        $this->score ++;
     }
 }
