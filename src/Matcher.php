@@ -109,7 +109,7 @@ class Matcher
                 $this->failedRoute = $route;
             }
 
-            $context['debug'] = $route->getFailedRule();
+            $context['debug'] = $route->failedRule;
             $this->logger->debug("{path} FAILED {debug} ON {name}", $context);
         }
 

@@ -165,16 +165,4 @@ class Route extends AbstractSpec
     {
         $this->attributes = array_merge($this->attributes, $attributes);
     }
-
-    /**
-     *
-     * Get the rule that failed, if any.
-     *
-     * @return bool
-     *
-     */
-    public function getFailedRule()
-    {
-        return $this->failedRule;
-    }
 }
