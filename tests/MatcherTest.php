@@ -249,6 +249,5 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
         $failed = $this->matcher->getFailedRoute();
         $this->assertSame($expect->name, $failed->name);
-        $this->assertEquals($expect->score, $other->score, "Assert scores were actually equal");
     }
 }

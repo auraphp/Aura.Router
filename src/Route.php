@@ -63,15 +63,6 @@ class Route extends AbstractSpec
 
     /**
      *
-     * The matching score for this route (+1 for each rule that passes).
-     *
-     * @var int
-     *
-     */
-    protected $score = 0;
-
-    /**
-     *
      * The rule that failed, if any, during matching.
      *
      * @var string
@@ -128,7 +119,6 @@ class Route extends AbstractSpec
         // $this is the cloned instance, not the original
         $this->attributes = $this->defaults;
         $this->failedRule = null;
-        $this->score = 0;
     }
 
     /**
@@ -149,10 +139,5 @@ class Route extends AbstractSpec
     public function setFailedRule($failedRule)
     {
         $this->failedRule = $failedRule;
-    }
-
-    public function incrementScore()
-    {
-        $this->score ++;
     }
 }

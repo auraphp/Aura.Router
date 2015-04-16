@@ -39,7 +39,7 @@ class Matcher
      */
     protected $map;
 
-    protected $rules;
+    protected $rules = array();
 
     /**
      *
@@ -48,7 +48,7 @@ class Matcher
      * @var Route|false
      *
      */
-    protected $matchedRoute = null;
+    protected $matchedRoute;
 
     /**
      *
@@ -57,7 +57,9 @@ class Matcher
      * @var Route
      *
      */
-    protected $failedRoute = null;
+    protected $failedRoute;
+
+    protected $failedScore = 0;
 
     /**
      *
@@ -89,7 +91,10 @@ class Matcher
      */
     public function match(ServerRequestInterface $request)
     {
+        $this->matchedRoute = false;
         $this->failedRoute = null;
+        $this->failedScore = 0;
+
         $context = ['path' => $request->getUri()->getPath()];
 
         foreach ($this->map as $name => $proto) {
@@ -97,35 +102,36 @@ class Matcher
             $context['name'] = $name;
             $route = clone $proto;
 
-            $match = $this->applyRules($request, $route);
+            $match = $this->applyRules($request, $route, $score);
             if ($match) {
                 $this->logger->debug("{path} MATCHED ON {name}", $context);
                 $this->matchedRoute = $route;
                 return $route;
             }
 
-            $betterMatch = ! $this->failedRoute
-                         || $route->score > $this->failedRoute->score;
-            if ($betterMatch) {
+            // retain a better-matching failure
+            if (! $this->failedRoute || $score > $this->failedScore) {
                 $this->failedRoute = $route;
+                $this->failedScore = $score;
             }
 
+            // log the failure
             $context['debug'] = $route->failedRule;
             $this->logger->debug("{path} FAILED {debug} ON {name}", $context);
         }
 
-        $this->matchedRoute = false;
         return false;
     }
 
-    protected function applyRules($request, $route)
+    protected function applyRules($request, $route, &$score)
     {
+        $score = 0;
         foreach ($this->rules as $rule) {
             if (! $rule($request, $route)) {
                 $route->setFailedRule(get_class($rule));
                 return false;
             }
-            $route->incrementScore();
+            $score ++;
         }
         return true;
     }
