@@ -47,21 +47,19 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'tokens' => array(),
             'server' => array(),
             'method' => array(),
-            'defaults' => array('action' => 'before'),
+            'defaults' => array(),
             'secure' => null,
             'wildcard' => null,
             'routable' => true,
         );
         $this->assertRoute($expect, $map['before']);
-
-        $expect['defaults']['action'] = 'after';
         $this->assertRoute($expect, $map['after']);
 
         $actual = $map['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
             'method' => array('GET'),
-            'defaults' => array('zim' => 'gir', 'action' => 'during.bar'),
+            'defaults' => array('zim' => 'gir'),
             'secure' => true,
             'wildcard' => 'other',
             'routable' => false,
@@ -139,9 +137,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('GET'),
-            'defaults' => array(
-                'action' => 'blog.browse',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.browse']);
 
@@ -153,9 +149,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('GET'),
-            'defaults' => array(
-                'action' => 'blog.read',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.read']);
 
@@ -167,9 +161,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('GET'),
-            'defaults' => array(
-                'action' => 'blog.add',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.add']);
 
@@ -181,9 +173,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('GET'),
-            'defaults' => array(
-                'action' => 'blog.edit',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.edit']);
 
@@ -195,9 +185,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('DELETE'),
-            'defaults' => array(
-                'action' => 'blog.delete',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.delete']);
 
@@ -209,9 +197,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('POST'),
-            'defaults' => array(
-                'action' => 'blog.create',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.create']);
 
@@ -223,9 +209,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('PATCH'),
-            'defaults' => array(
-                'action' => 'blog.update',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.update']);
 
@@ -237,9 +221,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => '(\.[^/]+)?',
             ),
             'method' => array('PUT'),
-            'defaults' => array(
-                'action' => 'blog.replace',
-            ),
+            'defaults' => array(),
         );
         $this->assertRoute($expect, $map['blog.replace']);
 

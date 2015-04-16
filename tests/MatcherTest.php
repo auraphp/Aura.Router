@@ -86,7 +86,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.head', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.head',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);
@@ -98,7 +97,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.read', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.read',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);
@@ -110,7 +108,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.edit', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.edit',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);
@@ -119,11 +116,9 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $request = $this->newRequest('/resource/42', ['REQUEST_METHOD' => 'PUT']);
         $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
-        $this->assertSame('resource.add', $actual->attributes['action']);
         $this->assertSame('resource.add', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.add',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);
@@ -135,7 +130,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.delete', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.delete',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);
@@ -147,7 +141,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.patch', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.patch',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);
@@ -159,7 +152,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('resource.options', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
         $expect = array(
-            'action' => 'resource.options',
             'id' => '42',
         );
         $this->assertEquals($expect, $actual->attributes);

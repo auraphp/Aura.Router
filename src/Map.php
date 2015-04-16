@@ -70,17 +70,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
-     * A callable to modify to each route added to the collection.
-     *
-     * @var callable
-     *
-     * @see add()
-     *
-     */
-    protected $routeCallable = null;
-
-    /**
-     *
      * Constructor.
      *
      * @param RouteFactory $routeFactory A factory to create route objects.
@@ -90,7 +79,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
     {
         $this->routeFactory = $routeFactory;
         $this->setResourceCallable(array($this, 'resourceCallable'));
-        $this->setRouteCallable(array($this, 'routeCallable'));
     }
 
     /**
@@ -194,10 +182,7 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
             $this->routes[$route->name] = $route;
         }
 
-        // modify newly-added route
-        call_user_func($this->routeCallable, $route);
-
-        // done; return for further modification
+        // done
         return $route;
     }
 
@@ -343,39 +328,6 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
 
     /**
      *
-     * Sets the callable for modifying a newly-added route before it is
-     * returned.
-     *
-     * @param callable $callable The callable to modify the route.
-     *
-     * @return $this
-     *
-     */
-    public function setRouteCallable($callable)
-    {
-        $this->routeCallable = $callable;
-        return $this;
-    }
-
-    /**
-     *
-     * Modifies the newly-added route to set an 'action' value from the route
-     * name.
-     *
-     * @param Route $route The newly-added route.
-     *
-     * @return null
-     *
-     */
-    protected function routeCallable(Route $route)
-    {
-        if ($route->name && ! isset($route->defaults['action'])) {
-            $route->addDefaults(array('action' => $route->name));
-        }
-    }
-
-    /**
-     *
      * Attaches routes to a specific path prefix, and prefixes the attached
      * route names.
      *
@@ -435,8 +387,7 @@ class Map extends AbstractSpec implements Countable, IteratorAggregate
             'routable',
             'namePrefix',
             'pathPrefix',
-            'resourceCallable',
-            'routeCallable',
+            'resourceCallable'
         );
 
         $spec = array();
