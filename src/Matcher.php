@@ -89,7 +89,7 @@ class Matcher
      * boolean false if there is no match.
      *
      */
-    public function match(ServerRequestInterface $request)
+    public function match(ServerRequestInterface &$request)
     {
         $this->matchedRoute = false;
         $this->failedRoute = null;
@@ -104,6 +104,20 @@ class Matcher
         }
 
         return false;
+    }
+
+    public function matchAndSet(ServerRequestInterface &$request)
+    {
+        $route = $this->match($request);
+        if (! $route) {
+            return false;
+        }
+
+        foreach ($route->attributes as $key => $val) {
+            $request = $request->withAttribute($key, $val);
+        }
+
+        return $route;
     }
 
     protected function applyRules($request, $route, $name, $path)
