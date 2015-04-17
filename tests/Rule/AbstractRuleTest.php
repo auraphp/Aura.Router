@@ -8,11 +8,17 @@ abstract class AbstractRuleTest extends \PHPUnit_Framework_TestCase
 {
     protected $rule;
 
-    protected function newRequest($path, array $server = [])
+    protected function newRequest($path, array $server = [], array $cookie = [])
     {
         $server['REQUEST_URI'] = $path;
         $server = array_merge($_SERVER, $server);
-        return ServerRequestFactory::fromGlobals($server);
+        $cookie = array_merge($_COOKIE, $cookie);
+        return ServerRequestFactory::fromGlobals(
+            $server,
+            array(),
+            array(),
+            $cookie
+        );
     }
 
     protected function newRoute($path)

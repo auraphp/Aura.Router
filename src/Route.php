@@ -160,6 +160,9 @@ class Route
      */
     protected $pathPrefix;
 
+    protected $cookies = [];
+
+
     /**
      *
      * Magic read-only for all properties.
@@ -278,6 +281,36 @@ class Route
     public function addHeaders(array $headers)
     {
         $this->headers = array_merge($this->headers, $headers);
+        return $this;
+    }
+
+    /**
+     *
+     * Sets the regular expressions for cookie values.
+     *
+     * @param array $cookies The regular expressions for cookie values.
+     *
+     * @return $this
+     *
+     */
+    public function setCookies(array $cookies)
+    {
+        $this->cookies = array();
+        return $this->addCookies($cookies);
+    }
+
+    /**
+     *
+     * Merges with the existing regular expressions for cookie values.
+     *
+     * @param array $cookies Regular expressions for cookie values.
+     *
+     * @return $this
+     *
+     */
+    public function addCookies(array $cookies)
+    {
+        $this->cookies = array_merge($this->cookies, $cookies);
         return $this;
     }
 

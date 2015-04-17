@@ -55,6 +55,7 @@ class RouterContainer
                 new \Aura\Router\Rule\Secure(),
                 new \Aura\Router\Rule\Path(),
                 new \Aura\Router\Rule\Method(),
+                new \Aura\Router\Rule\Cookies(),
                 new \Aura\Router\Rule\Accept(),
                 new \Aura\Router\Rule\Headers(),
             ];
