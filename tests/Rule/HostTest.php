@@ -26,25 +26,23 @@ class HostTest extends AbstractRuleTest
 
     public function testIsMatchOnDynamicHost()
     {
-        $proto = $this->newRoute('/foo/bar/baz')->setHost('{domain}?.?example.com');
+        $proto = $this->newRoute('/foo/bar/baz')
+            ->setHost('({subdomain}?.)?{domain}.com')
+            ->addTokens(['domain' => '.*']);
 
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/baz', ['HTTP_HOST' => 'foo.example.com']);
         $this->assertIsMatch($request, $route);
-        $this->assertEquals(['domain' => 'foo'], $route->attributes);
+        $this->assertEquals(['subdomain' => 'foo', 'domain' => 'example'], $route->attributes);
 
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/baz', ['HTTP_HOST' => 'bar.example.com']);
         $this->assertIsMatch($request, $route);
-        $this->assertEquals(['domain' => 'bar'], $route->attributes);
+        $this->assertEquals(['subdomain' => 'bar', 'domain' => 'example'], $route->attributes);
 
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/baz', ['HTTP_HOST' => 'example.com']);
         $this->assertIsMatch($request, $route);
-        $this->assertEquals(['domain' => null], $route->attributes);
-
-        $route = clone $proto;
-        $request = $this->newRequest('/foo/bar/baz', ['HTTP_HOST' => 'another.com']);
-        $this->assertIsNotMatch($request, $route);
+        $this->assertEquals(['subdomain' => null, 'domain' => 'example'], $route->attributes);
     }
 }
