@@ -4,13 +4,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-// must match **all** cookies
-class Cookies implements RuleInterface
+// must match **all** headers
+class Headers
 {
     /**
      *
-     * Checks that cookie values match their related regular expressions, and
-     * captures the cookies as attributes.
+     * Checks that header values match their related regular expressions, and
+     * captures the headers as attributes.
      *
      * @param ServerRequestInterface $request The HTTP request.
      *
@@ -21,10 +21,15 @@ class Cookies implements RuleInterface
      */
     public function __invoke(ServerRequestInterface $request, Route $route)
     {
-        $requestCookies = $request->getCookieParams();
+        $routeHeaders = $route->headers;
+        if (! $routeHeaders) {
+            return true;
+        }
+
+        $requestHeaders = $request->getHeaders();
         $attributes = [];
-        foreach ($route->cookies as $name => $regex) {
-            $match = $this->match($requestCookies, $name, $regex);
+        foreach ($routeHeaders as $name => $regex) {
+            $match = $this->match($requestHeaders, $name, $regex);
             if ($match === false) {
                 return false;
             }
@@ -37,7 +42,7 @@ class Cookies implements RuleInterface
 
     /**
      *
-     * Does a cookie value match a regex?
+     * Does a header value match a regex?
      *
      * @param $headers The array of all request headers.
      *
@@ -48,14 +53,17 @@ class Cookies implements RuleInterface
      * @return string The match.
      *
      */
-    protected function match($cookies, $name, $regex)
+    protected function match($headers, $name, $regex)
     {
-        if (! isset($cookies[$name])) {
+        $name = strtolower($name);
+        if (! isset($headers[$name])) {
             return false;
         }
 
-        if (preg_match($regex, $cookies[$name], $matches)) {
-            return $cookies[$name];
+        foreach ($headers[$name] as $value) {
+            if (preg_match($regex, $value, $matches)) {
+                return $value;
+            }
         }
 
         return false;

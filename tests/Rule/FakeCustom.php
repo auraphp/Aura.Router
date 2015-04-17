@@ -4,7 +4,7 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-class FakeCustom implements RuleInterface
+class FakeCustom
 {
     public function __invoke(ServerRequestInterface $request, Route $route)
     {

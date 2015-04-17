@@ -164,6 +164,8 @@ class Route
 
     protected $custom = [];
 
+    protected $host;
+
     /**
      *
      * Magic read-only for all properties.
@@ -252,66 +254,6 @@ class Route
     public function addTokens(array $tokens)
     {
         $this->tokens = array_merge($this->tokens, $tokens);
-        return $this;
-    }
-
-    /**
-     *
-     * Sets the regular expressions for header values.
-     *
-     * @param array $headers The regular expressions for header values.
-     *
-     * @return $this
-     *
-     */
-    public function setHeaders(array $headers)
-    {
-        $this->headers = array();
-        return $this->addHeaders($headers);
-    }
-
-    /**
-     *
-     * Merges with the existing regular expressions for header values.
-     *
-     * @param array $headers Regular expressions for header values.
-     *
-     * @return $this
-     *
-     */
-    public function addHeaders(array $headers)
-    {
-        $this->headers = array_merge($this->headers, $headers);
-        return $this;
-    }
-
-    /**
-     *
-     * Sets the regular expressions for cookie values.
-     *
-     * @param array $cookies The regular expressions for cookie values.
-     *
-     * @return $this
-     *
-     */
-    public function setCookies(array $cookies)
-    {
-        $this->cookies = array();
-        return $this->addCookies($cookies);
-    }
-
-    /**
-     *
-     * Merges with the existing regular expressions for cookie values.
-     *
-     * @param array $cookies Regular expressions for cookie values.
-     *
-     * @return $this
-     *
-     */
-    public function addCookies(array $cookies)
-    {
-        $this->cookies = array_merge($this->cookies, $cookies);
         return $this;
     }
 
@@ -422,7 +364,8 @@ class Route
 
     /**
      *
-     * Merges with the existing custom keys and values.
+     * Merges with the existing custom keys and values; this merge is recursive,
+     * so the values can arbitrarily deep.
      *
      * @param array $custom The custom keys and values.
      *
@@ -431,7 +374,7 @@ class Route
      */
     public function addCustom(array $custom)
     {
-        $this->custom = array_merge($this->custom, $custom);
+        $this->custom = array_merge_recursive($this->custom, $custom);
         return $this;
     }
 
@@ -479,6 +422,12 @@ class Route
     public function setRoutable($routable = true)
     {
         $this->routable = (bool) $routable;
+        return $this;
+    }
+
+    public function setHost($host)
+    {
+        $this->host = $host;
         return $this;
     }
 

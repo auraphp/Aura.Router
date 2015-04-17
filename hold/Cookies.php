@@ -4,13 +4,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-// must match **all** headers
-class Headers implements RuleInterface
+// must match **all** cookies
+class Cookies
 {
     /**
      *
-     * Checks that header values match their related regular expressions, and
-     * captures the headers as attributes.
+     * Checks that cookie values match their related regular expressions, and
+     * captures the cookies as attributes.
      *
      * @param ServerRequestInterface $request The HTTP request.
      *
@@ -21,10 +21,15 @@ class Headers implements RuleInterface
      */
     public function __invoke(ServerRequestInterface $request, Route $route)
     {
-        $requestHeaders = $request->getHeaders();
+        $routeCookies = $route->cookies;
+        if (! $routeCookies) {
+            return true;
+        }
+
+        $requestCookies = $request->getCookieParams();
         $attributes = [];
-        foreach ($route->headers as $name => $regex) {
-            $match = $this->match($requestHeaders, $name, $regex);
+        foreach ($routeCookies as $name => $regex) {
+            $match = $this->match($requestCookies, $name, $regex);
             if ($match === false) {
                 return false;
             }
@@ -37,7 +42,7 @@ class Headers implements RuleInterface
 
     /**
      *
-     * Does a header value match a regex?
+     * Does a cookie value match a regex?
      *
      * @param $headers The array of all request headers.
      *
@@ -48,17 +53,14 @@ class Headers implements RuleInterface
      * @return string The match.
      *
      */
-    protected function match($headers, $name, $regex)
+    protected function match($cookies, $name, $regex)
     {
-        $name = strtolower($name);
-        if (! isset($headers[$name])) {
+        if (! isset($cookies[$name])) {
             return false;
         }
 
-        foreach ($headers[$name] as $value) {
-            if (preg_match($regex, $value, $matches)) {
-                return $value;
-            }
+        if (preg_match($regex, $cookies[$name], $matches)) {
+            return $cookies[$name];
         }
 
         return false;
