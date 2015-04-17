@@ -162,6 +162,7 @@ class Route
 
     protected $cookies = [];
 
+    protected $custom = [];
 
     /**
      *
@@ -401,6 +402,36 @@ class Route
     public function addDefaults(array $defaults)
     {
         $this->defaults = array_merge($this->defaults, $defaults);
+        return $this;
+    }
+
+    /**
+     *
+     * Sets the custom keys and values.
+     *
+     * @param array $custom The custom keys and values.
+     *
+     * @return $this
+     *
+     */
+    public function setCustom(array $custom)
+    {
+        $this->custom = array();
+        return $this->addCustom($custom);
+    }
+
+    /**
+     *
+     * Merges with the existing custom keys and values.
+     *
+     * @param array $custom The custom keys and values.
+     *
+     * @return $this
+     *
+     */
+    public function addCustom(array $custom)
+    {
+        $this->custom = array_merge($this->custom, $custom);
         return $this;
     }
 
