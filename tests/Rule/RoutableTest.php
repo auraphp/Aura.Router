@@ -19,7 +19,6 @@ class RoutableTest extends AbstractRuleTest
             ->setRoutable(false);
 
         $request = $this->newRequest('/foo/bar/baz');
-        $actual = $route->isMatch($request);
-        $this->assertFalse($actual);
+        $this->assertIsNotMatch($request, $route);
     }
 }
