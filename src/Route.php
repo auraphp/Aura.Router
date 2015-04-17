@@ -63,15 +63,6 @@ class Route
 
     /**
      *
-     * Header names and regexes.
-     *
-     * @var array
-     *
-     */
-    protected $headers = array();
-
-    /**
-     *
      * HTTP method(s).
      *
      * @var array
@@ -159,8 +150,6 @@ class Route
      *
      */
     protected $pathPrefix;
-
-    protected $cookies = [];
 
     protected $custom = [];
 

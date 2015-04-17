@@ -4,32 +4,33 @@ A PSR-7 compliant web router implementation.
 
 This package does not provide a dispatching mechanism. Your application is
 expected to take the information provided by the matching route and dispatch
-it on its own. For one possible dispatch system, please see
-[Aura.Dispatcher][].
+it on its own. We provide an example below.
 
 ## Getting Started
 
 ### Instantiation
 
-Instantiate a _Router_ like so:
+We get all our router objects through a library-specific container, so we need
+to instantiate it first.
 
 ```php
 <?php
-use Aura\Router\RouterFactory;
+use Aura\Router\RouterContainer;
 
-$router_factory = new RouterFactory;
-$router = $router_factory->newInstance();
+$routerContainer = new RouterContainer();
 ?>
 ```
 
-You will need to place the _Router_ where you can get to it from your
-application; e.g., in a registry, a service locator, or a dependency injection
-container. One such system is the [Aura.Di](https://github.com/auraphp/Aura.Di)
-package.
+We can then retrieve a _Map_ (for adding routes), a _Matcher_ (for matching the
+incoming request to a route), and a _Generator_ (for generating links from
+routes).
+
+Let's go step-by-step to add a route, then match it.
+
 
 ### Adding A Route
 
-To create a route, call the `add()` method on the _Router_. Named path-info
+To add a route, get the _Map_ and call `route()` method on it. Named path-info
 params are placed inside braces in the path.
 
 ```php

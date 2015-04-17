@@ -136,20 +136,21 @@ class Map implements IteratorAggregate
      *
      * Adds a generic route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function route($path, $name, array $defaults = [])
+    public function route($name, $path, array $defaults = [])
     {
         $route = clone $this->protoRoute;
-        $route->setPath($path);
+
         $route->setName($name);
+        $route->setPath($path);
         $route->addDefaults($defaults);
 
         $this->addRoute($route);
@@ -160,18 +161,18 @@ class Map implements IteratorAggregate
      *
      * Adds a GET route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function get($path, $name, array $defaults = [])
+    public function get($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('GET');
         return $route;
     }
@@ -180,18 +181,18 @@ class Map implements IteratorAggregate
      *
      * Adds a DELETE route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function delete($path, $name, array $defaults = [])
+    public function delete($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('DELETE');
         return $route;
     }
@@ -200,18 +201,18 @@ class Map implements IteratorAggregate
      *
      * Adds a HEAD route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function head($path, $name, array $defaults = [])
+    public function head($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('HEAD');
         return $route;
     }
@@ -220,18 +221,18 @@ class Map implements IteratorAggregate
      *
      * Adds an OPTIONS route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function options($path, $name, array $defaults = [])
+    public function options($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('OPTIONS');
         return $route;
     }
@@ -240,18 +241,18 @@ class Map implements IteratorAggregate
      *
      * Adds a PATCH route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function patch($path, $name, array $defaults = [])
+    public function patch($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('PATCH');
         return $route;
     }
@@ -260,18 +261,18 @@ class Map implements IteratorAggregate
      *
      * Adds a POST route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function post($path, $name, array $defaults = [])
+    public function post($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('POST');
         return $route;
     }
@@ -280,18 +281,18 @@ class Map implements IteratorAggregate
      *
      * Adds a PUT route.
      *
-     * @param string $path The route path.
-     *
      * @param string $name The route name.
+     *
+     * @param string $path The route path.
      *
      * @param array $defaults An array of default attributes for the route.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function put($path, $name, array $defaults = [])
+    public function put($name, $path, array $defaults = [])
     {
-        $route = $this->route($path, $name, $defaults);
+        $route = $this->route($name, $path, $defaults);
         $route->addMethods('PUT');
         return $route;
     }
@@ -312,15 +313,15 @@ class Map implements IteratorAggregate
      * @return null
      *
      */
-    public function attach($pathPrefix, $namePrefix, $callable)
+    public function attach($namePrefix, $pathPrefix, $callable)
     {
         // retain current prototype and replace with a clone
         $previous = $this->protoRoute;
 
         // add to existing prefixes, then run the callable
         $this->protoRoute = clone $this->protoRoute;
-        $this->protoRoute->appendPathPrefix($pathPrefix);
         $this->protoRoute->appendNamePrefix($namePrefix);
+        $this->protoRoute->appendPathPrefix($pathPrefix);
         $callable($this);
 
         // restore previous prototype

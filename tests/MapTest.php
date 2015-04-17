@@ -27,38 +27,37 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testRouteAlreadyExists()
     {
-        $this->map->route('/foo', 'foo');
+        $this->map->route('foo', '/foo');
         $this->setExpectedException('Aura\Router\Exception\RouteAlreadyExists');
-        $this->map->route('/foo', 'foo');
+        $this->map->route('foo', '/foo');
     }
 
     public function testRouteWithoutName()
     {
-        $route = $this->map->route('/foo', null);
+        $route = $this->map->route(null, '/foo');
         $this->assertEmpty($route->name);
     }
 
     public function testBeforeAndAfterAttach()
     {
-        $this->map->route('/foo', 'before');
+        $this->map->route('before', '/foo');
 
-        $this->map->attach('/during', 'during.', function ($map) {
+        $this->map->attach('during.', '/during', function ($map) {
             $map->setTokens(array('id' => '\d+'));
             $map->setMethods('GET');
             $map->setDefaults(array('zim' => 'gir'));
             $map->setSecure(true);
             $map->setWildcard('other');
             $map->setRoutable(false);
-            $map->route('/bar', 'bar');
+            $map->route('bar', '/bar');
         });
 
-        $this->map->route('/baz', 'after');
+        $this->map->route('after', '/baz');
 
         $map = $this->map->getRoutes();
 
         $expect = array(
             'tokens' => array(),
-            'headers' => array(),
             'method' => array(),
             'defaults' => array(),
             'secure' => null,
@@ -82,10 +81,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testAttachInAttach()
     {
-        $this->map->attach('/foo', 'foo.', function ($map) {
-            $map->route('/index', 'index');
-            $map->attach('/bar', 'bar.', function ($map) {
-                $map->route('/index', 'index');
+        $this->map->attach('foo.', '/foo', function ($map) {
+            $map->route('index', '/index');
+            $map->attach('bar.', '/bar', function ($map) {
+                $map->route('index', '/index');
             });
         });
 
@@ -97,7 +96,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAndSetRoutes()
     {
-        $this->map->attach('/page', 'page.', function ($map) {
+        $this->map->attach('page.', '/page', function ($map) {
             $map->setTokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
@@ -108,8 +107,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
                 'format' => null,
             ));
 
-            $map->route('/', 'browse');
-            $map->route('/{id}{format}', 'read');
+            $map->route('browse', '/');
+            $map->route('read', '/{id}{format}');
         });
 
         $actual = $this->map->getRoutes();
@@ -139,7 +138,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
     public function testAddWithAction()
     {
-        $this->map->route('/foo/bar', 'foo.bar', ['action' => 'DirectAction']);
+        $this->map->route('foo.bar', '/foo/bar', ['action' => 'DirectAction']);
         $actual = $this->map->getRoute('foo.bar');
         $this->assertSame('DirectAction', $actual->defaults['action']);
     }
