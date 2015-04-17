@@ -121,7 +121,7 @@ class Matcher
     protected function ruleFailed($request, $route, $name, $path, $rule, $score)
     {
         $ruleClass = get_class($rule);
-        $route->setFailedRule($ruleClass);
+        $route->failedRule($ruleClass);
 
         if (! $this->failedRoute || $score > $this->failedScore) {
             $this->failedRoute = $route;

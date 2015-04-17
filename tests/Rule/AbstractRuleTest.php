@@ -24,7 +24,7 @@ abstract class AbstractRuleTest extends \PHPUnit_Framework_TestCase
     protected function newRoute($path)
     {
         $route = new Route();
-        return $route->setPath($path);
+        return $route->path($path);
     }
 
     protected function assertIsMatch($request, $route)

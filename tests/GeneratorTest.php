@@ -27,7 +27,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
                 'action' => 'read',
                 'format' => '.html',
             ))
-            ->setTokens(array(
+            ->tokens(array(
                 'id' => '([0-9]+)',
             ));
 
@@ -38,7 +38,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerate()
     {
         $this->map->route('test', '/blog/{id}/edit')
-            ->setTokens(array(
+            ->tokens(array(
                 'id' => '([0-9]+)',
             ));
 
@@ -55,10 +55,10 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateWithWildcard()
     {
         $this->map->route('test', '/blog/{id}')
-            ->setTokens(array(
+            ->tokens(array(
                 'id' => '([0-9]+)',
             ))
-            ->setWildcard('other');
+            ->wildcard('other');
 
         $url = $this->generator->generate('test', array(
             'id' => 42,
@@ -88,7 +88,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateOnFullUri()
     {
         $this->map->route('test', 'http://google.com/?q={q}', ['action' => 'google-search'])
-            ->setRoutable(false);
+            ->routable(false);
 
         $actual = $this->generator->generate('test', array('q' => "what's up doc?"));
         $expect = "http://google.com/?q=what%27s%20up%20doc%3F";
@@ -98,7 +98,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateRFC3986()
     {
         $this->map->route('test', '/path/{string}', ['action' => 'rfc3986'])
-            ->setRoutable(false);
+            ->routable(false);
 
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
         $actual = $this->generator->generate('test', array('string' => 'foo @+%/'));

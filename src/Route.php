@@ -68,11 +68,11 @@ class Route
      * @var array
      *
      */
-    protected $method = array();
+    protected $methods = array();
 
     /**
      *
-     * Accept header values.
+     * Accept these content-types.
      *
      * @var array
      *
@@ -151,7 +151,7 @@ class Route
      */
     protected $pathPrefix;
 
-    protected $custom = [];
+    protected $extras = [];
 
     protected $host;
 
@@ -196,7 +196,7 @@ class Route
         return $this;
     }
 
-    public function setPath($path)
+    public function path($path)
     {
         if ($this->path !== null) {
             $message = __CLASS__ . '::$path is immutable once set';
@@ -206,7 +206,7 @@ class Route
         return $this;
     }
 
-    public function setName($name)
+    public function name($name)
     {
         if ($this->name !== null) {
             $message = __CLASS__ . '::$name is immutable once set';
@@ -218,21 +218,6 @@ class Route
 
     /**
      *
-     * Sets the regular expressions for attribute tokens.
-     *
-     * @param array $tokens The regular expressions for attribute tokens.
-     *
-     * @return $this
-     *
-     */
-    public function setTokens(array $tokens)
-    {
-        $this->tokens = array();
-        return $this->addTokens($tokens);
-    }
-
-    /**
-     *
      * Merges with the existing regular expressions for attribute tokens.
      *
      * @param array $tokens Regular expressions for attribute tokens.
@@ -240,25 +225,10 @@ class Route
      * @return $this
      *
      */
-    public function addTokens(array $tokens)
+    public function tokens(array $tokens)
     {
         $this->tokens = array_merge($this->tokens, $tokens);
         return $this;
-    }
-
-    /**
-     *
-     * Sets the allowable method(s), overwriting previous the previous value.
-     *
-     * @param string|array $method The allowable method(s).
-     *
-     * @return $this
-     *
-     */
-    public function setMethods($method)
-    {
-        $this->method = array();
-        return $this->addMethods($method);
     }
 
     /**
@@ -270,55 +240,25 @@ class Route
      * @return $this
      *
      */
-    public function addMethods($method)
+    public function methods($method)
     {
-        $this->method = array_merge($this->method, (array) $method);
+        $this->methods = array_merge($this->methods, (array) $method);
         return $this;
     }
 
     /**
      *
-     * Sets the list of matchable content-types, overwriting previous values.
+     * Sets the list of matchable content-types.
      *
      * @param string|array $accept The matchable content-types.
      *
      * @return $this
      *
      */
-    public function setAccept($accept)
+    public function accept($accept)
     {
-        $this->accept = array();
-        return $this->addAccept($accept);
-    }
-
-    /**
-     *
-     * Adds to the list of matchable content-types.
-     *
-     * @param string|array $accept The matchable content-types.
-     *
-     * @return $this
-     *
-     */
-    public function addAccept($accept)
-    {
-        $this->accept = array_merge($this->accept, (array) $accept);
+        $this->accept = (array) $accept;
         return $this;
-    }
-
-    /**
-     *
-     * Sets the default values for attributes.
-     *
-     * @param array $values Default values for attributes.
-     *
-     * @return $this
-     *
-     */
-    public function setDefaults(array $defaults)
-    {
-        $this->defaults = array();
-        return $this->addDefaults($defaults);
     }
 
     /**
@@ -330,7 +270,7 @@ class Route
      * @return $this
      *
      */
-    public function addDefaults(array $defaults)
+    public function defaults(array $defaults)
     {
         $this->defaults = array_merge($this->defaults, $defaults);
         return $this;
@@ -338,32 +278,17 @@ class Route
 
     /**
      *
-     * Sets the custom keys and values.
-     *
-     * @param array $custom The custom keys and values.
-     *
-     * @return $this
-     *
-     */
-    public function setCustom(array $custom)
-    {
-        $this->custom = array();
-        return $this->addCustom($custom);
-    }
-
-    /**
-     *
-     * Merges with the existing custom keys and values; this merge is recursive,
+     * Merges with the existing extra keys and values; this merge is recursive,
      * so the values can arbitrarily deep.
      *
-     * @param array $custom The custom keys and values.
+     * @param array $extras The extra keys and values.
      *
      * @return $this
      *
      */
-    public function addCustom(array $custom)
+    public function extras(array $extras)
     {
-        $this->custom = array_merge_recursive($this->custom, $custom);
+        $this->extras = array_merge_recursive($this->extras, $extras);
         return $this;
     }
 
@@ -377,7 +302,7 @@ class Route
      * @return $this
      *
      */
-    public function setSecure($secure = true)
+    public function secure($secure = true)
     {
         $this->secure = ($secure === null) ? null : (bool) $secure;
         return $this;
@@ -385,14 +310,14 @@ class Route
 
     /**
      *
-     * Sets the name of the wildcard attribute.
+     * Sets the name of the wildcard token, if any.
      *
-     * @param string $wildcard The name of the wildcard attribute, if any.
+     * @param string $wildcard The name of the wildcard token, if any.
      *
      * @return $this
      *
      */
-    public function setWildcard($wildcard)
+    public function wildcard($wildcard)
     {
         $this->wildcard = $wildcard;
         return $this;
@@ -408,13 +333,13 @@ class Route
      * @return $this
      *
      */
-    public function setRoutable($routable = true)
+    public function routable($routable = true)
     {
         $this->routable = (bool) $routable;
         return $this;
     }
 
-    public function setHost($host)
+    public function host($host)
     {
         $this->host = $host;
         return $this;
@@ -429,13 +354,13 @@ class Route
      * @return null
      *
      */
-    public function addAttributes(array $attributes)
+    public function attributes(array $attributes)
     {
         $this->attributes = array_merge($this->attributes, $attributes);
         return $this;
     }
 
-    public function setFailedRule($failedRule)
+    public function failedRule($failedRule)
     {
         $this->failedRule = $failedRule;
         return $this;

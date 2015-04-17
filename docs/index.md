@@ -30,68 +30,78 @@ Let's go step-by-step to add a route, then match it.
 
 ### Adding A Route
 
-To add a route, get the _Map_ and call `route()` method on it. Named path-info
-params are placed inside braces in the path.
+To add a route, get the _Map_ and call `route()` method on it, passing a name
+and a path. (We always give our routes a name so we can look them up later.)
+
+This route named `Blog\Read` will match against any request with a path of
+`/blog/` followed by any string:
 
 ```php
 <?php
-// add a simple named route without params
-$map->route('home', '/');
-
-// add a simple unnamed route with params
-$map->route(null, '/{controller}/{action}/{id}');
-
-// add a named route with an extended specification
-$map->route('blog.read', '/blog/read/{id}{format}')
-    ->addTokens(array(
-        'id'     => '\d+',
-        'format' => '(\.[^/]+)?',
-    ))
-    ->addValues(array(
-        'action'     => 'BlogReadAction',
-        'format'     => '.html',
-    ));
+$map->route('Blog\Read', '/blog/{id}');
 ?>
 ```
 
-You can create a route that matches only against a particular HTTP method
-as well. The following _Router_ methods are identical to `add()` but require
-the related HTTP method:
-
-- `$map->head()`
-- `$map->get()`
-- `$map->delete()`
-- `$map->options()`
-- `$map->patch()`
-- `$map->post()`
-- `$map->put()`
+We will see later how to specify more complex routes.
 
 ### Matching A Route
 
-To match a URL path against your routes, call `match()` with a path string
-and the `$_SERVER` values.
+To match a PSR-7 _ServerRequest_ to a mapped _Route_, and add the _Route_
+attributes to the _ServerRequest_ attributes, get the _Matcher_ from the
+_RouterContainer_ and call its `matchAndSet()` method:
 
 ```php
 <?php
-// get the incoming request URL path
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-// get the route based on the path and server
-$route = $map->match($path, $_SERVER);
+/**
+ * @var Psr\Http\Message\ServerRequestInterface $request
+ */
+$matcher = $routerContainer->getMatcher();
+$route = $matcher->matchAndSet($request);
 ?>
 ```
 
-The `match()` method does not parse the URL or use `$_SERVER` internally. This
-is because different systems may have different ways of representing that
-information; e.g., through a URL object or a context object. As long as you
-can pass the string path and a server array, you can use the _Router_ in your
-application foundation or framework.
+> N.b.: The `$route` result returned from `matchAndSet()` is the matched
+> _Route_, or `false` if no match was found.
 
-The returned `$route` object will contain, among other things, a `$params`
-array with values for each of the parameters identified by the route path. For
-example, matching a route with the path `/{controller}/{action}/{id}` will
-populate the `$route->params` array with `controller`, `action`, and `id`
-keys.
+We can then dispatch to an action or controller.
+
+### Dispatching A Route
+
+Given the above example, we will use the _Route_ name as a double for the action
+class to dispatch to. In this case, the name was `Blog\Read`, so we'll use an
+invokable class like this:
+
+```php
+<?php
+namespace Blog;
+
+use Psr\Http\Message\ServerRequestInterface;
+
+class Read
+{
+    public function __invoke(ServerRequestInterface $request)
+    {
+        $attributes = $request->getAttributes();
+        $id = $attributes['id'];
+        // look up the blog $id and respond with its data
+    }
+}
+?>
+```
+
+We can then use three lines of generic code to dispatch the request to the
+action object:
+
+```php
+<?php
+$class = $route->name; // get the action class name from the route name
+$action = new $class(); // instantiate the action object
+$action($request); // invoke the action object with the request
+?>
+```
+
+## Advanced Topics
+
 
 ### Handling Failure To Match
 
@@ -147,14 +157,14 @@ echo $action->__invoke($route->params);
 ?>
 ```
 
-Again, note that the _Router_ will not dispatch for you; the above is provided
+Again, note that the _Map_ will not dispatch for you; the above is provided
 as a naive example only to show how to use route values.  For a more complex
 dispatching system, try [Aura.Dispatcher][].
 
 ### Generating A Route Path
 
 To generate a URL path from a route so that you can create links, call
-`generate()` on the _Router_ and provide the route name with optional data.
+`generate()` on the _Map_ and provide the route name with optional data.
 
 ```php
 <?php
@@ -169,7 +179,7 @@ echo '<a href="' . $href .'">Atom feed for this blog entry</a>';
 ?>
 ```
 
-The _Router_ does not do dynamic matching of routes; a route must have a name
+The _Map_ does not do dynamic matching of routes; a route must have a name
 to be able to generate a path from it.
 
 The example shows that passing an array of data as the second parameter will
@@ -177,9 +187,6 @@ cause that data to be interpolated into the route path. This data array is
 optional. If there are path params without matching data keys, those params
 will *not* be replaced, leaving the `{param}` token in the path. If there are
 data keys without matching params, those values will not be added to the path.
-
-
-## Advanced Usage
 
 ### Extended Route Specification
 
@@ -192,20 +199,9 @@ You can extend a route specification with the following methods:
             'id' => '\d+',
         ))
 
-    Note that `setTokens()` is also available, but this will replace any
+    Note that `addTokens()` is also available, but this will replace any
     previous subpatterns entirely, instead of merging with the existing
     subpatterns.
-
-- `addHeaders()` -- Adds regular expressions that server values must
-  match.
-
-        addHeaders(array(
-            'REQUEST_METHOD' => 'PUT|PATCH',
-        ))
-
-    Note that `setHeaders()` is also available, but this will replace any
-    previous expressions entirely, instead of merging with the existing
-    expressions.
 
 - `addAccept()` -- Adds a list of content types that the route responds to. Note that this is *not* content negotiation per se, only a "sanity check" to make sure the route can eventually provide the content types specified by the request.
 
@@ -215,19 +211,19 @@ You can extend a route specification with the following methods:
             'text/csv',
         ));
 
-    Note that `setAccept()` is also available, but this will replace any
+    Note that `addAccept()` is also available, but this will replace any
     previous content types entirely, instead of merging with the existing
     types.
 
-- `addValues()` -- Adds default values for the params.
+- `addDefaults()` -- Adds default values for the params.
 
-        addValues(array(
+        addDefaults(array(
             'year' => '1979',
             'month' => '11',
             'day' => '07'
         ))
 
-    Note that `setValues()` is also available, but this will replace any
+    Note that `setDefaults()` is also available, but this will replace any
     previous default values entirely, instead of merging with the existing
     default value.
 
@@ -242,27 +238,20 @@ You can extend a route specification with the following methods:
 - `setRoutable()` -- When `false` the route will be used only for generating
   paths, not for matching (`true` by default).
 
-- `setIsMatchCallable()` -- A custom callable with the signature
-  `function(array $server, \ArrayObject $matches)` that returns true on a
-  match, or false if not. This allows developers to build any kind of matching
-  logic for the route, and to change the `$matches` for param values from the
-  path.
+- `setHost()`
 
-- `setGenerateCallable()` -- A custom callable with the signature
-  `function(\ArrayObject $data)`. This allows developers to modify the data
-  for path interpolation.
+- `addCustom()`
 
-Here is a full extended route specification named `read`:
+Here is a full extended route specification named `Blog\Edit`:
 
 ```php
 <?php
-$map->route('blog.read', '/blog/read/{id}{format}')
+$map->route('Blog\Read', '/blog/{id}')
+    ->addMethods(['PUT', 'POST', 'PATCH'])
     ->addTokens(array(
         'id' => '\d+',
-        'format' => '(\.[^/]+)?',
-        'REQUEST_METHOD' => 'GET|POST',
     ))
-    ->addValues(array(
+    ->addDefaults(array(
         'id' => 1,
         'format' => '.html',
     ))
@@ -288,12 +277,12 @@ $map->route('blog.read', '/blog/read/{id}{format}')
 
 ### Default Route Specifications
 
-You can set the default route specifications with the following _Router_
+You can set the default route specifications with the following _Map_
 methods; the values will apply to all routes added thereafter.
 
 ```php
 <?php
-// add to the default 'tokens' expressions; setTokens() is also available
+// add to the default 'tokens' expressions; addTokens() is also available
 $map->addTokens(array(
     'id' => '\d+',
 ));
@@ -303,8 +292,8 @@ $map->addHeaders(array(
     'REQUEST_METHOD' => 'PUT|PATCH',
 ));
 
-// add to the default param values; setValues() is also available
-$map->addValues(array(
+// add to the default param values; setDefaults() is also available
+$map->addDefaults(array(
     'format' => null,
 ));
 
@@ -336,14 +325,14 @@ $map->route('archive', '/archive/{year}/{month}/{day}');
 ?>
 ```
 
-... the _Router_ will use a default subpattern that matches everything except
+... the _Map_ will use a default subpattern that matches everything except
 slashes for the path params. Thus, the above simple route is equivalent to the
 following extended route:
 
 ```php
 <?php
 $map->route('archive', '/archive/{year}/{month}/{day}')
-    ->setValues(array(
+    ->setDefaults(array(
         'action' => 'archive',
     ))
     ->addTokens(array(
@@ -356,7 +345,7 @@ $map->route('archive', '/archive/{year}/{month}/{day}')
 
 ### Automatic Params
 
-The _Router_ will automatically populate values for the `action`
+The _Map_ will automatically populate values for the `action`
 route param if one is not set manually.
 
 ```php
@@ -366,7 +355,7 @@ $map->route('foo.bar', '/path/to/bar');
 
 // ['action' => 'zim'] because we add it explicitly
 $map->route('foo.dib', '/path/to/dib')
-       ->addValues(array('action' => 'zim'));
+       ->addDefaults(array('action' => 'zim'));
 
 // the 'action' param here will be whatever the path value for {action} is
 $map->route('/path/to/{action}');
@@ -406,7 +395,7 @@ Optional params are *sequentially* optional. This means that, in the above
 example, you cannot have a "day" without a "month", and you cannot have a
 "month" without a "year".
 
-Only one set of optional params per path is recognized by the _Router_.
+Only one set of optional params per path is recognized by the _Map_.
 
 Optional params belong at the end of a route path; placing them elsewhere may
 result in unexpected behavior.
@@ -437,7 +426,7 @@ Similarly, optional params can be used as a generic catchall route:
 ```php
 <?php
 $map->route('generic', '{/controller,action,id}')
-    ->setValues(array(
+    ->setDefaults(array(
         'controller' => 'index',
         'action' => 'browse',
         'id' => null,
@@ -518,7 +507,7 @@ $map->attach($name_prefix, $path_prefix, function ($router) {
         ->addTokens(array(
             'format' => '(\.json|\.atom|\.html)?'
         ))
-        ->addValues(array(
+        ->addDefaults(array(
             'format' => '.html',
         ));
 
@@ -527,7 +516,7 @@ $map->attach($name_prefix, $path_prefix, function ($router) {
             'id'     => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
         ))
-        ->addValues(array(
+        ->addDefaults(array(
             'format' => '.html',
         ));
 
@@ -536,7 +525,7 @@ $map->attach($name_prefix, $path_prefix, function ($router) {
             'id' => '\d+',
             'format' => '(\.json|\.atom|\.html)?'
         ))
-        ->addValues(array(
+        ->addDefaults(array(
             'format' => '.html',
         ));
 });
@@ -562,12 +551,12 @@ $path_prefix = '/blog';
 
 $map->attach($name_prefix, $path_prefix, function ($router) {
 
-    $map->setTokens(array(
+    $map->addTokens(array(
         'id'     => '\d+',
         'format' => '(\.json|\.atom)?'
     ));
 
-    $map->setValues(array(
+    $map->setDefaults(array(
         'format' => '.html',
     ));
 
@@ -617,7 +606,7 @@ create them.
 ```php
 <?php
 $map->setResourceCallable(function ($router) {
-    $map->setTokens(array(
+    $map->addTokens(array(
         'id' => '([a-f0-9]+)'
     ));
     $map->post('create', '/{id}');
@@ -674,7 +663,7 @@ callables instead.
 
 ### As a Micro-Framework
 
-Sometimes you may wish to use the _Router_ as a micro-framework. This is
+Sometimes you may wish to use the _Map_ as a micro-framework. This is
 possible by assigning a `callable` as a default param value, usually `action`,
 then calling that param to dispatch it.
 
@@ -685,7 +674,7 @@ $map->route('read', '/blog/read/{id}{format}')
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
     ))
-    ->addValues(array(
+    ->addDefaults(array(
         'action' => function ($params) {
             if ($params['format'] == '.json') {
                 $id = (int) $params['id'];
@@ -723,7 +712,7 @@ $map->route(
         'id' => '\d+',
         'format' => '(\.[^/]+)?',
     ))
-    ->addValues(array(
+    ->addDefaults(array(
         'format' => '.html',
     ));
 ?>

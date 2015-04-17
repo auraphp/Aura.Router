@@ -149,9 +149,9 @@ class Map implements IteratorAggregate
     {
         $route = clone $this->protoRoute;
 
-        $route->setName($name);
-        $route->setPath($path);
-        $route->addDefaults($defaults);
+        $route->name($name);
+        $route->path($path);
+        $route->defaults($defaults);
 
         $this->addRoute($route);
         return $route;
@@ -173,7 +173,7 @@ class Map implements IteratorAggregate
     public function get($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('GET');
+        $route->methods('GET');
         return $route;
     }
 
@@ -193,7 +193,7 @@ class Map implements IteratorAggregate
     public function delete($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('DELETE');
+        $route->methods('DELETE');
         return $route;
     }
 
@@ -213,7 +213,7 @@ class Map implements IteratorAggregate
     public function head($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('HEAD');
+        $route->methods('HEAD');
         return $route;
     }
 
@@ -233,7 +233,7 @@ class Map implements IteratorAggregate
     public function options($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('OPTIONS');
+        $route->methods('OPTIONS');
         return $route;
     }
 
@@ -253,7 +253,7 @@ class Map implements IteratorAggregate
     public function patch($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('PATCH');
+        $route->methods('PATCH');
         return $route;
     }
 
@@ -273,7 +273,7 @@ class Map implements IteratorAggregate
     public function post($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('POST');
+        $route->methods('POST');
         return $route;
     }
 
@@ -293,7 +293,7 @@ class Map implements IteratorAggregate
     public function put($name, $path, array $defaults = [])
     {
         $route = $this->route($name, $path, $defaults);
-        $route->addMethods('PUT');
+        $route->methods('PUT');
         return $route;
     }
 

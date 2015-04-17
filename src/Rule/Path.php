@@ -74,7 +74,7 @@ class Path
             }
         }
 
-        $route->addAttributes($attributes);
+        $route->attributes($attributes);
         return true;
     }
 
@@ -171,7 +171,7 @@ class Path
                 $newAttributes[$name] = null;
             }
         }
-        $this->route->addAttributes($newAttributes);
+        $this->route->attributes($newAttributes);
     }
 
     /**

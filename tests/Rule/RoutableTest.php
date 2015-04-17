@@ -12,11 +12,11 @@ class RoutableTest extends AbstractRuleTest
     public function testIsNotRoutable()
     {
         $route = $this->newRoute('/foo/bar/baz')
-            ->setDefaults(array(
+            ->defaults(array(
                 'controller' => 'zim',
                 'action' => 'dib',
             ))
-            ->setRoutable(false);
+            ->routable(false);
 
         $request = $this->newRequest('/foo/bar/baz');
         $this->assertIsNotMatch($request, $route);

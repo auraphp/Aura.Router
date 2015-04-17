@@ -43,12 +43,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map->route('before', '/foo');
 
         $this->map->attach('during.', '/during', function ($map) {
-            $map->setTokens(array('id' => '\d+'));
-            $map->setMethods('GET');
-            $map->setDefaults(array('zim' => 'gir'));
-            $map->setSecure(true);
-            $map->setWildcard('other');
-            $map->setRoutable(false);
+            $map->tokens(array('id' => '\d+'));
+            $map->methods('GET');
+            $map->defaults(array('zim' => 'gir'));
+            $map->secure(true);
+            $map->wildcard('other');
+            $map->routable(false);
             $map->route('bar', '/bar');
         });
 
@@ -58,7 +58,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $expect = array(
             'tokens' => array(),
-            'method' => array(),
+            'methods' => array(),
             'defaults' => array(),
             'secure' => null,
             'wildcard' => null,
@@ -70,7 +70,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = $map['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
-            'method' => array('GET'),
+            'methods' => array('GET'),
             'defaults' => array('zim' => 'gir'),
             'secure' => true,
             'wildcard' => 'other',
@@ -97,12 +97,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testGetAndSetRoutes()
     {
         $this->map->attach('page.', '/page', function ($map) {
-            $map->setTokens(array(
+            $map->tokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
             ));
 
-            $map->setDefaults(array(
+            $map->defaults(array(
                 'controller' => 'page',
                 'format' => null,
             ));
