@@ -79,7 +79,7 @@ class Matcher
 
     public function match(ServerRequestInterface &$request)
     {
-        $route = $this->getRouteForRequest($request);
+        $route = $this->matchRoute($request);
         if (! $route) {
             return false;
         }
@@ -103,7 +103,7 @@ class Matcher
      * boolean false if there is no match.
      *
      */
-    public function getRouteForRequest(ServerRequestInterface &$request)
+    public function matchRoute(ServerRequestInterface &$request)
     {
         $this->matchedRoute = false;
         $this->failedRoute = null;
@@ -111,7 +111,7 @@ class Matcher
         $path = $request->getUri()->getPath();
 
         foreach ($this->map as $name => $proto) {
-            $route = $this->matchRoute($request, $proto, $name, $path);
+            $route = $this->requestRoute($request, $proto, $name, $path);
             if ($route) {
                 return $route;
             }
@@ -120,10 +120,10 @@ class Matcher
         return false;
     }
 
-    protected function matchRoute($request, $proto, $name, $path)
+    protected function requestRoute($request, $proto, $name, $path)
     {
         if (! $proto->isRoutable) {
-            continue;
+            return;
         }
         $route = clone $proto;
         return $this->applyRules($request, $route, $name, $path);
