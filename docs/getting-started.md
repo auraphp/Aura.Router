@@ -1,0 +1,142 @@
+# Getting Started
+
+Aura.Router is a web router implementation for PSR-7.
+
+You get all the router objects through a library-specific container, so you need to instantiate it first.
+
+```php
+<?php
+use Aura\Router\RouterContainer;
+
+$routerContainer = new RouterContainer();
+?>
+```
+
+You can then retrieve a _Map_ for adding routes, a _Matcher_ for matching the incoming request to a route, and a _Generator_ for generating paths from routes.
+
+Let's go step-by-step to add a route, match a request against it, and dispatch it.
+
+## Adding A Route
+
+To add a route, first retrieve the _Map_ from the _RouterContainer_.
+
+```php
+<?php
+$map = $routerContainer->getMap();
+?>
+```
+
+Then call one of its route-adding methods:
+
+- `$map->get()` adds a GET route
+- `$map->put()` adds a PUT route
+- `$map->post()` adds a POST route
+- `$map->patch()` adds a PATCH route
+- `$map->delete()` adds a DELETE route
+- `$map->options()` adds a OPTIONS route
+- `$map->head()` adds a HEAD route
+
+Each route-adding method takes three parameters:
+
+1. A `$name` (for when you need to generate link from the route)
+2. A `$path` (with optional named token placeholders)
+3. An optional `$handler` (a closure, callback, action class, controller class, etc); if you do not pass a handler, the route will use the $name parameter as the handler.
+
+For example, this route named `blog.read` will match against a `GET` request on the path `/blog/42` (or any other `{id}` value). It also defines a closure as a handler for the route, using a _ServerRequestInterface_ instance and a _ResponseInterface_ instance as arguments.
+
+```php
+<?php
+$map->get('blog.read', '/blog/{id}', function ($request, $response) {
+    $id = (int) $request->getAttribute('id');
+    $response->body()->write("You asked for blog entry {$id}.");
+    return $response;
+});
+?>
+```
+
+## Matching A Request To A Route
+
+First, get the _Matcher_ from the _RouterContainer_.
+
+```php
+<?php
+$matcher = $routerContainer->getMatcher();
+?>
+```
+
+Then call the `match()` method to match a PSR-7 _ServerRequestInterface_ instance to a mapped _Route_.
+
+```php
+<?php
+/**
+ * @var Psr\Http\Message\ServerRequestInterface $request
+ */
+$route = $matcher->match($request);
+?>
+```
+
+## Dispatching A Route
+
+This is the point at which your application takes over. The route has two properties that you are most likely to be interested in:
+
+- `$route->attributes` is the array of attribute values captured during matching
+- `$route->handler` is the handler you added to the route when you mapped it
+
+For example, with the `$route` in hand, you can transfer its attributes to the `$request` ...
+
+```php
+<?php
+foreach ($route->attributes as $key => $val) {
+    $request = $request->withAttribute($key, $val);
+}
+?>
+```
+
+... and dispatch to the route handler directly if it was a callable or closure:
+
+```php
+<?php
+$callable = $route->handler;
+$response = $callable($request);
+?>
+```
+
+Alternatively, if you used a class name for the handler, you can create a class from the handler and do what you like with it:
+
+```php
+<?php
+$actionClass = $route->handler;
+$action = new $actionClass();
+$response = $action($request);
+?>
+```
+
+## Handling Failure To Match
+
+When `$map->match()` returns empty, it means there was no matching route for the request. However, we can still discover the closest-matching failed route, and which rule it failed to match against.
+
+Your application might do something like the following:
+
+```php
+<?php
+$route = $matcher->match($request);
+if (! $route) {
+    // get the first of the best-available non-matched routes
+    $failedRoute = $map->getFailedRoute();
+
+    // which matching rule failed?
+    switch ($failure->failedRule) {
+        case 'Aura\Router\Rule\Allows':
+            // 405 METHOD NOT ALLOWED
+            // Send the $failedRoute->allows as 'Allow:'
+            break;
+        case 'Aura\Router\Rule\Accepts':
+            // 406 NOT ACCEPTABLE
+            break;
+        default:
+            // 404 NOT FOUND
+            break;
+    }
+}
+?>
+```
