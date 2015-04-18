@@ -27,7 +27,7 @@ class PathTest extends AbstractRuleTest
     public function testIsMatchOnDynamicPath()
     {
         $route = $this->newRoute('/{controller}/{action}/{id}{format}')
-            ->setTokens(array(
+            ->tokens(array(
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'id' => '([0-9]+)',
@@ -50,7 +50,7 @@ class PathTest extends AbstractRuleTest
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
         $route = $this->newRoute('/{controller}/{action}/{id}{format}')
-            ->setTokens(array(
+            ->tokens(array(
                 'action' => '(browse|read|edit|add|delete)',
                 'id' => '(\d+)',
                 'format' => '(\.[^/]+)?',
@@ -86,7 +86,7 @@ class PathTest extends AbstractRuleTest
     public function testIsMatchOnWildcard()
     {
         $proto = $this->newRoute('/foo/{zim}/')
-            ->setWildcard('wild');
+            ->wildcard('wild');
 
         // right path with wildcard values
         $route = clone $proto;

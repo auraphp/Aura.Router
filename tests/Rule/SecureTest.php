@@ -15,7 +15,7 @@ class SecureTest extends AbstractRuleTest
          * secure required
          */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setSecure(true);
+            ->secure(true);
 
         // correct
         $route = clone $proto;
@@ -31,7 +31,7 @@ class SecureTest extends AbstractRuleTest
          * not-secure required
          */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setSecure(false);
+            ->secure(false);
 
         // correct
         $route = clone $proto;
@@ -50,7 +50,7 @@ class SecureTest extends AbstractRuleTest
          * secure required
          */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setSecure(true);
+            ->secure(true);
 
         // correct
         $route = clone $proto;
@@ -66,7 +66,7 @@ class SecureTest extends AbstractRuleTest
          * not-secure required
          */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setSecure(false);
+            ->secure(false);
 
         // correct
         $route = clone $proto;

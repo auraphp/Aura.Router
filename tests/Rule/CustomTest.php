@@ -14,7 +14,7 @@ class CustomTest extends AbstractRuleTest
         $request = $this->newRequest('/foo/bar/baz');
 
         $route = $this->newRoute('/foo/bar/baz')
-            ->setCustom([
+            ->extras([
                 'aura/router:fake' => true
             ]);
         $this->assertIsMatch($request, $route);

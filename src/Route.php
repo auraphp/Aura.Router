@@ -14,106 +14,58 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * An individual route with a name, path, attributes, defaults, etc.
  *
- * In general, you should never need to instantiate a Route directly. Use the
- * Map instead.
- *
  * @package Aura.Router
  *
  * @property-read string $name The route name.
  *
  * @property-read string $path The route path.
  *
+ * @property-read string $namePrefix
+ *
+ * @property-read string $pathPrefix
+ *
+ * @property-read string $host
+ *
  * @property-read array $defaults Default values for attributes.
  *
  * @property-read array $attributes Attribute values added by the rules.
  *
- * @property-read array $tokens The regular expression for the route.
+ * @property-read array $tokens Plceholder token names and regexes.
  *
- * @property-read string $wildcard The name of the wildcard attribute.
+ * @property-read string $wildcard The name of the wildcard token.
+ *
+ * @property-read array $accept
+ *
+ * @property-read array $extras
+ *
+ * @property-read bool $secure
+ *
+ * @property-read array $methods
+ *
+ * @property-read bool $routable
+ *
+ * @property-read string $failedRule
  *
  */
 class Route
 {
     /**
      *
-     * The name for this Route.
-     *
-     * @var string
-     *
-     */
-    protected $name;
-
-    /**
-     *
-     * The path for this Route with attribute tokens.
-     *
-     * @var string
-     *
-     */
-    protected $path;
-
-    /**
-     *
-     * Token names and regexes.
+     * Accepts these content types.
      *
      * @var array
      *
      */
-    protected $tokens = array();
+    protected $accepts = array();
 
     /**
      *
-     * HTTP method(s).
+     * Allows these HTTP methods.
      *
      * @var array
      *
      */
-    protected $method = array();
-
-    /**
-     *
-     * Accept header values.
-     *
-     * @var array
-     *
-     */
-    protected $accept = array();
-
-    /**
-     *
-     * Default attribute values.
-     *
-     * @var array
-     *
-     */
-    protected $defaults = array();
-
-    /**
-     *
-     * Secure route?
-     *
-     * @var bool
-     *
-     */
-    protected $secure = null;
-
-    /**
-     *
-     * Wildcard token name, if any.
-     *
-     * @var string
-     *
-     */
-    protected $wildcard = null;
-
-    /**
-     *
-     * Routable route?
-     *
-     * @var bool
-     *
-     */
-    protected $routable = true;
+    protected $allows = array();
 
     /**
      *
@@ -126,6 +78,25 @@ class Route
 
     /**
      *
+     * Default attribute values.
+     *
+     * @var array
+     *
+     */
+    protected $defaults = array();
+
+    /**
+     *
+     * Extra key-value pairs to attach to the route; intended for use by
+     * custom matching rules.
+     *
+     * @var array
+     *
+     */
+    protected $extras = [];
+
+    /**
+     *
      * The rule that failed, if any, during matching.
      *
      * @var string
@@ -135,7 +106,34 @@ class Route
 
     /**
      *
-     * A prefix to add to the name.
+     * The action, controller, callable, closure, etc. this route points to.
+     *
+     * @var mixed
+     *
+     */
+    protected $handler;
+
+    /**
+     *
+     * The host string this route responds to.
+     *
+     * @var string
+     *
+     */
+    protected $host;
+
+    /**
+     *
+     * The name for this route.
+     *
+     * @var string
+     *
+     */
+    protected $name;
+
+    /**
+     *
+     * Prefix the route name with this string.
      *
      * @var string
      *
@@ -144,16 +142,70 @@ class Route
 
     /**
      *
-     * A prefix to add to the path.
+     * The path for this route.
+     *
+     * @var string
+     *
+     */
+    protected $path;
+
+    /**
+     *
+     * Prefix the route path with this string.
      *
      * @var string
      *
      */
     protected $pathPrefix;
 
-    protected $custom = [];
+    /**
+     *
+     * Should this route be used for matching?
+     *
+     * @var bool
+     *
+     */
+    protected $routable = true;
 
-    protected $host;
+    /**
+     *
+     * Should this route respond on a secure protocol?
+     *
+     * @var bool
+     *
+     */
+    protected $secure = null;
+
+    /**
+     *
+     * Placeholder token names and regexes.
+     *
+     * @var array
+     *
+     */
+    protected $tokens = array();
+
+    /**
+     *
+     * Wildcard token name, if any.
+     *
+     * @var string
+     *
+     */
+    protected $wildcard = null;
+
+    /**
+     *
+     * When cloning the Route, reset the `$attributes` to an empty array, and
+     * clear the `$failedRule`.
+     *
+     */
+    public function __clone()
+    {
+        // $this is the cloned instance, not the original
+        $this->attributes = $this->defaults;
+        $this->failedRule = null;
+    }
 
     /**
      *
@@ -169,156 +221,64 @@ class Route
         return $this->$key;
     }
 
-    public function __clone()
+    /**
+     *
+     * Invoke the `$handler` property with arbitrary arguments.
+     *
+     * @param array ...$args Arbitrary arguments.
+     *
+     * @return mixed
+     *
+     */
+    public function __invoke(...$args)
     {
-        // $this is the cloned instance, not the original
-        $this->attributes = $this->defaults;
-        $this->failedRule = null;
+        $handler = $this->handler;
+        return $handler(...$args);
     }
 
-    public function appendPathPrefix($pathPrefix)
+    /**
+     *
+     * Merges with the existing content types.
+     *
+     * @param string|array $accepts The content types.
+     *
+     * @return $this
+     *
+     */
+    public function accepts($accepts)
     {
-        if ($this->path !== null) {
-            $message = __CLASS__ . '::$pathPrefix is immutable once $path is set';
-            throw new Exception\ImmutableProperty($message);
-        }
-        $this->pathPrefix .= $pathPrefix;
-        return $this;
-    }
-
-    public function appendNamePrefix($namePrefix)
-    {
-        if ($this->name !== null) {
-            $message = __CLASS__ . '::$namePrefix is immutable once $name is set';
-            throw new Exception\ImmutableProperty($message);
-        }
-        $this->namePrefix .= $namePrefix;
-        return $this;
-    }
-
-    public function setPath($path)
-    {
-        if ($this->path !== null) {
-            $message = __CLASS__ . '::$path is immutable once set';
-            throw new Exception\ImmutableProperty($message);
-        }
-        $this->path = $this->pathPrefix . $path;
-        return $this;
-    }
-
-    public function setName($name)
-    {
-        if ($this->name !== null) {
-            $message = __CLASS__ . '::$name is immutable once set';
-            throw new Exception\ImmutableProperty($message);
-        }
-        $this->name = $this->namePrefix . $name;
+        $this->accepts = array_merge($this->accepts, (array) $accepts);
         return $this;
     }
 
     /**
      *
-     * Sets the regular expressions for attribute tokens.
+     * Merges with the existing allowed methods.
      *
-     * @param array $tokens The regular expressions for attribute tokens.
-     *
-     * @return $this
-     *
-     */
-    public function setTokens(array $tokens)
-    {
-        $this->tokens = array();
-        return $this->addTokens($tokens);
-    }
-
-    /**
-     *
-     * Merges with the existing regular expressions for attribute tokens.
-     *
-     * @param array $tokens Regular expressions for attribute tokens.
+     * @param string|array $method The allowed HTTP methods.
      *
      * @return $this
      *
      */
-    public function addTokens(array $tokens)
+    public function allows($allows)
     {
-        $this->tokens = array_merge($this->tokens, $tokens);
+        $this->allows = array_merge($this->allows, (array) $allows);
         return $this;
     }
 
     /**
      *
-     * Sets the allowable method(s), overwriting previous the previous value.
+     * Merges with the existing attributes.
      *
-     * @param string|array $method The allowable method(s).
+     * @param array $attributes The attributes to add.
      *
-     * @return $this
-     *
-     */
-    public function setMethods($method)
-    {
-        $this->method = array();
-        return $this->addMethods($method);
-    }
-
-    /**
-     *
-     * Adds to the allowable method(s).
-     *
-     * @param string|array $method The allowable method(s).
-     *
-     * @return $this
+     * @return null
      *
      */
-    public function addMethods($method)
+    public function attributes(array $attributes)
     {
-        $this->method = array_merge($this->method, (array) $method);
+        $this->attributes = array_merge($this->attributes, $attributes);
         return $this;
-    }
-
-    /**
-     *
-     * Sets the list of matchable content-types, overwriting previous values.
-     *
-     * @param string|array $accept The matchable content-types.
-     *
-     * @return $this
-     *
-     */
-    public function setAccept($accept)
-    {
-        $this->accept = array();
-        return $this->addAccept($accept);
-    }
-
-    /**
-     *
-     * Adds to the list of matchable content-types.
-     *
-     * @param string|array $accept The matchable content-types.
-     *
-     * @return $this
-     *
-     */
-    public function addAccept($accept)
-    {
-        $this->accept = array_merge($this->accept, (array) $accept);
-        return $this;
-    }
-
-    /**
-     *
-     * Sets the default values for attributes.
-     *
-     * @param array $values Default values for attributes.
-     *
-     * @return $this
-     *
-     */
-    public function setDefaults(array $defaults)
-    {
-        $this->defaults = array();
-        return $this->addDefaults($defaults);
     }
 
     /**
@@ -330,7 +290,7 @@ class Route
      * @return $this
      *
      */
-    public function addDefaults(array $defaults)
+    public function defaults(array $defaults)
     {
         $this->defaults = array_merge($this->defaults, $defaults);
         return $this;
@@ -338,63 +298,106 @@ class Route
 
     /**
      *
-     * Sets the custom keys and values.
+     * Merges with the existing extra key-value pairs; this merge is recursive,
+     * so the values can be arbitrarily deep.
      *
-     * @param array $custom The custom keys and values.
+     * @param array $extras The extra key-value pairs.
      *
      * @return $this
      *
      */
-    public function setCustom(array $custom)
+    public function extras(array $extras)
     {
-        $this->custom = array();
-        return $this->addCustom($custom);
+        $this->extras = array_merge_recursive($this->extras, $extras);
+        return $this;
     }
 
-    /**
-     *
-     * Merges with the existing custom keys and values; this merge is recursive,
-     * so the values can arbitrarily deep.
-     *
-     * @param array $custom The custom keys and values.
-     *
-     * @return $this
-     *
-     */
-    public function addCustom(array $custom)
+    public function failedRule($failedRule)
     {
-        $this->custom = array_merge_recursive($this->custom, $custom);
+        $this->failedRule = $failedRule;
         return $this;
     }
 
     /**
      *
-     * Sets whether or not the route must be secure.
+     * The route leads to this handler.
      *
-     * @param bool $secure If true, the server must indicate an HTTPS request;
-     * if false, it must *not* be HTTPS; if null, it doesn't matter.
+     * @param mixed $handler The handler for this route.
      *
      * @return $this
      *
      */
-    public function setSecure($secure = true)
+    public function handler($handler)
     {
-        $this->secure = ($secure === null) ? null : (bool) $secure;
+        $this->handler = $handler;
+        return $this;
+    }
+
+    public function host($host)
+    {
+        $this->host = $host;
+        return $this;
+    }
+
+    public function name($name)
+    {
+        if ($this->name !== null) {
+            $message = __CLASS__ . '::$name is immutable once set';
+            throw new Exception\ImmutableProperty($message);
+        }
+        $this->name = $this->namePrefix . $name;
         return $this;
     }
 
     /**
      *
-     * Sets the name of the wildcard attribute.
+     * Appends to the existing name prefix.
      *
-     * @param string $wildcard The name of the wildcard attribute, if any.
+     * @param string $namePrefix The name prefix to append.
      *
      * @return $this
      *
+     * @throws Exception\ImmutableProperty when the name has already been set.
+     *
      */
-    public function setWildcard($wildcard)
+    public function namePrefix($namePrefix)
     {
-        $this->wildcard = $wildcard;
+        if ($this->name !== null) {
+            $message = __CLASS__ . '::$namePrefix is immutable once $name is set';
+            throw new Exception\ImmutableProperty($message);
+        }
+        $this->namePrefix = $namePrefix;
+        return $this;
+    }
+
+    public function path($path)
+    {
+        if ($this->path !== null) {
+            $message = __CLASS__ . '::$path is immutable once set';
+            throw new Exception\ImmutableProperty($message);
+        }
+        $this->path = $this->pathPrefix . $path;
+        return $this;
+    }
+
+    /**
+     *
+     * Appends to the existing path prefix.
+     *
+     * @param string $pathPrefix The path prefix to append.
+     *
+     * @return $this
+     *
+     * @throws Exception\ImmutableProperty when the path has already been set.
+     *
+     */
+    public function pathPrefix($pathPrefix)
+    {
+        if ($this->path !== null) {
+            $message = __CLASS__ . '::$pathPrefix is immutable once $path is set';
+            throw new Exception\ImmutableProperty($message);
+        }
+        $this->pathPrefix = $pathPrefix;
         return $this;
     }
 
@@ -408,36 +411,55 @@ class Route
      * @return $this
      *
      */
-    public function setRoutable($routable = true)
+    public function routable($routable = true)
     {
         $this->routable = (bool) $routable;
         return $this;
     }
 
-    public function setHost($host)
+    /**
+     *
+     * Sets whether or not the route must be secure.
+     *
+     * @param bool $secure If true, the server must indicate an HTTPS request;
+     * if false, it must *not* be HTTPS; if null, it doesn't matter.
+     *
+     * @return $this
+     *
+     */
+    public function secure($secure = true)
     {
-        $this->host = $host;
+        $this->secure = ($secure === null) ? null : (bool) $secure;
         return $this;
     }
 
     /**
      *
-     * Adds attributes to the Route.
+     * Merges with the existing tokens.
      *
-     * @param array $attributes The attributes to add.
+     * @param array $tokens The tokens.
      *
-     * @return null
+     * @return $this
      *
      */
-    public function addAttributes(array $attributes)
+    public function tokens(array $tokens)
     {
-        $this->attributes = array_merge($this->attributes, $attributes);
+        $this->tokens = array_merge($this->tokens, $tokens);
         return $this;
     }
 
-    public function setFailedRule($failedRule)
+    /**
+     *
+     * Sets the name of the wildcard token, if any.
+     *
+     * @param string $wildcard The name of the wildcard token, if any.
+     *
+     * @return $this
+     *
+     */
+    public function wildcard($wildcard)
     {
-        $this->failedRule = $failedRule;
+        $this->wildcard = $wildcard;
         return $this;
     }
 }

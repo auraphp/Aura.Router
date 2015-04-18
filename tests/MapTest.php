@@ -43,12 +43,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map->route('before', '/foo');
 
         $this->map->attach('during.', '/during', function ($map) {
-            $map->setTokens(array('id' => '\d+'));
-            $map->setMethods('GET');
-            $map->setDefaults(array('zim' => 'gir'));
-            $map->setSecure(true);
-            $map->setWildcard('other');
-            $map->setRoutable(false);
+            $map->tokens(array('id' => '\d+'));
+            $map->allows('GET');
+            $map->defaults(array('zim' => 'gir'));
+            $map->secure(true);
+            $map->wildcard('other');
+            $map->routable(false);
             $map->route('bar', '/bar');
         });
 
@@ -58,7 +58,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $expect = array(
             'tokens' => array(),
-            'method' => array(),
+            'allows' => array(),
             'defaults' => array(),
             'secure' => null,
             'wildcard' => null,
@@ -70,7 +70,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = $map['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
-            'method' => array('GET'),
+            'allows' => array('GET'),
             'defaults' => array('zim' => 'gir'),
             'secure' => true,
             'wildcard' => 'other',
@@ -97,12 +97,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testGetAndSetRoutes()
     {
         $this->map->attach('page.', '/page', function ($map) {
-            $map->setTokens(array(
+            $map->tokens(array(
                 'id'            => '(\d+)',
                 'format'        => '(\.[^/]+)?',
             ));
 
-            $map->setDefaults(array(
+            $map->defaults(array(
                 'controller' => 'page',
                 'format' => null,
             ));
@@ -134,12 +134,5 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/page/', $actual['page.browse']->path);
         $this->assertIsRoute($actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
-    }
-
-    public function testAddWithAction()
-    {
-        $this->map->route('foo.bar', '/foo/bar', ['action' => 'DirectAction']);
-        $actual = $this->map->getRoute('foo.bar');
-        $this->assertSame('DirectAction', $actual->defaults['action']);
     }
 }

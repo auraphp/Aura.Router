@@ -11,7 +11,7 @@ class HostTest extends AbstractRuleTest
 
     public function testIsMatchOnStaticHost()
     {
-        $proto = $this->newRoute('/foo/bar/baz')->setHost('foo.example.com');
+        $proto = $this->newRoute('/foo/bar/baz')->host('foo.example.com');
 
         // right host
         $route = clone $proto;
@@ -27,8 +27,8 @@ class HostTest extends AbstractRuleTest
     public function testIsMatchOnDynamicHost()
     {
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setHost('({subdomain}?.)?{domain}.com')
-            ->addTokens(['domain' => '.*']);
+            ->host('({subdomain}?.)?{domain}.com')
+            ->tokens(['domain' => '.*']);
 
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/baz', ['HTTP_HOST' => 'foo.example.com']);

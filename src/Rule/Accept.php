@@ -22,7 +22,7 @@ class Accept
     {
         $server = $request->getServerParams();
 
-        if (! $route->accept || ! isset($server['HTTP_ACCEPT'])) {
+        if (! $route->accepts || ! isset($server['HTTP_ACCEPT'])) {
             return true;
         }
 
@@ -32,7 +32,7 @@ class Accept
             return true;
         }
 
-        foreach ($route->accept as $type) {
+        foreach ($route->accepts as $type) {
             if ($this->match($type, $header)) {
                 return true;
             }

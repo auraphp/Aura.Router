@@ -66,7 +66,7 @@ class Host
             }
         }
 
-        $route->addAttributes($attributes);
+        $route->attributes($attributes);
         return true;
     }
 
@@ -101,7 +101,7 @@ class Host
                 $newAttributes[$name] = null;
             }
         }
-        $this->route->addAttributes($newAttributes);
+        $this->route->attributes($newAttributes);
     }
 
     /**
