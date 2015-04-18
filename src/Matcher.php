@@ -77,20 +77,6 @@ class Matcher
         $this->rules = $rules;
     }
 
-    public function match(ServerRequestInterface &$request)
-    {
-        $route = $this->matchRoute($request);
-        if (! $route) {
-            return false;
-        }
-
-        foreach ($route->attributes as $key => $val) {
-            $request = $request->withAttribute($key, $val);
-        }
-
-        return $route;
-    }
-
     /**
      *
      * Gets a route that matches a given path and other server conditions.
@@ -103,7 +89,7 @@ class Matcher
      * boolean false if there is no match.
      *
      */
-    public function matchRoute(ServerRequestInterface &$request)
+    public function match(ServerRequestInterface $request)
     {
         $this->matchedRoute = false;
         $this->failedRoute = null;

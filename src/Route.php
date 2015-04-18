@@ -339,6 +339,22 @@ class Route
         return $this;
     }
 
+    /**
+     *
+     * Sets whether or not this route should be used for matching.
+     *
+     * @param bool $routable If true, this route can be matched; if not, it
+     * can be used only to generate a path.
+     *
+     * @return $this
+     *
+     */
+    public function isRoutable($isRoutable = true)
+    {
+        $this->isRoutable = (bool) $isRoutable;
+        return $this;
+    }
+
     public function name($name)
     {
         if ($this->name !== null) {
@@ -398,22 +414,6 @@ class Route
             throw new Exception\ImmutableProperty($message);
         }
         $this->pathPrefix = $pathPrefix;
-        return $this;
-    }
-
-    /**
-     *
-     * Sets whether or not this route should be used for matching.
-     *
-     * @param bool $routable If true, this route can be matched; if not, it
-     * can be used only to generate a path.
-     *
-     * @return $this
-     *
-     */
-    public function isRoutable($isRoutable = true)
-    {
-        $this->isRoutable = (bool) $isRoutable;
         return $this;
     }
 

@@ -98,7 +98,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->attach('page.', '/page', function ($map) {
             $map->tokens(array(
-                'id'            => '(\d+)',
+                'id'            => '\d+',
                 'format'        => '(\.[^/]+)?',
             ));
 
