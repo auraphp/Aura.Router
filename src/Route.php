@@ -51,12 +51,12 @@ class Route
 {
     /**
      *
-     * Accept these content-types.
+     * Accepts these content-types.
      *
      * @var array
      *
      */
-    protected $accept = array();
+    protected $accepts = array();
 
     /**
      *
@@ -238,22 +238,22 @@ class Route
 
     /**
      *
-     * The route only responds to these content types.
+     * Merges with the existing content types.
      *
-     * @param string|array $accept The content-types.
+     * @param string|array $accepts The content types.
      *
      * @return $this
      *
      */
-    public function accept($accept)
+    public function accepts($accepts)
     {
-        $this->accept = (array) $accept;
+        $this->accepts = array_merge($this->accepts, (array) $accepts);
         return $this;
     }
 
     /**
      *
-     * Adds attributes to the Route.
+     * Merges with the existing attributes.
      *
      * @param array $attributes The attributes to add.
      *
