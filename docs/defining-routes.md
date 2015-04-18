@@ -81,10 +81,10 @@ $map->get('wild', '/wild')
 ```
 All slash-separated path segments after the `{id}` will be captured as an array in the in wildcard attribute. For example:
 
-- '/wild'             : ['card' => []]
-- '/wild/foo'         : ['card' => ['foo']]
-- '/wild/foo/bar'     : ['card' => ['foo', 'bar']]
-- '/wild/foo/bar/baz' : ['card' => ['foo', 'bar', 'baz']]
+- `/wild             : ['card' => []]`
+- `/wild/foo         : ['card' => ['foo']]`
+- `/wild/foo/bar     : ['card' => ['foo', 'bar']]`
+- `/wild/foo/bar/baz : ['card' => ['foo', 'bar', 'baz']]`
 
 
 ## Host Matching
