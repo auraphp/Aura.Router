@@ -6,7 +6,7 @@ class AcceptTest extends AbstractRuleTest
     public function setup()
     {
         parent::setup();
-        $this->rule = new Accept();
+        $this->rule = new Accepts();
     }
 
     public function testIsAcceptMatch()

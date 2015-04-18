@@ -97,6 +97,9 @@ class Matcher
         $path = $request->getUri()->getPath();
 
         foreach ($this->map as $name => $originalRoute) {
+            if (! $originalRoute->routable) {
+                continue;
+            }
             $route = clone $originalRoute;
             if ($this->applyRules($request, $route, $name, $path)) {
                 return $this->routeMatched($route, $name, $path);

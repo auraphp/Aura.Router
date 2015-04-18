@@ -4,12 +4,12 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-// must match **at least one** method value
-class Method
+// must match **at least one** allowed method value
+class Allows
 {
     /**
      *
-     * Does the server request method match the route method?
+     * Does the server request method match an allowed route method?
      *
      * @param ServerRequestInterface $request The HTTP request.
      *
