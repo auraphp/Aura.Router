@@ -77,6 +77,20 @@ class Matcher
         $this->rules = $rules;
     }
 
+    public function matchAndSet(ServerRequestInterface &$request)
+    {
+        $route = $this->match($request);
+        if (! $route) {
+            return false;
+        }
+
+        foreach ($route->attributes as $key => $val) {
+            $request = $request->withAttribute($key, $val);
+        }
+
+        return $route;
+    }
+
     /**
      *
      * Gets a route that matches a given path and other server conditions.
@@ -96,31 +110,23 @@ class Matcher
         $this->failedScore = 0;
         $path = $request->getUri()->getPath();
 
-        foreach ($this->map as $name => $originalRoute) {
-            if (! $originalRoute->routable) {
-                continue;
-            }
-            $route = clone $originalRoute;
-            if ($this->applyRules($request, $route, $name, $path)) {
-                return $this->routeMatched($route, $name, $path);
+        foreach ($this->map as $name => $proto) {
+            $route = $this->matchRoute($request, $proto, $name, $path);
+            if ($route) {
+                return $route;
             }
         }
 
         return false;
     }
 
-    public function matchAndSet(ServerRequestInterface &$request)
+    protected function matchRoute($request, $proto, $name, $path)
     {
-        $route = $this->match($request);
-        if (! $route) {
-            return false;
+        if (! $proto->routable) {
+            continue;
         }
-
-        foreach ($route->attributes as $key => $val) {
-            $request = $request->withAttribute($key, $val);
-        }
-
-        return $route;
+        $route = clone $proto;
+        return $this->applyRules($request, $route, $name, $path);
     }
 
     protected function applyRules($request, $route, $name, $path)
@@ -132,7 +138,7 @@ class Matcher
             }
             $score ++;
         }
-        return true;
+        return $this->routeMatched($route, $name, $path);
     }
 
     protected function ruleFailed($request, $route, $name, $path, $rule, $score)
