@@ -171,7 +171,7 @@ $map->tokens([
 ])->defaults([
     'format' => '.json',
 ])->host(
-    '{subdomain}.?'
+    '{subdomain}.?example.com'
 )->accepts([
     'application/json',
     'application/xml',
@@ -182,7 +182,7 @@ $map->tokens([
 $map->get('blog.browse', '/blog');
 $map->get('blog.read', '/blog/{id}{format}');
 $map->patch('blog.edit', '/blog/{id}');
-$map->put('blog.add', '/blog');
+$map->post('blog.add', '/blog');
 $map->delete('blog.delete', '/blog/{id}');
 ?>
 ```
