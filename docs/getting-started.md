@@ -29,8 +29,8 @@ $map = $routerContainer->getMap();
 Then call one of its route-adding methods:
 
 - `$map->get()` adds a GET route
-- `$map->put()` adds a PUT route
 - `$map->post()` adds a POST route
+- `$map->patch()` adds a PATCH route
 - `$map->patch()` adds a PATCH route
 - `$map->delete()` adds a DELETE route
 - `$map->options()` adds a OPTIONS route
@@ -40,7 +40,7 @@ Each route-adding method takes three parameters:
 
 1. A `$name` (for when you need to generate link from the route)
 2. A `$path` (with optional named token placeholders)
-3. An optional `$handler` (a closure, callback, action class, controller class, etc); if you do not pass a handler, the route will use the $name parameter as the handler.
+3. An optional `$handler` (a closure, callback, action object, controller class, etc); if you do not pass a handler, the route will use the `$name` parameter as the handler.
 
 For example, this route named `blog.read` will match against a `GET` request on the path `/blog/42` (or any other `{id}` value). It also defines a closure as a handler for the route, using a _ServerRequestInterface_ instance and a _ResponseInterface_ instance as arguments.
 
