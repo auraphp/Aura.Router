@@ -44,7 +44,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $this->map->attach('during.', '/during', function ($map) {
             $map->tokens(array('id' => '\d+'));
-            $map->methods('GET');
+            $map->allows('GET');
             $map->defaults(array('zim' => 'gir'));
             $map->secure(true);
             $map->wildcard('other');
@@ -58,7 +58,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $expect = array(
             'tokens' => array(),
-            'methods' => array(),
+            'allows' => array(),
             'defaults' => array(),
             'secure' => null,
             'wildcard' => null,
@@ -70,7 +70,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $actual = $map['during.bar'];
         $expect = array(
             'tokens' => array('id' => '\d+'),
-            'methods' => array('GET'),
+            'allows' => array('GET'),
             'defaults' => array('zim' => 'gir'),
             'secure' => true,
             'wildcard' => 'other',

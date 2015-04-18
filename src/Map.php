@@ -176,7 +176,7 @@ class Map implements IteratorAggregate
     public function get($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('GET');
+        $route->allows('GET');
         return $route;
     }
 
@@ -196,7 +196,7 @@ class Map implements IteratorAggregate
     public function delete($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('DELETE');
+        $route->allows('DELETE');
         return $route;
     }
 
@@ -216,7 +216,7 @@ class Map implements IteratorAggregate
     public function head($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('HEAD');
+        $route->allows('HEAD');
         return $route;
     }
 
@@ -236,7 +236,7 @@ class Map implements IteratorAggregate
     public function options($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('OPTIONS');
+        $route->allows('OPTIONS');
         return $route;
     }
 
@@ -256,7 +256,7 @@ class Map implements IteratorAggregate
     public function patch($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('PATCH');
+        $route->allows('PATCH');
         return $route;
     }
 
@@ -276,7 +276,7 @@ class Map implements IteratorAggregate
     public function post($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('POST');
+        $route->allows('POST');
         return $route;
     }
 
@@ -296,7 +296,7 @@ class Map implements IteratorAggregate
     public function put($name, $path, $handler = null)
     {
         $route = $this->route($name, $path, $handler);
-        $route->methods('PUT');
+        $route->allows('PUT');
         return $route;
     }
 

@@ -51,12 +51,21 @@ class Route
 {
     /**
      *
-     * Accepts these content-types.
+     * Accepts these content types.
      *
      * @var array
      *
      */
     protected $accepts = array();
+
+    /**
+     *
+     * Allows these HTTP methods.
+     *
+     * @var array
+     *
+     */
+    protected $allows = array();
 
     /**
      *
@@ -115,16 +124,7 @@ class Route
 
     /**
      *
-     * HTTP method(s) this route responds to.
-     *
-     * @var array
-     *
-     */
-    protected $methods = array();
-
-    /**
-     *
-     * The name for this Route.
+     * The name for this route.
      *
      * @var string
      *
@@ -142,7 +142,7 @@ class Route
 
     /**
      *
-     * The path for this Route.
+     * The path for this route.
      *
      * @var string
      *
@@ -160,7 +160,7 @@ class Route
 
     /**
      *
-     * Routable route?
+     * Should this route be used for matching?
      *
      * @var bool
      *
@@ -169,7 +169,7 @@ class Route
 
     /**
      *
-     * Secure route?
+     * Should this route respond on a secure protocol?
      *
      * @var bool
      *
@@ -253,6 +253,21 @@ class Route
 
     /**
      *
+     * Merges with the existing allowed methods.
+     *
+     * @param string|array $method The allowed HTTP methods.
+     *
+     * @return $this
+     *
+     */
+    public function allows($allows)
+    {
+        $this->allows = array_merge($this->allows, (array) $allows);
+        return $this;
+    }
+
+    /**
+     *
      * Merges with the existing attributes.
      *
      * @param array $attributes The attributes to add.
@@ -321,21 +336,6 @@ class Route
     public function host($host)
     {
         $this->host = $host;
-        return $this;
-    }
-
-    /**
-     *
-     * Merges with the existing method(s).
-     *
-     * @param string|array $method The HTTP method(s).
-     *
-     * @return $this
-     *
-     */
-    public function methods($method)
-    {
-        $this->methods = array_merge($this->methods, (array) $method);
         return $this;
     }
 

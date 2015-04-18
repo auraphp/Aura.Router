@@ -20,11 +20,11 @@ class Method
      */
     public function __invoke(ServerRequestInterface $request, Route $route)
     {
-        if (! $route->methods) {
+        if (! $route->allows) {
             return true;
         }
 
         $request_method = $request->getMethod() ?: 'GET';
-        return in_array($request_method, $route->methods);
+        return in_array($request_method, $route->allows);
     }
 }
