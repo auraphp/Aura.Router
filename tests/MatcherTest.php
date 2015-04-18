@@ -71,7 +71,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $request = $this->newRequest('/resource/', ['REQUEST_METHOD' => 'GET']);
         $actual = $this->matcher->match($request);
         $this->assertIsRoute($actual);
-        $this->assertSame('browse', $actual->attributes['action']);
         $this->assertSame('resource.browse', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
 

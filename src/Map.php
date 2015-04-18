@@ -140,18 +140,21 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function route($name, $path, array $defaults = [])
+    public function route($name, $path, $handler = null)
     {
         $route = clone $this->protoRoute;
 
         $route->name($name);
         $route->path($path);
-        $route->defaults($defaults);
+        $route->handler($name);
+        if ($handler) {
+            $route->handler($handler);
+        }
 
         $this->addRoute($route);
         return $route;
@@ -165,14 +168,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function get($name, $path, array $defaults = [])
+    public function get($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('GET');
         return $route;
     }
@@ -185,14 +188,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function delete($name, $path, array $defaults = [])
+    public function delete($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('DELETE');
         return $route;
     }
@@ -205,14 +208,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function head($name, $path, array $defaults = [])
+    public function head($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('HEAD');
         return $route;
     }
@@ -225,14 +228,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function options($name, $path, array $defaults = [])
+    public function options($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('OPTIONS');
         return $route;
     }
@@ -245,14 +248,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function patch($name, $path, array $defaults = [])
+    public function patch($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('PATCH');
         return $route;
     }
@@ -265,14 +268,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function post($name, $path, array $defaults = [])
+    public function post($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('POST');
         return $route;
     }
@@ -285,14 +288,14 @@ class Map implements IteratorAggregate
      *
      * @param string $path The route path.
      *
-     * @param array $defaults An array of default attributes for the route.
+     * @param mixed $handler The route leads to this handler.
      *
      * @return Route The newly-added route object.
      *
      */
-    public function put($name, $path, array $defaults = [])
+    public function put($name, $path, $handler = null)
     {
-        $route = $this->route($name, $path, $defaults);
+        $route = $this->route($name, $path, $handler);
         $route->methods('PUT');
         return $route;
     }
@@ -313,18 +316,19 @@ class Map implements IteratorAggregate
      * @return null
      *
      */
-    public function attach($namePrefix, $pathPrefix, $callable)
+    public function attach($namePrefix, $pathPrefix, callable $callable)
     {
-        // retain current prototype and replace with a clone
-        $previous = $this->protoRoute;
+        // retain current prototype
+        $old = $this->protoRoute;
 
-        // add to existing prefixes, then run the callable
-        $this->protoRoute = clone $this->protoRoute;
-        $this->protoRoute->appendNamePrefix($namePrefix);
-        $this->protoRoute->appendPathPrefix($pathPrefix);
+        // clone a new prototype, update prefixes, and retain it
+        $new = clone $old;
+        $new->namePrefix($old->namePrefix . $namePrefix);
+        $new->pathPrefix($old->pathPrefix . $pathPrefix);
+        $this->protoRoute = $new;
+
+        // run the callable and restore the old prototype
         $callable($this);
-
-        // restore previous prototype
-        $this->protoRoute = $previous;
+        $this->protoRoute = $old;
     }
 }

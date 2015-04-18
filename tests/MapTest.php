@@ -135,11 +135,4 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
     }
-
-    public function testAddWithAction()
-    {
-        $this->map->route('foo.bar', '/foo/bar', ['action' => 'DirectAction']);
-        $actual = $this->map->getRoute('foo.bar');
-        $this->assertSame('DirectAction', $actual->defaults['action']);
-    }
 }

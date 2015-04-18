@@ -31,7 +31,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'Aura\Router\Exception\ImmutableProperty',
             'Aura\Router\Route::$pathPrefix'
         );
-        $route->appendPathPrefix('/bar');
+        $route->pathPrefix('/bar');
     }
 
     public function testImmutableName()
@@ -53,6 +53,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             'Aura\Router\Exception\ImmutableProperty',
             'Aura\Router\Route::$namePrefix'
         );
-        $route->appendNamePrefix('/bar');
+        $route->namePrefix('/bar');
     }
 }
