@@ -88,7 +88,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateOnFullUri()
     {
         $this->map->route('test', 'http://google.com/?q={q}', ['action' => 'google-search'])
-            ->routable(false);
+            ->isRoutable(false);
 
         $actual = $this->generator->generate('test', array('q' => "what's up doc?"));
         $expect = "http://google.com/?q=what%27s%20up%20doc%3F";
@@ -98,7 +98,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateRFC3986()
     {
         $this->map->route('test', '/path/{string}', ['action' => 'rfc3986'])
-            ->routable(false);
+            ->isRoutable(false);
 
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
         $actual = $this->generator->generate('test', array('string' => 'foo @+%/'));

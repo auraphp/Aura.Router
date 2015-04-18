@@ -40,7 +40,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @property-read bool $secure
  *
- * @property-read array $methods
+ * @property-read array $allows
  *
  * @property-read bool $routable
  *
@@ -165,7 +165,7 @@ class Route
      * @var bool
      *
      */
-    protected $routable = true;
+    protected $isRoutable = true;
 
     /**
      *
@@ -411,9 +411,9 @@ class Route
      * @return $this
      *
      */
-    public function routable($routable = true)
+    public function isRoutable($isRoutable = true)
     {
-        $this->routable = (bool) $routable;
+        $this->isRoutable = (bool) $isRoutable;
         return $this;
     }
 

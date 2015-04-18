@@ -48,7 +48,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             $map->defaults(array('zim' => 'gir'));
             $map->secure(true);
             $map->wildcard('other');
-            $map->routable(false);
+            $map->isRoutable(false);
             $map->route('bar', '/bar');
         });
 
@@ -62,7 +62,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'defaults' => array(),
             'secure' => null,
             'wildcard' => null,
-            'routable' => true,
+            'isRoutable' => true,
         );
         $this->assertRoute($expect, $map['before']);
         $this->assertRoute($expect, $map['after']);
@@ -74,7 +74,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'defaults' => array('zim' => 'gir'),
             'secure' => true,
             'wildcard' => 'other',
-            'routable' => false,
+            'isRoutable' => false,
         );
         $this->assertRoute($expect, $actual);
     }
