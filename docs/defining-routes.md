@@ -61,7 +61,7 @@ With that, the following paths will all match the 'archive' route, and set the a
 - `/archive            : ['year' => null,   'month' => null, 'day' = null]`
 - `/archive/1979       : ['year' => '1979', 'month' => null, 'day' = null]`
 - `/archive/1979/11    : ['year' => '1979', 'month' => '11', 'day' = null]`
-- `/archive/1979/11/07 : ['year' => '1979', 'month' => '11', 'day' = '01']`
+- `/archive/1979/11/07 : ['year' => '1979', 'month' => '11', 'day' = '07']`
 
 Optional attributes are *sequentially* optional. This means that, in the above example, you cannot have a "day" without a "month", and you cannot have a "month" without a "year".
 
