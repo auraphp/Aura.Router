@@ -8,3 +8,6 @@ the name or path.  Perhaps clear() ?
 How to check faked HTTP verb -- middleware to "fix" the request?
 
 Add acceptLanguages, acceptCharsets, acceptEncodings ?
+
+Update Accepts to use headers.
+
