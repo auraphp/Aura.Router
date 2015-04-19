@@ -81,21 +81,22 @@ class Matcher
      *
      * Gets a route that matches a given path and other server conditions.
      *
-     * @param string $path The path to match against.
+     * @param ServerRequestInterface $request PSR-7 Request
      *
-     * @param array $server A copy of the $_SERVER superglobal.
+     * @param string $path Optional path to match against.
      *
      * @return Route|false Returns a route object when it finds a match, or
      * boolean false if there is no match.
      *
      */
-    public function match(ServerRequestInterface $request)
+    public function match(ServerRequestInterface $request, $path = null)
     {
         $this->matchedRoute = false;
         $this->failedRoute = null;
         $this->failedScore = 0;
-        $path = $request->getUri()->getPath();
-
+        if (! $path) {
+            $path = $request->getUri()->getPath();
+        }
         foreach ($this->map as $name => $proto) {
             $route = $this->requestRoute($request, $proto, $name, $path);
             if ($route) {
