@@ -50,6 +50,17 @@ class Map implements IteratorAggregate
         $this->protoRoute = $protoRoute;
     }
 
+    /**
+     *
+     * Proxy unknown method calls to the proto-route.
+     *
+     * @param string $method The method name.
+     *
+     * @param array $params The method params.
+     *
+     * @return $this
+     *
+     */
     public function __call($method, $params)
     {
         call_user_func_array([$this->protoRoute, $method], $params);
@@ -98,6 +109,18 @@ class Map implements IteratorAggregate
         return $this->routes;
     }
 
+    /**
+     *
+     * Adds a pre-built route to the collection.
+     *
+     * @param Route $route The pre-built route.
+     *
+     * @return $this
+     *
+     * @throws Exception\RouteAlreadyExists when the route name is already
+     * mapped.
+     *
+     */
     public function addRoute(Route $route)
     {
         $name = $route->name;

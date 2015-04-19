@@ -133,6 +133,8 @@ class Generator
      * @param array $data An array of key-value pairs to interpolate into the
      * attribute tokens in the path for the Route.
      *
+     * @param bool $raw Leave the data unencoded?
+     *
      * @return string
      *
      */
