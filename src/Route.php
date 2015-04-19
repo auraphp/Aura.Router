@@ -223,21 +223,6 @@ class Route
 
     /**
      *
-     * Invoke the `$handler` property with arbitrary arguments.
-     *
-     * @param array ...$args Arbitrary arguments.
-     *
-     * @return mixed
-     *
-     */
-    public function __invoke(...$args)
-    {
-        $handler = $this->handler;
-        return $handler(...$args);
-    }
-
-    /**
-     *
      * Merges with the existing content types.
      *
      * @param string|array $accepts The content types.
