@@ -332,8 +332,8 @@ class Map implements IteratorAggregate
      *
      * @param string $pathPrefix The prefix for all route paths being attached.
      *
-     * @param callable $callable A callable that uses the Router to add new
-     * routes. Its signature is `function (\Aura\Router\Map $map)`; this
+     * @param callable $callable A callable that uses the Map to add new
+     * routes. Its signature is `function (\Aura\Router\Map $map)`; $this
      * Map instance will be passed to the callable.
      *
      * @return null
