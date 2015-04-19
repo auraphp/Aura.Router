@@ -51,6 +51,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
                 'id' => '(\d+)',
             ));
 
+            $map->get('google', 'http://google.com/q={q}')
+                ->isRoutable(false);
             $map->get('browse', '/', ['action' => 'browse']);
             $map->head('head', '/{id}');
             $map->get('read', '/{id}');
