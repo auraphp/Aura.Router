@@ -37,7 +37,7 @@ $map->post('blog.archive', '/blog/{id}{format}')
 ```
 
 
-### Optional Placeholder Tokens
+## Optional Placeholder Tokens
 
 Sometimes it is useful to have a route with optional placeholder tokens for attributes. None, some, or all of the optional values may be present, and the route will still match.
 
