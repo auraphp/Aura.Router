@@ -54,6 +54,15 @@ $map->get('blog.read', '/blog/{id}', function ($request, $response) {
 ?>
 ```
 
+If you want to add a route with a custom HTTP verb, call `$map->route()` and follow with a fluent call to `allows()`:
+
+```php
+<?php
+$map->route('route-name', '/route/path', function () { ... })
+    ->allows('CUSTOMVERB');
+?>
+```
+
 ## Matching A Request To A Route
 
 First, get the _Matcher_ from the _RouterContainer_.
