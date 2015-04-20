@@ -78,6 +78,15 @@ class Route
 
     /**
      *
+     * Authentication/authorization values.
+     *
+     * @var mixed
+     *
+     */
+    protected $auth;
+
+    /**
+     *
      * Default attribute values.
      *
      * @var array
@@ -263,6 +272,12 @@ class Route
     public function attributes(array $attributes)
     {
         $this->attributes = array_merge($this->attributes, $attributes);
+        return $this;
+    }
+
+    public function auth($auth)
+    {
+        $this->auth = $auth;
         return $this;
     }
 
