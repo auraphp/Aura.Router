@@ -39,7 +39,7 @@ class Matcher
      */
     protected $map;
 
-    protected $rules = array();
+    protected $rules = [];
 
     /**
      *

@@ -16,7 +16,7 @@ class AllowsTest extends AbstractRuleTest
 
         // correct
         $route = clone $proto;
-        $request = $this->newRequest('/foo/bar/baz', array('REQUEST_METHOD' => 'POST'));
+        $request = $this->newRequest('/foo/bar/baz', ['REQUEST_METHOD' => 'POST']);
         $this->assertIsMatch($request, $route);
 
         // wrong REQUEST_METHOD
@@ -28,7 +28,7 @@ class AllowsTest extends AbstractRuleTest
          * try many REQUEST_METHOD
          */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->allows(array('GET', 'POST'));
+            ->allows(['GET', 'POST']);
 
         // correct
         $route = clone $proto;

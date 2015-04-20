@@ -56,7 +56,7 @@ class Route
      * @var array
      *
      */
-    protected $accepts = array();
+    protected $accepts = [];
 
     /**
      *
@@ -65,7 +65,7 @@ class Route
      * @var array
      *
      */
-    protected $allows = array();
+    protected $allows = [];
 
     /**
      *
@@ -83,7 +83,7 @@ class Route
      * @var array
      *
      */
-    protected $defaults = array();
+    protected $defaults = [];
 
     /**
      *
@@ -183,7 +183,7 @@ class Route
      * @var array
      *
      */
-    protected $tokens = array();
+    protected $tokens = [];
 
     /**
      *

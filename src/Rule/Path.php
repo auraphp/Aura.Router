@@ -65,7 +65,7 @@ class Path
         }
 
         if ($route->wildcard) {
-            $attributes[$route->wildcard] = array();
+            $attributes[$route->wildcard] = [];
             if (! empty($matches[$route->wildcard])) {
                 $attributes[$route->wildcard] = array_map(
                     'rawurldecode',

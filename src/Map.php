@@ -27,7 +27,7 @@ class Map implements IteratorAggregate
      * @var array
      *
      */
-    protected $routes = array();
+    protected $routes = [];
 
     /**
      *

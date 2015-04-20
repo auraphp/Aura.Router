@@ -47,9 +47,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->attach('resource.', '/resource', function ($map) {
 
-            $map->tokens(array(
-                'id' => '(\d+)',
-            ));
+            $map->tokens(['id' => '(\d+)']);
 
             $map->get('google', 'http://google.com/q={q}')
                 ->isRoutable(false);
@@ -82,9 +80,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.head', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
 
         // read
@@ -93,9 +89,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.read', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
 
         // edit
@@ -104,9 +98,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.edit', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
 
         // add
@@ -115,9 +107,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.add', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
 
         // delete
@@ -126,9 +116,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.delete', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
 
         // patch
@@ -137,9 +125,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.patch', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
 
         // options
@@ -148,9 +134,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertIsRoute($actual);
         $this->assertSame('resource.options', $actual->name);
         $this->assertRoute($actual, $this->matcher->getMatchedRoute());
-        $expect = array(
-            'id' => '42',
-        );
+        $expect = ['id' => '42'];
         $this->assertEquals($expect, $actual->attributes);
     }
 
@@ -179,49 +163,49 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
         $request = $this->newRequest('/');
         $actual = $this->matcher->match($request);
-        $expect = array(
-            'attributes' => array(
+        $expect = [
+            'attributes' => [
                 'controller' => null,
                 'action' => null,
                 'id' => null,
-            ),
-        );
+            ],
+        ];
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
 
         $request = $this->newRequest('/foo');
         $actual = $this->matcher->match($request);
-        $expect = array(
-            'attributes' => array(
+        $expect = [
+            'attributes' => [
                 'controller' => 'foo',
                 'action' => null,
                 'id' => null,
-            ),
-        );
+            ],
+        ];
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
 
         $request = $this->newRequest('/foo/bar');
         $actual = $this->matcher->match($request);
-        $expect = array(
-            'attributes' => array(
+        $expect = [
+            'attributes' => [
                 'controller' => 'foo',
                 'action' => 'bar',
                 'id' => null,
-            ),
-        );
+            ],
+        ];
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
 
         $request = $this->newRequest('/foo/bar/baz');
         $actual = $this->matcher->match($request);
-        $expect = array(
-            'attributes' => array(
+        $expect = [
+            'attributes' => [
                 'controller' => 'foo',
                 'action' => 'bar',
                 'id' => 'baz',
-            ),
-        );
+            ],
+        ];
         $this->assertRoute($expect, $actual);
         $this->assertRoute($expect, $this->matcher->getMatchedRoute());
     }

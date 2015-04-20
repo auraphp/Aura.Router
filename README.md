@@ -12,7 +12,7 @@ Alternatively, [download a release][], or clone this repository, then map the
 
 ## Dependencies
 
-This package requires PHP 5.6 or later; it has been tested on PHP 7 and HHVM.
+This package requires PHP 5.5 or later; it has been tested on PHP 7 and HHVM.
 We recommend using the latest available version of PHP as a matter of principle.
 
 Aura library packages may sometimes depend on external interfaces, but never on
@@ -41,7 +41,7 @@ on Freenode in the #auraphp channel.
 
 ## Documentation
 
-This package is fully documented [here](./docs/index.md).
+This package is [fully documented][].
 
 [PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
@@ -53,3 +53,4 @@ This package is fully documented [here](./docs/index.md).
 [download a release]: https://github.com/auraphp/Aura.Router/releases
 [aura/router]: https://packagist.org/packages/aura/router
 [composer.json]: ./composer.json
+[fully documented]: http://auraphp.com/packages/Aura.Router

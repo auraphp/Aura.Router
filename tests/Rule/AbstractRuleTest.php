@@ -15,8 +15,8 @@ abstract class AbstractRuleTest extends \PHPUnit_Framework_TestCase
         $cookie = array_merge($_COOKIE, $cookie);
         return ServerRequestFactory::fromGlobals(
             $server,
-            array(),
-            array(),
+            [],
+            [],
             $cookie
         );
     }

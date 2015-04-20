@@ -12,9 +12,9 @@ class CookiesTest extends AbstractRuleTest
     public function test()
     {
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setCookies(array(
+            ->setCookies([
                 'foo' => '/fooval/',
-            ));
+            ]);
 
         /* single-value regex */
 
@@ -32,9 +32,9 @@ class CookiesTest extends AbstractRuleTest
         /* multi-value regex */
 
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setCookies(array(
+            ->setCookies([
                 'foo' => '/fooval|barval/',
-            ));
+            ]);
 
         // correct
         $route = clone $proto;

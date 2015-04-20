@@ -27,43 +27,43 @@ class PathTest extends AbstractRuleTest
     public function testIsMatchOnDynamicPath()
     {
         $route = $this->newRoute('/{controller}/{action}/{id}{format}')
-            ->tokens(array(
+            ->tokens([
                 'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
                 'id' => '([0-9]+)',
                 'format' => '(\.[^/]+)?',
-            ));
+            ]);
 
         $request = $this->newRequest('/foo/bar/42');
 
         $this->assertIsMatch($request, $route);
 
-        $expect = array(
+        $expect = [
             'controller' => 'foo',
             'action' => 'bar',
             'id' => '42',
             'format' => null,
-        );
+        ];
         $this->assertEquals($expect, $route->attributes);
     }
 
     public function testIsMatchOnDefaultAndDefinedSubpatterns()
     {
         $route = $this->newRoute('/{controller}/{action}/{id}{format}')
-            ->tokens(array(
+            ->tokens([
                 'action' => '(browse|read|edit|add|delete)',
                 'id' => '(\d+)',
                 'format' => '(\.[^/]+)?',
-            ));
+            ]);
 
         $request = $this->newRequest('/any-value/read/42');
         $this->assertIsMatch($request, $route);
-        $expect = array(
+        $expect = [
             'controller' => 'any-value',
             'action' => 'read',
             'id' => '42',
             'format' => null,
-        );
+        ];
         $this->assertSame($expect, $route->attributes);
     }
 
@@ -74,12 +74,12 @@ class PathTest extends AbstractRuleTest
         // examples taken from http://php.net/manual/en/function.rawurlencode.php
         $request = $this->newRequest('/some-controller/some%20action/foo%20%40%2B%25%2F/sales%20and%20marketing%2FMiami');
         $this->assertIsMatch($request, $route);
-        $expect = array(
+        $expect = [
             'controller' => 'some-controller',
             'action' => 'some action',
             'attribute1' => 'foo @+%/',
             'attribute2' => 'sales and marketing/Miami',
-        );
+        ];
         $this->assertEquals($expect, $route->attributes);
     }
 
@@ -93,19 +93,19 @@ class PathTest extends AbstractRuleTest
         $request = $this->newRequest('/foo/bar/baz/dib');
         $this->assertIsMatch($request, $route);
         $this->assertSame('bar', $route->attributes['zim']);
-        $this->assertSame(array('baz', 'dib'), $route->attributes['wild']);
+        $this->assertSame(['baz', 'dib'], $route->attributes['wild']);
 
         // right path with trailing slash but no wildcard values
         $route = clone $proto;
         $request = $this->newRequest('/foo/bar/');
         $this->assertIsMatch($request, $route);
         $this->assertSame('bar', $route->attributes['zim']);
-        $this->assertSame(array(), $route->attributes['wild']);
+        $this->assertSame([], $route->attributes['wild']);
 
         // right path without trailing slash
         $route = clone $proto;
         $this->assertIsMatch($request, $route);
-        $this->assertSame(array(), $route->attributes['wild']);
+        $this->assertSame([], $route->attributes['wild']);
 
         // wrong path
         $route = clone $proto;

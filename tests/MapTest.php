@@ -43,9 +43,9 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map->route('before', '/foo');
 
         $this->map->attach('during.', '/during', function ($map) {
-            $map->tokens(array('id' => '\d+'));
+            $map->tokens(['id' => '\d+']);
             $map->allows('GET');
-            $map->defaults(array('zim' => 'gir'));
+            $map->defaults(['zim' => 'gir']);
             $map->secure(true);
             $map->wildcard('other');
             $map->isRoutable(false);
@@ -56,26 +56,26 @@ class MapTest extends \PHPUnit_Framework_TestCase
 
         $map = $this->map->getRoutes();
 
-        $expect = array(
-            'tokens' => array(),
-            'allows' => array(),
-            'defaults' => array(),
+        $expect = [
+            'tokens' => [],
+            'allows' => [],
+            'defaults' => [],
             'secure' => null,
             'wildcard' => null,
             'isRoutable' => true,
-        );
+        ];
         $this->assertRoute($expect, $map['before']);
         $this->assertRoute($expect, $map['after']);
 
         $actual = $map['during.bar'];
-        $expect = array(
-            'tokens' => array('id' => '\d+'),
-            'allows' => array('GET'),
-            'defaults' => array('zim' => 'gir'),
+        $expect = [
+            'tokens' => ['id' => '\d+'],
+            'allows' => ['GET'],
+            'defaults' => ['zim' => 'gir'],
             'secure' => true,
             'wildcard' => 'other',
             'isRoutable' => false,
-        );
+        ];
         $this->assertRoute($expect, $actual);
     }
 
@@ -97,15 +97,15 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testGetAndSetRoutes()
     {
         $this->map->attach('page.', '/page', function ($map) {
-            $map->tokens(array(
+            $map->tokens([
                 'id'            => '\d+',
                 'format'        => '(\.[^/]+)?',
-            ));
+            ]);
 
-            $map->defaults(array(
+            $map->defaults([
                 'controller' => 'page',
                 'format' => null,
-            ));
+            ]);
 
             $map->route('browse', '/');
             $map->route('read', '/{id}{format}');

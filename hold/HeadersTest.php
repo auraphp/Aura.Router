@@ -12,9 +12,9 @@ class HeadersTest extends AbstractRuleTest
     public function test()
     {
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setHeaders(array(
+            ->setHeaders([
                 'X-Foo' => '/fooval/',
-            ));
+            ]);
 
         /* single-value regex */
 
@@ -30,9 +30,9 @@ class HeadersTest extends AbstractRuleTest
 
         /* multi-value regex */
         $proto = $this->newRoute('/foo/bar/baz')
-            ->setHeaders(array(
+            ->setHeaders([
                 'X-Foo' => '/fooval|barval/',
-            ));
+            ]);
 
         // correct
         $route = clone $proto;

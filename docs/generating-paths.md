@@ -31,16 +31,16 @@ If you `generate()` a path from a route with optional attributes, the attributes
 ```php
 <?php
 $map->route('archive', '/archive{/year,month,day}')
-    ->tokens(array(
+    ->tokens([
         'year'  => '\d{4}',
         'month' => '\d{2}',
         'day'   => '\d{2}'
-    ));
+    ]);
 
-$link = $generator->generate('archive', array(
+$link = $generator->generate('archive', [
     'year' => '1979',
     'month' => '11',
-)); // "/archive/1979/11"
+]); // "/archive/1979/11"
 ?>
 ```
 
@@ -54,13 +54,13 @@ will be used for the trailing arbitrary attribute values:
 $map->route('wild_post', '/post/{id}')
     ->wildcard('other');
 
-$link = $generator->generate('wild_post', array(
+$link = $generator->generate('wild_post', [
     'id' => '88',
-    'other' => array(
+    'other' => [
         'foo',
         'bar',
         'baz',
-    );
-)); // "/post/88/foo/bar/baz"
+    ]
+]); // "/post/88/foo/bar/baz"
 ?>
 ```

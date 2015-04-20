@@ -99,7 +99,7 @@ class Generator
      * @throws Exception\RouteNotFound
      *
      */
-    public function generate($name, $data = array())
+    public function generate($name, $data = [])
     {
         return $this->buildPath($name, $data, false);
     }
@@ -119,7 +119,7 @@ class Generator
      * @throws Exception\RouteNotFound
      *
      */
-    public function generateRaw($name, $data = array())
+    public function generateRaw($name, $data = [])
     {
         return $this->buildPath($name, $data, true);
     }
@@ -143,7 +143,7 @@ class Generator
         $this->raw = $raw;
         $this->route = $this->map->getRoute($name);
         $this->path = $this->route->path;
-        $this->repl = array();
+        $this->repl = [];
         $this->data = array_merge($this->route->defaults, $data);
 
         $this->buildTokenReplacements();
