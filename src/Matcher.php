@@ -9,6 +9,7 @@
 namespace Aura\Router;
 
 use Aura\Router\Exception;
+use Aura\Router\Rule\RuleIterator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
@@ -39,7 +40,7 @@ class Matcher
      */
     protected $map;
 
-    protected $rules = [];
+    protected $ruleIterator;
 
     /**
      *
@@ -70,11 +71,14 @@ class Matcher
      * @param Generator $generator A URL path generator.
      *
      */
-    public function __construct(Map $map, LoggerInterface $logger, array $rules)
+    public function __construct(
+        Map $map,
+        LoggerInterface $logger,
+        RuleIterator $ruleIterator)
     {
         $this->map = $map;
         $this->logger = $logger;
-        $this->rules = $rules;
+        $this->ruleIterator = $ruleIterator;
     }
 
     /**
@@ -118,7 +122,7 @@ class Matcher
     protected function applyRules($request, $route, $name, $path)
     {
         $score = 0;
-        foreach ($this->rules as $rule) {
+        foreach ($this->ruleIterator as $rule) {
             if (! $rule($request, $route)) {
                 return $this->ruleFailed($request, $route, $name, $path, $rule, $score);
             }

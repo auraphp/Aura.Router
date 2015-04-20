@@ -8,6 +8,7 @@
  */
 namespace Aura\Router;
 
+use Aura\Router\Rule\RuleIterator;
 use Psr\Log\NullLogger;
 
 /**
@@ -24,7 +25,8 @@ class RouterContainer
     protected $loggerFactory;
     protected $matcher;
     protected $map;
-    protected $rules = [];
+    protected $ruleFactories = [];
+    protected $ruleIterator;
     protected $protoRoute;
 
     public function __construct()
@@ -42,23 +44,23 @@ class RouterContainer
         $this->protoRoute = $protoRoute;
     }
 
-    public function setRules(array $rules)
+    public function setRuleFactories(array $ruleFactories)
     {
-        $this->rules = $rules;
+        $this->ruleFactories = $ruleFactories;
     }
 
-    public function getRules()
+    public function getRuleFactories()
     {
-        if (! $this->rules) {
-            $this->rules = [
-                new \Aura\Router\Rule\Secure(),
-                new \Aura\Router\Rule\Host(),
-                new \Aura\Router\Rule\Path(),
-                new \Aura\Router\Rule\Allows(),
-                new \Aura\Router\Rule\Accepts(),
+        if (! $this->ruleFactories) {
+            $this->ruleFactories = [
+                function () { return new \Aura\Router\Rule\Secure(); },
+                function () { return new \Aura\Router\Rule\Host(); },
+                function () { return new \Aura\Router\Rule\Path(); },
+                function () { return new \Aura\Router\Rule\Allows(); },
+                function () { return new \Aura\Router\Rule\Accepts(); },
             ];
         }
-        return $this->rules;
+        return $this->ruleFactories;
     }
 
     public function getMap()
@@ -75,7 +77,7 @@ class RouterContainer
             $this->matcher = new Matcher(
                 $this->getMap(),
                 $this->getLogger(),
-                $this->getRules()
+                $this->getRuleIterator()
             );
         }
         return $this->matcher;
@@ -95,6 +97,14 @@ class RouterContainer
             $this->logger = call_user_func($this->loggerFactory);
         }
         return $this->logger;
+    }
+
+    public function getRuleIterator()
+    {
+        if (! $this->ruleIterator) {
+            $this->ruleIterator = new RuleIterator($this->getRuleFactories());
+        }
+        return $this->ruleIterator;
     }
 
     public function getProtoRoute()

@@ -18,7 +18,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($route, $this->container->getProtoRoute());
 
         $rules = ['foo'];
-        $this->container->setRules($rules);
-        $this->assertSame($rules, $this->container->getRules());
+        $this->container->setRuleFactories($rules);
+        $this->assertSame($rules, $this->container->getRuleFactories());
     }
 }
