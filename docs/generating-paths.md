@@ -8,7 +8,7 @@ $generator = $routerContainer->getGenerator();
 ?>
 ```
 
-You can then call `Generagor::generate()` with the route name and optional attributes to use for named placeholder tokens.
+You can then call `Generator::generate()` with the route name and optional attributes to use for named placeholder tokens.
 
 ```php
 <?php
