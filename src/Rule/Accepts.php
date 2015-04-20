@@ -11,12 +11,11 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-// must match **at least one** accept value
 class Accepts
 {
     /**
      *
-     * Check that the request Accept headers match the Route accept values.
+     * Check that the request Accept headers match one Route accept value.
      *
      * @param ServerRequestInterface $request The HTTP request.
      *
@@ -27,14 +26,16 @@ class Accepts
      */
     public function __invoke(ServerRequestInterface $request, Route $route)
     {
-        $server = $request->getServerParams();
-
-        if (! $route->accepts || ! isset($server['HTTP_ACCEPT'])) {
+        if (! $route->accepts) {
             return true;
         }
 
-        $header = str_replace(' ', '', $server['HTTP_ACCEPT']);
+        $requestAccepts = $request->getHeaders('Accept');
+        if (! $requestAccepts) {
+            return true;
+        }
 
+        $header = $this->stringify($requestAccepts);
         if ($this->match('*/*', $header)) {
             return true;
         }
@@ -50,11 +51,31 @@ class Accepts
 
     /**
      *
-     * Is the accept header a match?
+     * Convert the Request 'Accept' header values to a string.
      *
-     * @param string $type
+     * @param array $requestAccepts The Accept header values in the Request.
      *
-     * @param string $header
+     * @return string
+     *
+     */
+    protected function stringify(array $requestAccepts)
+    {
+        $result = '';
+        foreach ($requestAccepts as $label => $values) {
+            foreach ($values as $value) {
+                $result .= $value . ';';
+            }
+        }
+        return $result;
+    }
+
+    /**
+     *
+     * Is the Accept header a match?
+     *
+     * @param string $type The Route accept type.
+     *
+     * @param string $header The Request accept header.
      *
      * @return bool True on a match, false if not.
      *

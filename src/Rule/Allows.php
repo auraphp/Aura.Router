@@ -31,7 +31,7 @@ class Allows
             return true;
         }
 
-        $request_method = $request->getMethod() ?: 'GET';
-        return in_array($request_method, $route->allows);
+        $requestMethod = $request->getMethod() ?: 'GET';
+        return in_array($requestMethod, $route->allows);
     }
 }
