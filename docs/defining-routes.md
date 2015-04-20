@@ -4,7 +4,7 @@ Every time you add a route to the _Map_, you get back a _Route_ object. The _Rou
 
 ## Placeholder Tokens and Default Values
 
-When you add a `{token}` placeholer in the path, it uses a default regular expression of `[^/]`. Essentially, this matches everything except a slash, which of course indicates the next path segment.
+When you add a `{token}` placeholer in the path, it uses a default regular expression of `([^/]+)`. Essentially, this matches everything except a slash, which of course indicates the next path segment.
 
 To define custom regular expressions for placeholder tokens, use the `tokens()` method.
 
