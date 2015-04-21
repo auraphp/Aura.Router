@@ -57,12 +57,23 @@ if (file_exists($cache)) {
 
 Note that if there are closures in the _Route_ objects (e.g. in the handlers), you will not be able to cache the routes. This is because closures cannot be serialized by PHP. Consider using non-closure callables instead.
 
+## Custom Matching Rules
+
+Writing a custom matching rule, say one that checks the authentication state, is a bit involved but not difficult:
+
+1. Write a rule class that implements the RuleInterface.
+
+2. Get the RuleIterator from the RouterContainer and append or prepend an instance of your new Rule. (You can also wrap it in a callable to make it lazy-loaded, such as with Aura.Di Lazy instances.)
+
+3. Use the Matcher as normal.
+
+4. If you want your rule to appear in the middle of the matching process, you'll need to set all the rules at once.
+
+
 ## Extending the Map and Route Classes
 
 TBD
 
-## Custom Matching Rules
+## Customizing The Container
 
 TBD
-
-## Customizing The Container

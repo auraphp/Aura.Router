@@ -30,10 +30,12 @@ $map->get('blog.read', '/blog/{id}{format}')
 If no default value is specified for a placeholder token, the corresponding attribute value will be `null`. To set your own default values, call the `defaults()` method.
 
 ```php
+<?php
 $map->post('blog.archive', '/blog/{id}{format}')
     ->defaults([
         'format' => '.html',
     ]);
+?>
 ```
 
 
@@ -92,8 +94,10 @@ All slash-separated path segments after the `{id}` will be captured as an array 
 You can limit a route to specific hosts with the `host()` method and a regular expression. The following example will only match when the request is on `example.com` domain:
 
 ```php
+<?php
 $map->get('blog.browse', '/blog')
     ->host('example.com');
+?>
 ```
 
 (Dots in the regular expression will automatically be escaped for you.)
@@ -101,8 +105,10 @@ $map->get('blog.browse', '/blog')
 You can use placeholder tokens and default values in the host specification, and capture those values into route attributes. The following matches `*.example.com` and captures the subdomain value as a route attribute:
 
 ```php
+<?php
 $map->get('blog.browse', '/blog')
     ->host('{subdomain}.?example.com');
+?>
 ```
 
 ## Accept Headers
@@ -110,12 +116,14 @@ $map->get('blog.browse', '/blog')
 The `accepts()` method adds to a list of content types that the route handler can be expected to return.
 
 ```php
+<?php
 $map->get('blog.browse', '/blog')
     ->accepts([
         'application/json',
         'application/xml',
         'text/csv',
     ]);
+?>
 ```
 
 Note that this is *not* a content negotiation method. It is only a pro-forma check to see if one of the specified types is present in the `Accept` header with a non-zero `q` value. THe handler, or some other layer, should perform content negotation proper.
@@ -125,8 +133,10 @@ Note that this is *not* a content negotiation method. It is only a pro-forma che
 The `allows()` method adds to the allowed HTTP verbs for the route.
 
 ```php
+<?php
 $map->post('blog.edit', '/blog/{id}')
     ->allows(['PATCH', 'PUT'])
+?>
 ```
 
 ## Secure Protocols
@@ -134,8 +144,10 @@ $map->post('blog.edit', '/blog/{id}')
 You can use the `secure()` method to specify that a route should only match a secure protcol. (Specifically, `$_SERVER['HTTPS']` must be on, or the request must be on port 443.)
 
 ```php
+<?php
 $map->post('blog.edit', '/blog/{id}')
     ->secure();
+?>
 ```
 
 You can call `secure(false)` to limit the route to only non-secure protocols. Calling `secure(null)` causes the route to ignore the protocol security.
@@ -144,18 +156,32 @@ You can call `secure(false)` to limit the route to only non-secure protocols. Ca
 
 Sometimes you will want to have a route in the _Map_ that is used only for generating paths, and not for matching to handlers.  In this case, you can call `isRoutable(false)`. (This is rare but useful.)
 
+## Authentication
+
+Each route instance has a special-purpose method and property, `auth()` and `$auth`, for you to store authentication/authorization values.  These values are entirely arbitrary, and are best used with custom matching rules of your own design.
+
+```php
+<?php
+$map->post('blog.admin', '/blog/admin')
+    ->auth([
+        'isAdmin' => true,
+    ]);
+?>
+```
+
 ## Custom Extras
 
 Other, custom data about the route can be stored using the `extras()` method. Pass an array of key-value pairs and it will be merged with any other custom data already stored.
 
 ```php
-$map->post('blog.dashboard', '/blog/dashboard')
+<?php
+$map->post('blog.other', '/blog/other')
     ->extras([
-        'authenticated' => true,
-        'is_admin' => true,
+        'foo' => true,
+        'bar' => false,
     ]);
+?>
 ```
-
 You can then use these extra values in your own custom matching rules.
 
 ## Default Map Route Specifications

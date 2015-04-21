@@ -8,7 +8,7 @@
  */
 namespace Aura\Router;
 
-use Aura\Router\Rule\RuleRegistry;
+use Aura\Router\Rule\RuleIterator;
 use Psr\Log\NullLogger;
 
 /**
@@ -26,7 +26,7 @@ class RouterContainer
     protected $matcher;
     protected $map;
     protected $rules = [];
-    protected $ruleRegistry;
+    protected $ruleIterator;
     protected $protoRoute;
 
     public function __construct()
@@ -77,7 +77,7 @@ class RouterContainer
             $this->matcher = new Matcher(
                 $this->getMap(),
                 $this->getLogger(),
-                $this->getRuleRegistry()
+                $this->getRuleIterator()
             );
         }
         return $this->matcher;
@@ -99,12 +99,12 @@ class RouterContainer
         return $this->logger;
     }
 
-    public function getRuleRegistry()
+    public function getRuleIterator()
     {
-        if (! $this->ruleRegistry) {
-            $this->ruleRegistry = new RuleRegistry($this->getRules());
+        if (! $this->ruleIterator) {
+            $this->ruleIterator = new RuleIterator($this->getRules());
         }
-        return $this->ruleRegistry;
+        return $this->ruleIterator;
     }
 
     public function getProtoRoute()

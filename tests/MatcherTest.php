@@ -21,7 +21,7 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->map = $container->getMap();
         $this->matcher = $container->getMatcher();
         $this->logger = $container->getLogger();
-        $this->ruleRegistry = $container->getRuleRegistry();
+        $this->ruleIterator = $container->getRuleIterator();
     }
 
     protected function newRequest($path, array $server = [])

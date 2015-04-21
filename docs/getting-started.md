@@ -2,7 +2,7 @@
 
 Aura.Router is a web router implementation for PSR-7.
 
-You get all the router objects through a library-specific container, so you need to instantiate it first.
+You get all the router objects through a library-specific _RouterContainer_, so you need to instantiate that first.
 
 ```php
 <?php
@@ -12,7 +12,7 @@ $routerContainer = new RouterContainer();
 ?>
 ```
 
-You can then retrieve a _Map_ for adding routes, a _Matcher_ for matching the incoming request to a route, and a _Generator_ for generating paths from routes.
+You can then retrieve a _Map_ for adding routes, a _Matcher_ for matching the incoming request to a route, and a _Generator_ for generating paths from routes. (There are other support objects available as well.)
 
 Let's go step-by-step to add a route, match a request against it, and dispatch it.
 

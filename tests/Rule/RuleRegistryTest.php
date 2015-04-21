@@ -1,23 +1,23 @@
 <?php
 namespace Aura\Router\Rule;
 
-class RuleRegistryTest extends \PHPUnit_Framework_TestCase
+class RuleIteratorTest extends \PHPUnit_Framework_TestCase
 {
-    protected $ruleRegistry;
+    protected $ruleIterator;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->ruleRegistry = new RuleRegistry();
+        $this->ruleIterator = new RuleIterator();
     }
 
     public function test()
     {
-        $this->ruleRegistry->set([
+        $this->ruleIterator->set([
             new Secure(),
             function () { return new FakeCustom(); },
         ]);
-        $this->ruleRegistry->prepend(new Allows());
+        $this->ruleIterator->prepend(new Allows());
 
         $expect = [
             'Aura\Router\Rule\Allows',
@@ -27,14 +27,14 @@ class RuleRegistryTest extends \PHPUnit_Framework_TestCase
 
         // first traversal
         $actual = [];
-        foreach ($this->ruleRegistry as $key => $rule) {
+        foreach ($this->ruleIterator as $key => $rule) {
             $actual[] = get_class($rule);
         }
         $this->assertSame($actual, $expect);
 
         // subsequent traversal
         $actual = [];
-        foreach ($this->ruleRegistry as $key => $rule) {
+        foreach ($this->ruleIterator as $key => $rule) {
             $actual[] = get_class($rule);
         }
         $this->assertSame($actual, $expect);
@@ -42,7 +42,7 @@ class RuleRegistryTest extends \PHPUnit_Framework_TestCase
 
     public function testUnexpectedValue()
     {
-        $this->ruleRegistry->set([
+        $this->ruleIterator->set([
             function () { return 'string'; }
         ]);
 
@@ -51,12 +51,12 @@ class RuleRegistryTest extends \PHPUnit_Framework_TestCase
             'string'
         );
 
-        $this->ruleRegistry->current();
+        $this->ruleIterator->current();
     }
 
     public function testUnexpectedValueObject()
     {
-        $this->ruleRegistry->set([
+        $this->ruleIterator->set([
             function () { return (object) []; }
         ]);
 
@@ -65,6 +65,6 @@ class RuleRegistryTest extends \PHPUnit_Framework_TestCase
             'object of type stdClass'
         );
 
-        $this->ruleRegistry->current();
+        $this->ruleIterator->current();
     }
 }

@@ -4,7 +4,7 @@ namespace Aura\Router\Rule;
 use Aura\Router\Exception;
 use Iterator;
 
-class RuleRegistry implements Iterator
+class RuleIterator implements Iterator
 {
     protected $rules = [];
 
