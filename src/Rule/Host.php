@@ -58,16 +58,19 @@ class Host implements RuleInterface
             return false;
         }
 
-        // populate the named matches into the route attributes.
+        $route->attributes($this->getAttributes($matches));
+        return true;
+    }
+
+    protected function getAttributes($matches)
+    {
         $attributes = [];
         foreach ($matches as $key => $val) {
             if (is_string($key)) {
                 $attributes[$key] = $val;
             }
         }
-
-        $route->attributes($attributes);
-        return true;
+        return $attributes;
     }
 
     protected function buildRegex(Route $route)
