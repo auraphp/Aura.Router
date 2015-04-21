@@ -31,9 +31,19 @@ class Secure implements RuleInterface
         }
 
         $server = $request->getServerParams();
-        $secure = (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-               || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
-
+        $secure = $this->https($server) || $this->port443($server);
         return $route->secure == $secure;
+    }
+
+    protected function https($server)
+    {
+        return isset($server['HTTPS'])
+            && $server['HTTPS'] == 'on';
+    }
+
+    protected function port443($server)
+    {
+        return isset($server['SERVER_PORT'])
+            && $server['SERVER_PORT'] == 443;
     }
 }
