@@ -55,4 +55,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
         $route->namePrefix('/bar');
     }
+
+    public function testAuth()
+    {
+        $route = new Route();
+        $route->auth(true);
+        $this->assertTrue($route->auth);
+    }
 }
