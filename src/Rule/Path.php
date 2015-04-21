@@ -11,7 +11,7 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Path
+class Path implements RuleInterface
 {
     /**
      *

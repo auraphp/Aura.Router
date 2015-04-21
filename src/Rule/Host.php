@@ -11,7 +11,7 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Host
+class Host implements RuleInterface
 {
     /**
      *

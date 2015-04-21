@@ -11,11 +11,11 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Allows implements RuleInterface
+interface RuleInterface
 {
     /**
      *
-     * Does the server request method match an allowed route method?
+     * Check if the Request matches the Route.
      *
      * @param ServerRequestInterface $request The HTTP request.
      *
@@ -24,13 +24,5 @@ class Allows implements RuleInterface
      * @return bool True on success, false on failure.
      *
      */
-    public function __invoke(ServerRequestInterface $request, Route $route)
-    {
-        if (! $route->allows) {
-            return true;
-        }
-
-        $requestMethod = $request->getMethod() ?: 'GET';
-        return in_array($requestMethod, $route->allows);
-    }
+    public function __invoke(ServerRequestInterface $request, Route $route);
 }
