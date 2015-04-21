@@ -8,7 +8,7 @@ class RuleRegistry implements Iterator
 {
     protected $rules = [];
 
-    public function __construct(array $rules)
+    public function __construct(array $rules = [])
     {
         $this->set($rules);
     }
@@ -28,7 +28,7 @@ class RuleRegistry implements Iterator
 
     public function prepend(callable $rule)
     {
-        array_unshift($rule, $this->rules);
+        array_unshift($this->rules, $rule);
     }
 
     public function current()
@@ -38,16 +38,18 @@ class RuleRegistry implements Iterator
             return $rule;
         }
 
-        // treat it as a factory
-        $rule = $rule();
-        if (! $rule instanceof RuleInterface) {
-            throw new Exception\UnexpectedValue(get_class($rule));
+        $key = key($this->rules);
+        $factory = $this->rules[$key];
+        $rule = $factory();
+        if ($rule instanceof RuleInterface) {
+            $this->rules[$key] = $rule;
+            return $rule;
         }
 
-        // retain and return
-        $key = key($this->rules);
-        $this->rules[$key] = $rule;
-        return $rule;
+        $message = gettype($rule);
+        $message .= ($message != 'object') ?: ' of type ' . get_class($rule);
+        $message = "Expected RuleInterface, got {$message} for key {$key}";
+        throw new Exception\UnexpectedValue($message);
     }
 
     public function key()
