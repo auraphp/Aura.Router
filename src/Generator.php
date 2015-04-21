@@ -183,23 +183,30 @@ class Generator
             return;
         }
 
-        // this is the full token to replace in the path
-        $key = $matches[0];
-        // start with an empty replacement
-        $this->repl[$key] = '';
         // the optional attribute names in the token
         $names = explode(',', $matches[1]);
-        // look for data for each of the attribute names
+
+        // this is the full token to replace in the path
+        $key = $matches[0];
+
+        // build the replacement string
+        $this->repl[$key] = $this->buildOptionalReplacement($names);
+    }
+
+    protected function buildOptionalReplacement($names)
+    {
+        $repl = '';
         foreach ($names as $name) {
             // is there data for this optional attribute?
             if (! isset($this->data[$name])) {
                 // options are *sequentially* optional, so if one is
                 // missing, we're done
-                break;
+                return $repl;
             }
             // encode the optional value
-            $this->repl[$key] .= '/' . $this->encode($this->data[$name]);
+            $repl .= '/' . $this->encode($this->data[$name]);
         }
+        return $repl;
     }
 
     /**
