@@ -54,9 +54,14 @@ class Path implements RuleInterface
             return false;
         }
 
-        // populate the matches into the route attributes. if the path match
-        // is exactly an empty string, treat it as missing/unset. (this is
-        // to support optional ".format" attribute values.)
+        $route->attributes($this->getAttributes($matches, $route->wildcard));
+        return true;
+    }
+
+    protected function getAttributes($matches, $wildcard)
+    {
+        // if the path match is exactly an empty string, treat it as unset.
+        // this is to support optional attribute values.
         $attributes = [];
         foreach ($matches as $key => $val) {
             if (is_string($key) && $val !== '') {
@@ -64,18 +69,19 @@ class Path implements RuleInterface
             }
         }
 
-        if ($route->wildcard) {
-            $attributes[$route->wildcard] = [];
-            if (! empty($matches[$route->wildcard])) {
-                $attributes[$route->wildcard] = array_map(
-                    'rawurldecode',
-                    explode('/', $matches[$route->wildcard])
-                );
-            }
+        if (! $wildcard) {
+            return $attributes;
         }
 
-        $route->attributes($attributes);
-        return true;
+        $attributes[$wildcard] = [];
+        if (! empty($matches[$wildcard])) {
+            $attributes[$wildcard] = array_map(
+                'rawurldecode',
+                explode('/', $matches[$wildcard])
+            );
+        }
+
+        return $attributes;
     }
 
     protected function buildRegex(Route $route)
