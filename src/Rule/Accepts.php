@@ -30,43 +30,28 @@ class Accepts implements RuleInterface
             return true;
         }
 
-        $requestAccepts = $request->getHeaders('Accept');
+        $requestAccepts = $request->getHeader('Accept');
         if (! $requestAccepts) {
             return true;
         }
 
-        $header = $this->stringify($requestAccepts);
-        if ($this->match('*/*', $header)) {
+        return $this->matches($route->accepts, $requestAccepts);
+    }
+
+    protected function matches($routeAccepts, $requestAccepts)
+    {
+        $requestAccepts = implode(';', $requestAccepts);
+        if ($this->match('*/*', $requestAccepts)) {
             return true;
         }
 
-        foreach ($route->accepts as $type) {
-            if ($this->match($type, $header)) {
+        foreach ($routeAccepts as $type) {
+            if ($this->match($type, $requestAccepts)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     *
-     * Convert the Request 'Accept' header values to a string.
-     *
-     * @param array $requestAccepts The Accept header values in the Request.
-     *
-     * @return string
-     *
-     */
-    protected function stringify(array $requestAccepts)
-    {
-        $result = '';
-        foreach ($requestAccepts as $label => $values) {
-            foreach ($values as $value) {
-                $result .= $value . ';';
-            }
-        }
-        return $result;
     }
 
     /**

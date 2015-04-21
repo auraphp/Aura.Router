@@ -8,7 +8,7 @@
  */
 namespace Aura\Router;
 
-use Aura\Router\Rule\RuleIterator;
+use Aura\Router\Rule;
 use Psr\Log\NullLogger;
 
 /**
@@ -23,25 +23,26 @@ class RouterContainer
     protected $generator;
     protected $logger;
     protected $loggerFactory;
-    protected $matcher;
     protected $map;
-    protected $rules = [];
+    protected $mapFactory;
+    protected $matcher;
     protected $ruleIterator;
-    protected $protoRoute;
+    protected $rules = [];
 
     public function __construct()
     {
-        $this->loggerFactory = function () { return new NullLogger(); };
+        $this->setLoggerFactory(function () {
+            return new NullLogger();
+        });
+
+        $this->setMapFactory(function () {
+            return new Map(new Route());
+        });
     }
 
     public function setLoggerFactory(callable $loggerFactory)
     {
         $this->loggerFactory = $loggerFactory;
-    }
-
-    public function setProtoRoute(Route $protoRoute)
-    {
-        $this->protoRoute = $protoRoute;
     }
 
     public function setRules(array $rules)
@@ -53,20 +54,26 @@ class RouterContainer
     {
         if (! $this->rules) {
             $this->rules = [
-                new \Aura\Router\Rule\Secure(),
-                new \Aura\Router\Rule\Host(),
-                new \Aura\Router\Rule\Path(),
-                new \Aura\Router\Rule\Allows(),
-                new \Aura\Router\Rule\Accepts(),
+                new Rule\Secure(),
+                new Rule\Host(),
+                new Rule\Path(),
+                new Rule\Allows(),
+                new Rule\Accepts(),
             ];
         }
         return $this->rules;
     }
 
+    public function setMapFactory(callable $mapFactory)
+    {
+        $this->mapFactory = $mapFactory;
+    }
+
     public function getMap()
     {
         if (! $this->map) {
-            $this->map = new Map($this->getProtoRoute());
+            $factory = $this->mapFactory;
+            $this->map = $factory();
         }
         return $this->map;
     }
@@ -102,16 +109,8 @@ class RouterContainer
     public function getRuleIterator()
     {
         if (! $this->ruleIterator) {
-            $this->ruleIterator = new RuleIterator($this->getRules());
+            $this->ruleIterator = new Rule\RuleIterator($this->getRules());
         }
         return $this->ruleIterator;
-    }
-
-    public function getProtoRoute()
-    {
-        if (! $this->protoRoute) {
-            $this->protoRoute = new Route();
-        }
-        return $this->protoRoute;
     }
 }
