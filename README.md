@@ -1,6 +1,6 @@
 # Aura.Router
 
-A PSR-7 compliant web router implementation.
+Powerful, flexible web routing for PSR-7 requests.
 
 ## Installation and Autoloading
 
@@ -8,12 +8,13 @@ This package is installable and PSR-4 autoloadable via Composer as
 [aura/router][].
 
 Alternatively, [download a release][], or clone this repository, then map the
-`Aura\Router\` namespace to the package PSR-4 `src/` directory.
+`Aura\Router\` namespace to the package `src/` directory.
 
 ## Dependencies
 
-This package requires PHP 5.5 or later; it has been tested on PHP 7 and HHVM.
-We recommend using the latest available version of PHP as a matter of principle.
+This package requires PHP 5.5 or later; it has been tested on PHP 5.6, PHP 7,
+and HHVM. We recommend using the latest available version of PHP as a matter of
+principle.
 
 Aura library packages may sometimes depend on external interfaces, but never on
 external implementations. This allows compliance with community standards
@@ -41,7 +42,7 @@ on Freenode in the #auraphp channel.
 
 ## Documentation
 
-This package is [fully documented][].
+This package is fully documented [here](./docs/index.md).
 
 [PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
@@ -53,4 +54,3 @@ This package is [fully documented][].
 [download a release]: https://github.com/auraphp/Aura.Router/releases
 [aura/router]: https://packagist.org/packages/aura/router
 [composer.json]: ./composer.json
-[fully documented]: http://auraphp.com/packages/Aura.Router

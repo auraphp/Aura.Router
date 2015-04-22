@@ -1,7 +1,7 @@
 {
     "name": "aura/router",
     "type": "library",
-    "description": "A PSR-7 compliant web router implementation.",
+    "description": "Powerful, flexible web routing for PSR-7 requests.",
     "keywords": [
         "route",
         "router",
