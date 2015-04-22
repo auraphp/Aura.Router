@@ -53,9 +53,11 @@ echo get_class($map); // "ResourceMap"
 ?>
 ```
 
-## Caching Routes
+## Automated Route Caching and Building
 
-You may wish to cache your route map for production deployments so that you do not have to add the routes from scratch on each page load. You can call the `RouterContainer::setMapBuilder()` method and pass a builder callable to set up the _Map_ before the container returns it. The builder callable should take a _Map_ instance as its only argument.
+You may wish to build your route map from some external source. Alternatively,you mighg want to cache your route map for production deployments so that you do not have to add the routes from scratch on each page load.
+
+To effect these or other automated map-building functionality, call the `RouterContainer::setMapBuilder()` method and pass a builder callable to set up the _Map_ before the container returns it. The builder callable should take a _Map_ instance as its only argument.
 
 The following is a naive example for file-based caching and restoring of _Map_ routes. It uses the `Map::setRoutes()` and `Map::getRoutes()` methods to work with the array of mapped route objects.
 
@@ -87,11 +89,6 @@ $routerContainer->setMapBuilder(function ($map) {
 ?>
 ```
 
-Now when we call `$routerContainer->getMap()`, the container will automatically call the map-builder logic and apply it to the `$map` before returning it.
+> N.b.: If there are closures in the _Route_ objects (e.g. in the handlers), you will not be able to serialize the routes for caching. This is because closures cannot be serialized by PHP. Consider using non-closure callables instead.
 
-Two notes:
-
-1. If there are closures in the _Route_ objects (e.g. in the handlers), you will not be able to serialize the routes for caching. This is because closures cannot be serialized by PHP. Consider using non-closure callables instead.
-
-2. The map-builder callable can be any callable: a closure, invokable object, etc.
-
+Now when you call `$routerContainer->getMap()`, the container will automatically call the map-builder logic and apply it to the `$map` before returning it.
