@@ -5,6 +5,8 @@
         "defining-routes.md",
         "attaching-route-groups.md",
         "generating-paths.md",
-        "advanced-topics.md"
+        "custom-maps.md",
+        "custom-matching.md",
+        "other-topics.md"
     ]
 }
