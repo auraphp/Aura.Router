@@ -38,6 +38,10 @@ class RouterContainer
         $this->setMapFactory(function () {
             return new Map(new Route());
         });
+
+        $this->setMapBuilder(function (Map $map) {
+            // do nothing
+        });
     }
 
     public function setLoggerFactory(callable $loggerFactory)
@@ -69,11 +73,16 @@ class RouterContainer
         $this->mapFactory = $mapFactory;
     }
 
+    public function setMapBuilder(callable $mapBuilder)
+    {
+        $this->mapBuilder = $mapBuilder;
+    }
+
     public function getMap()
     {
         if (! $this->map) {
-            $factory = $this->mapFactory;
-            $this->map = $factory();
+            $this->map = call_user_func($this->mapFactory);
+            call_user_func($this->mapBuilder, $this->map);
         }
         return $this->map;
     }

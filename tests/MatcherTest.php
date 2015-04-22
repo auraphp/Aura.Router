@@ -14,14 +14,8 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $container = new RouterContainer();
-        $container->setLoggerFactory(function () {
-            return new FakeLogger();
-        });
-
         $this->map = $container->getMap();
         $this->matcher = $container->getMatcher();
-        $this->logger = $container->getLogger();
-        $this->ruleIterator = $container->getRuleIterator();
     }
 
     protected function newRequest($path, array $server = [])
@@ -139,25 +133,6 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expect, $actual->attributes);
     }
 
-    public function testLogger()
-    {
-        $foo = $this->map->route('foo', '/foo');
-        $bar = $this->map->route('bar', '/bar');
-        $baz = $this->map->route('baz', '/baz');
-
-        $request = $this->newRequest('/bar');
-        $this->matcher->match($request);
-
-        $expect = [
-            'debug: /bar FAILED Aura\Router\Rule\Path ON foo',
-            'debug: /bar MATCHED ON bar',
-        ];
-        $actual = $this->logger->lines;
-        $this->assertSame($expect, $actual);
-
-        $this->assertRoute($bar, $this->matcher->getMatchedRoute());
-    }
-
     public function testCatchAll()
     {
         $this->map->route('catchall', '{/controller,action,id}');
@@ -235,5 +210,32 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
 
         $failed = $this->matcher->getFailedRoute();
         $this->assertSame($expect->name, $failed->name);
+    }
+
+    public function testLogger()
+    {
+        $container = new RouterContainer();
+        $container->setLoggerFactory(function () {
+            return new FakeLogger();
+        });
+
+        $map = $container->getMap();
+        $matcher = $container->getMatcher();
+        $logger = $container->getLogger();
+
+        $foo = $map->route('foo', '/foo');
+        $bar = $map->route('bar', '/bar');
+        $baz = $map->route('baz', '/baz');
+
+        $request = $this->newRequest('/bar');
+        $matcher->match($request);
+
+        $expect = [
+            'debug: /bar FAILED Aura\Router\Rule\Path ON foo',
+            'debug: /bar MATCHED ON bar',
+        ];
+        $actual = $logger->lines;
+        $this->assertSame($expect, $actual);
+        $this->assertRoute($bar, $matcher->getMatchedRoute());
     }
 }

@@ -77,13 +77,22 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->route('test', '/archive/{category}{/year,month,day}');
 
+        // some
         $url = $this->generator->generate('test', [
             'category' => 'foo',
             'year' => '1979',
             'month' => '11',
         ]);
-
         $this->assertEquals('/archive/foo/1979/11', $url);
+
+        // all
+        $url = $this->generator->generate('test', [
+            'category' => 'foo',
+            'year' => '1979',
+            'month' => '11',
+            'day' => '07',
+        ]);
+        $this->assertEquals('/archive/foo/1979/11/07', $url);
     }
 
     public function testGenerateOnFullUri()
