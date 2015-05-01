@@ -81,6 +81,11 @@ class Matcher
         $this->ruleIterator = $ruleIterator;
     }
 
+    public function getMap()
+    {
+        return $this->map;
+    }
+
     /**
      *
      * Gets a route that matches a given path and other server conditions.
