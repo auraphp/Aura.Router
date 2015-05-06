@@ -16,6 +16,14 @@ use Aura\Router\Exception;
  *
  * @package Aura.Router
  *
+ * @method Route add() add($name, $path, $action = null) Adds a route
+ * @method Route addGet() addGet($name, $path, $action = null)  Adds a GET route
+ * @method Route addDelete() addDelete($name, $path, $action = null) Adds a DELETE route
+ * @method Route addHead() addHead($name, $path, $action = null)  Adds a HEAD route
+ * @method Route addOptions() addOptions($name, $path, $action = null)  Adds a OPTIONS route
+ * @method Route addPatch() addPatch($name, $path, $action = null)  Adds a PATCH route
+ * @method Route addPut() addPut($name, $path, $action = null)  Adds a PUT route
+ * @method Route setRouteCallable() setRouteCallable($callable) Sets the callable for modifying a newly-added route before it is returned.
  */
 class Router
 {
