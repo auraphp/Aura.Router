@@ -382,7 +382,9 @@ class Route extends AbstractSpec
     protected function serverIsSecure($server)
     {
         return (isset($server['HTTPS']) && $server['HTTPS'] == 'on')
-            || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443);
+            || (isset($server['SERVER_PORT']) && $server['SERVER_PORT'] == 443)
+            || (isset($server['HTTP_X_FORWARDED_PROTO']) && strtolower($server['HTTP_X_FORWARDED_PROTO']) === 'https')
+            ;
     }
 
     /**
