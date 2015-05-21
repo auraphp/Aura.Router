@@ -2,7 +2,7 @@
 namespace Aura\Router\Rule;
 
 use Aura\Router\Route;
-use Phly\Http\ServerRequestFactory;
+use Zend\Diactoros\ServerRequestFactory;
 
 abstract class AbstractRuleTest extends \PHPUnit_Framework_TestCase
 {
