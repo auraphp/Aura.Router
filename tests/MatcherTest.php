@@ -1,7 +1,7 @@
 <?php
 namespace Aura\Router;
 
-use Phly\Http\ServerRequestFactory;
+use Zend\Diactoros\ServerRequestFactory;
 
 class MatcherTest extends \PHPUnit_Framework_TestCase
 {
