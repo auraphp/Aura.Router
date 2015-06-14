@@ -20,17 +20,101 @@ use Psr\Log\NullLogger;
  */
 class RouterContainer
 {
+    /**
+     *
+     * Generates paths from routes.
+     *
+     * @var Generator
+     *
+     */
     protected $generator;
+
+    /**
+     *
+     * Logs activity in the Matcher.
+     *
+     * @var Psr\Log\LoggerInterface
+     *
+     */
     protected $logger;
+
+    /**
+     *
+     * A factory to create the logger.
+     *
+     * @var callable
+     *
+     */
     protected $loggerFactory;
+
+    /**
+     *
+     * A route map.
+     *
+     * @var Map
+     *
+     */
     protected $map;
+
+    /**
+     *
+     * A factory to create the map.
+     *
+     * @var callable
+     *
+     */
     protected $mapFactory;
+
+    /**
+     *
+     * The route matcher.
+     *
+     * @var Matcher
+     *
+     */
     protected $matcher;
+
+    /**
+     *
+     * A proto-route for the map.
+     *
+     * @var Route
+     *
+     */
     protected $route;
+
+    /**
+     *
+     * A factory to create the route.
+     *
+     * @var callable
+     *
+     */
     protected $routeFactory;
+
+    /**
+     *
+     * An collection of route-matching rules to iterate through.
+     *
+     * @var RuleIterator
+     *
+     */
     protected $ruleIterator;
+
+    /**
+     *
+     * An array of rule objects/factories.
+     *
+     * @var array
+     *
+     */
     protected $rules = [];
 
+    /**
+     *
+     * Constructor.
+     *
+     */
     public function __construct()
     {
         $this->setLoggerFactory(function () {
@@ -51,16 +135,43 @@ class RouterContainer
         });
     }
 
+    /**
+     *
+     * Sets the logger factory.
+     *
+     * @param callable $loggerFactory The logger factory.
+     *
+     * @return null
+     *
+     */
     public function setLoggerFactory(callable $loggerFactory)
     {
         $this->loggerFactory = $loggerFactory;
     }
 
+    /**
+     *
+     * Sets the array of rules for the rule iterator.
+     *
+     * @param array $rules Rules for the iterator.
+     *
+     * @return null
+     *
+     */
     public function setRules(array $rules)
     {
         $this->rules = $rules;
     }
 
+    /**
+     *
+     * Gets the array of rules for the rule iterator.
+     *
+     * @param array $rules Rules for the iterator.
+     *
+     * @return null
+     *
+     */
     public function getRules()
     {
         if (! $this->rules) {
@@ -75,21 +186,56 @@ class RouterContainer
         return $this->rules;
     }
 
+    /**
+     *
+     * Sets the proto-route factory.
+     *
+     * @param callable $routeFactory The proto-route factory.
+     *
+     * @return null
+     *
+     */
     public function setRouteFactory(callable $routeFactory)
     {
         $this->routeFactory = $routeFactory;
     }
 
+    /**
+     *
+     * Sets the map factory.
+     *
+     * @param callable $mapFactory The map factory.
+     *
+     * @return null
+     *
+     */
     public function setMapFactory(callable $mapFactory)
     {
         $this->mapFactory = $mapFactory;
     }
 
+    /**
+     *
+     * Sets the map builder.
+     *
+     * @param callable $mapBuilder The map builder.
+     *
+     * @return null
+     *
+     */
     public function setMapBuilder(callable $mapBuilder)
     {
         $this->mapBuilder = $mapBuilder;
     }
 
+    /**
+     *
+     * Gets the shared Map instance. Creates it with the map factory, and runs
+     * it through the map builder, on first call.
+     *
+     * @return Map
+     *
+     */
     public function getMap()
     {
         if (! $this->map) {
@@ -99,6 +245,13 @@ class RouterContainer
         return $this->map;
     }
 
+    /**
+     *
+     * Gets the shared Matcher instance.
+     *
+     * @return Matcher
+     *
+     */
     public function getMatcher()
     {
         if (! $this->matcher) {
@@ -111,6 +264,13 @@ class RouterContainer
         return $this->matcher;
     }
 
+    /**
+     *
+     * Gets the shared Generator instance.
+     *
+     * @return Generator
+     *
+     */
     public function getGenerator()
     {
         if (! $this->generator) {
@@ -119,6 +279,13 @@ class RouterContainer
         return $this->generator;
     }
 
+    /**
+     *
+     * Gets the shared Logger instance.
+     *
+     * @return Logger
+     *
+     */
     public function getLogger()
     {
         if (! $this->logger) {
@@ -127,6 +294,13 @@ class RouterContainer
         return $this->logger;
     }
 
+    /**
+     *
+     * Gets the shared proto-route instance.
+     *
+     * @return Route
+     *
+     */
     public function getRoute()
     {
         if (! $this->route) {
@@ -135,6 +309,13 @@ class RouterContainer
         return $this->route;
     }
 
+    /**
+     *
+     * Gets the rule iterator instance.
+     *
+     * @return RuleIterator
+     *
+     */
     public function getRuleIterator()
     {
         if (! $this->ruleIterator) {
