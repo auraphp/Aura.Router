@@ -11,6 +11,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ *
+ * A rule for HTTPS/SSL/TLS.
+ *
+ * @package Aura.Router
+ *
+ */
 class Secure implements RuleInterface
 {
     /**
@@ -35,12 +42,31 @@ class Secure implements RuleInterface
         return $route->secure == $secure;
     }
 
+    /**
+     *
+     * Is HTTPS on?
+     *
+     * @param array $server The server params.
+     *
+     * @return bool
+     *
+     */
     protected function https($server)
     {
         return isset($server['HTTPS'])
             && $server['HTTPS'] == 'on';
     }
 
+
+    /**
+     *
+     * Is the request on port 443?
+     *
+     * @param array $server The server params.
+     *
+     * @return bool
+     *
+     */
     protected function port443($server)
     {
         return isset($server['SERVER_PORT'])

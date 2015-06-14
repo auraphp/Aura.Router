@@ -193,6 +193,15 @@ class Generator
         $this->repl[$key] = $this->buildOptionalReplacement($names);
     }
 
+    /**
+     *
+     * Builds the optional replacement for attribute names.
+     *
+     * @param array $names The optional replacement names.
+     *
+     * @return string
+     *
+     */
     protected function buildOptionalReplacement($names)
     {
         $repl = '';

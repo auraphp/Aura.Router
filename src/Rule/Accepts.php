@@ -11,6 +11,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ *
+ * A rule for "Accept" headers.
+ *
+ * @package Aura.Router
+ *
+ */
 class Accepts implements RuleInterface
 {
     /**
@@ -38,6 +45,17 @@ class Accepts implements RuleInterface
         return $this->matches($route->accepts, $requestAccepts);
     }
 
+    /**
+     *
+     * Does what the route accepts match what the request accepts?
+     *
+     * @param array $routeAccepts What the route accepts.
+     *
+     * @param array $requestAccepts What the request accepts.
+     *
+     * @return bool
+     *
+     */
     protected function matches($routeAccepts, $requestAccepts)
     {
         $requestAccepts = implode(';', $requestAccepts);

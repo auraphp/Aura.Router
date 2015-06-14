@@ -1,18 +1,53 @@
 <?php
+/**
+ *
+ * This file is part of Aura for PHP.
+ *
+ * @license http://opensource.org/licenses/bsd-license.php BSD
+ *
+ */
 namespace Aura\Router\Rule;
 
 use Aura\Router\Exception;
 use Iterator;
 
+/**
+ *
+ * Collection of rules to iterate through.
+ *
+ * @package Aura.Router
+ *
+ */
 class RuleIterator implements Iterator
 {
+    /**
+     *
+     * The rules to iterate through.
+     *
+     * @var array
+     *
+     */
     protected $rules = [];
 
+    /**
+     *
+     * Constructor.
+     *
+     * @param array $rules The rules to iterate through.
+     *
+     */
     public function __construct(array $rules = [])
     {
         $this->set($rules);
     }
 
+    /**
+     *
+     * Sets the rules to iterate through.
+     *
+     * @param array $rules The rules to iterate through.
+     *
+     */
     public function set(array $rules)
     {
         $this->rules = [];
@@ -21,16 +56,37 @@ class RuleIterator implements Iterator
         }
     }
 
+    /**
+     *
+     * Appends a rule to iterate through.
+     *
+     * @param callable $rule The rule to iterate through.
+     *
+     */
     public function append(callable $rule)
     {
         $this->rules[] = $rule;
     }
 
+    /**
+     *
+     * Prepends a rule to iterate through.
+     *
+     * @param callable $rule The rule to iterate through.
+     *
+     */
     public function prepend(callable $rule)
     {
         array_unshift($this->rules, $rule);
     }
 
+    /**
+     *
+     * Iterator: gets the current rule.
+     *
+     * @return RuleInterface
+     *
+     */
     public function current()
     {
         $rule = current($this->rules);
@@ -52,21 +108,49 @@ class RuleIterator implements Iterator
         throw new Exception\UnexpectedValue($message);
     }
 
+    /**
+     *
+     * Iterator: gets the current rule key.
+     *
+     * @return mixed
+     *
+     */
     public function key()
     {
-        return key($this->rules);;
+        return key($this->rules);
     }
 
+    /**
+     *
+     * Iterator: moves the iterator forward to the next rule.
+     *
+     * @return null
+     *
+     */
     public function next()
     {
         next($this->rules);
     }
 
+    /**
+     *
+     * Iterator: rewinds to the first rule.
+     *
+     * @return null
+     *
+     */
     public function rewind()
     {
         reset($this->rules);
     }
 
+    /**
+     *
+     * Iterator: is the current position valid?
+     *
+     * @return bool
+     *
+     */
     public function valid()
     {
         return current($this->rules) !== false;

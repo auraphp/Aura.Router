@@ -11,6 +11,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ *
+ * A rule for the HTTP host.
+ *
+ * @package Aura.Router
+ *
+ */
 class Host implements RuleInterface
 {
     /**
@@ -62,6 +69,15 @@ class Host implements RuleInterface
         return true;
     }
 
+    /**
+     *
+     * Gets the attributes out of the regex matches.
+     *
+     * @param array $matches The regex matches.
+     *
+     * @return array
+     *
+     */
     protected function getAttributes($matches)
     {
         $attributes = [];
@@ -73,6 +89,15 @@ class Host implements RuleInterface
         return $attributes;
     }
 
+    /**
+     *
+     * Builds the regular expression for the route host.
+     *
+     * @param Route $route The Route.
+     *
+     * @return string
+     *
+     */
     protected function buildRegex(Route $route)
     {
         $this->route = $route;

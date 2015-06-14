@@ -11,6 +11,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ *
+ * A rule for the URL path.
+ *
+ * @package Aura.Router
+ *
+ */
 class Path implements RuleInterface
 {
     /**
@@ -58,6 +65,17 @@ class Path implements RuleInterface
         return true;
     }
 
+    /**
+     *
+     * Gets the attributes from the path.
+     *
+     * @param array $matches The array of matches.
+     *
+     * @param string $wildcard The name of the wildcard attributes.
+     *
+     * @return array
+     *
+     */
     protected function getAttributes($matches, $wildcard)
     {
         // if the path match is exactly an empty string, treat it as unset.
@@ -84,6 +102,15 @@ class Path implements RuleInterface
         return $attributes;
     }
 
+    /**
+     *
+     * Builds the regular expression for the route path.
+     *
+     * @param Route $route The Route.
+     *
+     * @return string
+     *
+     */
     protected function buildRegex(Route $route)
     {
         $this->route = $route;

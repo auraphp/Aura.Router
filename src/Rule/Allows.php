@@ -11,6 +11,13 @@ namespace Aura\Router\Rule;
 use Aura\Router\Route;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ *
+ * A rule for HTTP methods.
+ *
+ * @package Aura.Router
+ *
+ */
 class Allows implements RuleInterface
 {
     /**
