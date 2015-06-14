@@ -26,6 +26,8 @@ class RouterContainer
     protected $map;
     protected $mapFactory;
     protected $matcher;
+    protected $route;
+    protected $routeFactory;
     protected $ruleIterator;
     protected $rules = [];
 
@@ -35,8 +37,13 @@ class RouterContainer
             return new NullLogger();
         });
 
-        $this->setMapFactory(function () {
-            return new Map(new Route());
+        $this->setRouteFactory(function () {
+            return new Route();
+        });
+
+        $self = $this;
+        $this->setMapFactory(function () use ($self) {
+            return new Map($self->getRoute());
         });
 
         $this->setMapBuilder(function (Map $map) {
@@ -66,6 +73,11 @@ class RouterContainer
             ];
         }
         return $this->rules;
+    }
+
+    public function setRouteFactory(callable $routeFactory)
+    {
+        $this->routeFactory = $routeFactory;
     }
 
     public function setMapFactory(callable $mapFactory)
@@ -113,6 +125,14 @@ class RouterContainer
             $this->logger = call_user_func($this->loggerFactory);
         }
         return $this->logger;
+    }
+
+    public function getRoute()
+    {
+        if (! $this->route) {
+            $this->route = call_user_func($this->routeFactory);
+        }
+        return $this->route;
     }
 
     public function getRuleIterator()
