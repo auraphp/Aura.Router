@@ -103,15 +103,6 @@ class RouterContainer
 
     /**
      *
-     * An array of rule objects/factories.
-     *
-     * @var array
-     *
-     */
-    protected $rules = [];
-
-    /**
-     *
      * Constructor.
      *
      */
@@ -147,43 +138,6 @@ class RouterContainer
     public function setLoggerFactory(callable $loggerFactory)
     {
         $this->loggerFactory = $loggerFactory;
-    }
-
-    /**
-     *
-     * Sets the array of rules for the rule iterator.
-     *
-     * @param array $rules Rules for the iterator.
-     *
-     * @return null
-     *
-     */
-    public function setRules(array $rules)
-    {
-        $this->rules = $rules;
-    }
-
-    /**
-     *
-     * Gets the array of rules for the rule iterator.
-     *
-     * @param array $rules Rules for the iterator.
-     *
-     * @return null
-     *
-     */
-    public function getRules()
-    {
-        if (! $this->rules) {
-            $this->rules = [
-                new Rule\Secure(),
-                new Rule\Host(),
-                new Rule\Path(),
-                new Rule\Allows(),
-                new Rule\Accepts(),
-            ];
-        }
-        return $this->rules;
     }
 
     /**
@@ -319,7 +273,13 @@ class RouterContainer
     public function getRuleIterator()
     {
         if (! $this->ruleIterator) {
-            $this->ruleIterator = new Rule\RuleIterator($this->getRules());
+            $this->ruleIterator = new Rule\RuleIterator([
+                new Rule\Secure(),
+                new Rule\Host(),
+                new Rule\Path(),
+                new Rule\Allows(),
+                new Rule\Accepts(),
+            ]);
         }
         return $this->ruleIterator;
     }

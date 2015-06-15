@@ -52,7 +52,7 @@ $route = $matcher->match($request);
 ?>
 ```
 
-## Setting Rules Into The Container
+## Setting Rules
 
 If you want, you can set all the matching rules into the _RouterContainer_ in advance. They will be injected into the _RuleIterator_ and thereby into the _Matcher_ automatically.
 
@@ -61,7 +61,7 @@ For good or bad, you need to pass the entire set of rules, not just your custom 
 ```php
 use Aura\Router\Rule;
 
-$routerContainer->setRules([
+$routerContainer->getRuleIterator()->set([
     // default rules
     new Rule\Secure(),
     new Rule\Host(),
@@ -80,7 +80,7 @@ Setting all the rules at once means you can place your rule exactly where you wa
 ```php
 use Aura\Router\Rule;
 
-$routerContainer->setRules([
+$routerContainer->getRuleIterator()->set([
     new Rule\Secure(),
     new Rule\Host(),
     new ApiVersionRule(), // custom rule in the middle
@@ -95,7 +95,7 @@ Finally, if you feel you don't need some rules, you can omit them from the list.
 ```php
 use Aura\Router\Rule;
 
-$routerContainer->setRules([
+$routerContainer->getRuleIterator()->set([
     new Rule\Path(),
     new Rule\Allows(),
 ]);
