@@ -40,6 +40,13 @@ class Matcher
      */
     protected $map;
 
+    /**
+     *
+     * A collection of matching rules to iterate through.
+     *
+     * @var RuleIterator
+     *
+     */
     protected $ruleIterator;
 
     /**
@@ -60,6 +67,13 @@ class Matcher
      */
     protected $failedRoute;
 
+    /**
+     *
+     * The score of the closest-matching failed route.
+     *
+     * @var int
+     *
+     */
     protected $failedScore = 0;
 
     /**
@@ -68,31 +82,26 @@ class Matcher
      *
      * @param Map $map A route collection object.
      *
-     * @param Generator $generator A URL path generator.
+     * @param LoggerInterface $logger A logger object.
+     *
+     * @param RuleIterator $ruleIterator A collection of matching rules.
      *
      */
     public function __construct(
         Map $map,
         LoggerInterface $logger,
-        RuleIterator $ruleIterator)
-    {
+        RuleIterator $ruleIterator
+    ) {
         $this->map = $map;
         $this->logger = $logger;
         $this->ruleIterator = $ruleIterator;
     }
 
-    public function getMap()
-    {
-        return $this->map;
-    }
-
     /**
      *
-     * Gets a route that matches a given path and other server conditions.
+     * Gets a route that matches the request.
      *
-     * @param string $path The path to match against.
-     *
-     * @param array $server A copy of the $_SERVER superglobal.
+     * @param ServerRequestInterface $request The incoming request.
      *
      * @return Route|false Returns a route object when it finds a match, or
      * boolean false if there is no match.
@@ -115,6 +124,21 @@ class Matcher
         return false;
     }
 
+    /**
+     *
+     * Match a request to a route.
+     *
+     * @param ServerRequestInterface $request The request to match against.
+     *
+     * @param Route $proto The proto-route to match against.
+     *
+     * @param string $name The route name.
+     *
+     * @param string $path The request path.
+     *
+     * @return mixed False on failure, or a Route on match.
+     *
+     */
     protected function requestRoute($request, $proto, $name, $path)
     {
         if (! $proto->isRoutable) {
@@ -124,6 +148,21 @@ class Matcher
         return $this->applyRules($request, $route, $name, $path);
     }
 
+    /**
+     *
+     * Does the request match a route per the matching rules?
+     *
+     * @param ServerRequestInterface $request The request to match against.
+     *
+     * @param Route $route The route to match against.
+     *
+     * @param string $name The route name.
+     *
+     * @param string $path The request path.
+     *
+     * @return mixed False on failure, or a Route on match.
+     *
+     */
     protected function applyRules($request, $route, $name, $path)
     {
         $score = 0;
@@ -136,6 +175,25 @@ class Matcher
         return $this->routeMatched($route, $name, $path);
     }
 
+    /**
+     *
+     * A matching rule failed.
+     *
+     * @param ServerRequestInterface $request The request to match against.
+     *
+     * @param Route $route The route to match against.
+     *
+     * @param string $name The route name.
+     *
+     * @param string $path The request path.
+     *
+     * @param mixed $rule The rule that failed.
+     *
+     * @param int $score The failure score.
+     *
+     * @return false
+     *
+     */
     protected function ruleFailed($request, $route, $name, $path, $rule, $score)
     {
         $ruleClass = get_class($rule);
@@ -155,6 +213,19 @@ class Matcher
         return false;
     }
 
+    /**
+     *
+     * The route matched.
+     *
+     * @param Route $route The route to match against.
+     *
+     * @param string $name The route name.
+     *
+     * @param string $path The request path.
+     *
+     * @return Route
+     *
+     */
     protected function routeMatched($route, $name, $path)
     {
         $this->logger->debug("{path} MATCHED ON {name}", [
