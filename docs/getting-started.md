@@ -31,7 +31,6 @@ Then call one of its route-adding methods:
 - `$map->get()` adds a GET route
 - `$map->post()` adds a POST route
 - `$map->patch()` adds a PATCH route
-- `$map->patch()` adds a PATCH route
 - `$map->delete()` adds a DELETE route
 - `$map->options()` adds a OPTIONS route
 - `$map->head()` adds a HEAD route
