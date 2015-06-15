@@ -340,13 +340,17 @@ class Route
      *
      * The route leads to this handler.
      *
-     * @param mixed $handler The handler for this route.
+     * @param mixed $handler The handler for this route; if null, uses the
+     * route name.
      *
      * @return $this
      *
      */
     public function handler($handler)
     {
+        if ($handler === null) {
+            $handler = $this->name;
+        }
         $this->handler = $handler;
         return $this;
     }

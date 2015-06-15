@@ -171,14 +171,9 @@ class Map implements IteratorAggregate
     public function route($name, $path, $handler = null)
     {
         $route = clone $this->protoRoute;
-
         $route->name($name);
         $route->path($path);
-        $route->handler($name);
-        if ($handler) {
-            $route->handler($handler);
-        }
-
+        $route->handler($handler);
         $this->addRoute($route);
         return $route;
     }
