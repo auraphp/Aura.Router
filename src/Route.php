@@ -249,7 +249,7 @@ class Route
      *
      * Merges with the existing allowed methods.
      *
-     * @param string|array $method The allowed HTTP methods.
+     * @param string|array $allows The allowed HTTP methods.
      *
      * @return $this
      *
@@ -266,7 +266,7 @@ class Route
      *
      * @param array $attributes The attributes to add.
      *
-     * @return null
+     * @return $this
      *
      */
     public function attributes(array $attributes)
@@ -275,6 +275,15 @@ class Route
         return $this;
     }
 
+    /**
+     *
+     * Sets the auth value.
+     *
+     * @param mixed $auth The auth value to set.
+     *
+     * @return $this
+     *
+     */
     public function auth($auth)
     {
         $this->auth = $auth;
@@ -312,6 +321,15 @@ class Route
         return $this;
     }
 
+    /**
+     *
+     * Sets the failed rule.
+     *
+     * @param mixed $failedRule The failed rule.
+     *
+     * @return $this
+     *
+     */
     public function failedRule($failedRule)
     {
         $this->failedRule = $failedRule;
@@ -333,6 +351,15 @@ class Route
         return $this;
     }
 
+    /**
+     *
+     * Sets the host.
+     *
+     * @param mixed $host The host.
+     *
+     * @return $this
+     *
+     */
     public function host($host)
     {
         $this->host = $host;
@@ -343,7 +370,7 @@ class Route
      *
      * Sets whether or not this route should be used for matching.
      *
-     * @param bool $routable If true, this route can be matched; if not, it
+     * @param bool $isRoutable If true, this route can be matched; if not, it
      * can be used only to generate a path.
      *
      * @return $this
@@ -355,6 +382,15 @@ class Route
         return $this;
     }
 
+    /**
+     *
+     * Sets the route name; immutable once set.
+     *
+     * @param string $name The route name.
+     *
+     * @return $this
+     *
+     */
     public function name($name)
     {
         if ($this->name !== null) {
@@ -367,7 +403,7 @@ class Route
 
     /**
      *
-     * Appends to the existing name prefix.
+     * Appends to the existing name prefix; immutable once $name is set.
      *
      * @param string $namePrefix The name prefix to append.
      *
@@ -386,6 +422,15 @@ class Route
         return $this;
     }
 
+    /**
+     *
+     * Sets the route path; immutable once set.
+     *
+     * @param string $path The route path.
+     *
+     * @return $this
+     *
+     */
     public function path($path)
     {
         if ($this->path !== null) {
@@ -398,7 +443,7 @@ class Route
 
     /**
      *
-     * Appends to the existing path prefix.
+     * Appends to the existing path prefix; immutable once $path is set.
      *
      * @param string $pathPrefix The path prefix to append.
      *
