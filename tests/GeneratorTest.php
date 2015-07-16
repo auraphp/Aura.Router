@@ -14,8 +14,15 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $this->generator = $container->getGenerator();
     }
 
+    protected function setProperties($basepath = null)
+    {
+        $container = new RouterContainer($basepath);
+        $this->map = $container->getMap();
+        $this->generator = $container->getGenerator();
+    }
+
     /**
-     * This test should not get exception for the urlencode on closure
+     * This test should not throw exception for the urlencode on closure
      */
     public function testGenerateControllerAsClosureIssue19()
     {
@@ -132,5 +139,18 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $actual = $this->generator->generateRaw('test', $data);
         $expect = '/vendor+name/package+name/foo/bar/baz.jpg';
         $this->assertSame($actual, $expect);
+    }
+
+    public function testGenerateWithBasepath()
+    {
+        $this->setProperties('/path/to/sub/index.php');
+
+        $this->map->route('test', '/blog/{id}/edit')
+            ->tokens([
+                'id' => '([0-9]+)',
+            ]);
+
+        $url = $this->generator->generate('test', ['id' => 42, 'foo' => 'bar']);
+        $this->assertEquals('/path/to/sub/index.php/blog/42/edit', $url);
     }
 }

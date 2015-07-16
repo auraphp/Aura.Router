@@ -103,11 +103,24 @@ class RouterContainer
 
     /**
      *
-     * Constructor.
+     * The basepath to use for matching and generating.
+     *
+     * @var string
      *
      */
-    public function __construct()
+    protected $basepath;
+
+    /**
+     *
+     * Constructor.
+     *
+     * @param string $basepath The basepath to use for matching and generating.
+     *
+     */
+    public function __construct($basepath = null)
     {
+        $this->basepath = $basepath;
+
         $this->setLoggerFactory(function () {
             return new NullLogger();
         });
@@ -228,7 +241,7 @@ class RouterContainer
     public function getGenerator()
     {
         if (! $this->generator) {
-            $this->generator = new Generator($this->getMap());
+            $this->generator = new Generator($this->getMap(), $this->basepath);
         }
         return $this->generator;
     }
@@ -276,7 +289,7 @@ class RouterContainer
             $this->ruleIterator = new Rule\RuleIterator([
                 new Rule\Secure(),
                 new Rule\Host(),
-                new Rule\Path(),
+                new Rule\Path($this->basepath),
                 new Rule\Allows(),
                 new Rule\Accepts(),
             ]);

@@ -171,4 +171,20 @@ class PathTest extends AbstractRuleTest
         $request = $this->newRequest('/foo/');
         $this->assertIsMatch($request, $route);
     }
+
+    public function testIsMatchWithBasepath()
+    {
+        $this->rule = new Path('/path/to/sub/index.php');
+        $proto = $this->newRoute('/foo/bar/baz');
+
+        // request has correct basepath
+        $route = clone $proto;
+        $request = $this->newRequest('/path/to/sub/index.php/foo/bar/baz');
+        $this->assertIsMatch($request, $route);
+
+        // request is missing basepath
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz');
+        $this->assertIsNotMatch($request, $route);
+    }
 }

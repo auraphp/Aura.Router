@@ -40,6 +40,27 @@ class Path implements RuleInterface
 
     /**
      *
+     * The basepath to prefix when matching the path.
+     *
+     * @var string
+     *
+     */
+    protected $basepath;
+
+    /**
+     *
+     * Constructor.
+     *
+     * @param string $basepath The basepath to prefix when matching the path.
+     *
+     */
+    public function __construct($basepath = null)
+    {
+        $this->basepath = $basepath;
+    }
+
+    /**
+     *
      * Checks that the Request path matches the Route path.
      *
      * @param ServerRequestInterface $request The HTTP request.
@@ -114,7 +135,7 @@ class Path implements RuleInterface
     protected function buildRegex(Route $route)
     {
         $this->route = $route;
-        $this->regex = $this->route->path;
+        $this->regex = $this->basepath . $this->route->path;
         $this->setRegexOptionalAttributes();
         $this->setRegexAttributes();
         $this->setRegexWildcard();

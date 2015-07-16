@@ -73,14 +73,26 @@ class Generator
 
     /**
      *
+     * The basepath to prefix to generated paths.
+     *
+     * @var string
+     *
+     */
+    protected $basepath;
+
+    /**
+     *
      * Constructor.
      *
      * @param Map $map A route collection object.
      *
+     * @param string $basepath The basepath to prefix to generated paths.
+     *
      */
-    public function __construct(Map $map)
+    public function __construct(Map $map, $basepath = null)
     {
         $this->map = $map;
+        $this->basepath = $basepath;
     }
 
     /**
@@ -142,7 +154,7 @@ class Generator
     {
         $this->raw = $raw;
         $this->route = $this->map->getRoute($name);
-        $this->path = $this->route->path;
+        $this->path = $this->basepath . $this->route->path;
         $this->repl = [];
         $this->data = array_merge($this->route->defaults, $data);
 
