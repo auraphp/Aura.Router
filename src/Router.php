@@ -72,6 +72,8 @@ class Router
      */
     protected $failed_route = null;
 
+    protected $basepath;
+
     /**
      *
      * Constructor.
@@ -81,10 +83,14 @@ class Router
      * @param Generator $generator A URL path generator.
      *
      */
-    public function __construct(RouteCollection $routes, Generator $generator)
-    {
+    public function __construct(
+        RouteCollection $routes,
+        Generator $generator,
+        $basepath = null
+    ) {
         $this->routes = $routes;
         $this->generator = $generator;
+        $this->basepath = $basepath;
     }
 
     /**
@@ -124,7 +130,7 @@ class Router
 
             $this->debug[] = $route;
 
-            $match = $route->isMatch($path, $server);
+            $match = $route->isMatch($path, $server, $this->basepath);
             if ($match) {
                 $this->matched_route = $route;
                 return $route;
@@ -187,7 +193,7 @@ class Router
     public function generate($name, $data = array())
     {
         $route = $this->getRouteForGenerate($name);
-        return $this->generator->generate($route, $data);
+        return $this->basepath . $this->generator->generate($route, $data);
     }
 
     /**
@@ -208,7 +214,7 @@ class Router
     public function generateRaw($name, $data = array())
     {
         $route = $this->getRouteForGenerate($name);
-        return $this->generator->generateRaw($route, $data);
+        return $this->basepath . $this->generator->generateRaw($route, $data);
     }
 
     /**

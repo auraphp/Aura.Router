@@ -8,13 +8,13 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->factory = new RouterFactory;
         $this->router = $this->newRouter();
     }
 
-    protected function newRouter()
+    protected function newRouter($basepath = null)
     {
-        return $this->factory->newInstance();
+        $factory = new RouterFactory;
+        return $factory->newInstance($basepath);
     }
 
     protected function assertIsRoute($actual)
@@ -497,5 +497,23 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router->add('foo.bar', '/foo/bar', 'DirectAction');
         $actual = $this->router->match('/foo/bar');
         $this->assertSame('DirectAction', $actual->values['action']);
+    }
+
+    public function testWithBasepath()
+    {
+        $this->router = $this->newRouter('/path/to/sub/index.php');
+        $this->router->add('foo.bar', '/foo/bar', 'DirectAction');
+
+        // should fail without basepath
+        $this->assertFalse($this->router->match('/foo/bar'));
+
+        // should pass with basepath
+        $actual = $this->router->match('/path/to/sub/index.php/foo/bar');
+        $this->assertSame('DirectAction', $actual->values['action']);
+
+        // should get the basepath in place
+        $expect = '/path/to/sub/index.php/foo/bar';
+        $actual = $this->router->generate('foo.bar');
+        $this->assertSame($expect, $actual);
     }
 }

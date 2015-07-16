@@ -24,11 +24,12 @@ class RouterFactory
      * @return Router
      *
      */
-    public function newInstance()
+    public function newInstance($basepath = null)
     {
         return new Router(
             new RouteCollection(new RouteFactory),
-            new Generator
+            new Generator,
+            $basepath
         );
     }
 }

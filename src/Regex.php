@@ -55,10 +55,10 @@ class Regex
      * @return bool
      *
      */
-    public function match(Route $route, $path)
+    public function match(Route $route, $path, $basepath = null)
     {
         $this->route = $route;
-        $this->regex = $this->route->path;
+        $this->regex = $basepath . $this->route->path;
         $this->setRegexOptionalParams();
         $this->setRegexParams();
         $this->setRegexWildcard();
