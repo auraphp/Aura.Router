@@ -663,6 +663,30 @@ $router->setResourceCallable(function ($router) {
 That example will cause only four CRUD routes, using hexadecimal resource IDs,
 to be added for the resource when you call `attachResource()`.
 
+### Setting A Base Path
+
+The router assumes that all URL paths begin at the top document root, but sometimes you will need them to begin in a subdirectory. In that case, you can instantiate the _RouterFactory_ with an explicit base path; this base path will be used as a prefix for all route matching and path generation.
+
+```php
+<?php
+// create a factory with a base path
+$router_factory = new RouterFactory('/path/to/subdir');
+
+// define a route as normal
+$router = $router_factory->getInstance();
+$router->addGet('blog.read', '/blog/{id}');
+
+// if the incoming request is for "/path/to/subdir/blog/{id}"
+// then the route will match.
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$route = $router->match($path, $_SERVER);
+
+// generating a path from the route will add the base path automatically
+$path = $router->generate('blog.read', '88');
+echo $path; // "/path/to/subdir/blog/88"
+?>
+```
+
 ### Caching Route Information
 
 You may wish to cache the router for production deployments so that the
