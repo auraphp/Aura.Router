@@ -499,7 +499,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('DirectAction', $actual->values['action']);
     }
 
-    public function testWithBasepath()
+    public function testWithBasepathIndex()
     {
         $this->router = $this->newRouter('/path/to/sub/index.php');
         $this->router->add('foo.bar', '/foo/bar', 'DirectAction');
@@ -513,6 +513,25 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         // should get the basepath in place
         $expect = '/path/to/sub/index.php/foo/bar';
+        $actual = $this->router->generate('foo.bar');
+        $this->assertSame($expect, $actual);
+    }
+
+
+    public function testWithBasepathDir()
+    {
+        $this->router = $this->newRouter('/path/to/sub');
+        $this->router->add('foo.bar', '/foo/bar', 'DirectAction');
+
+        // should fail without basepath
+        $this->assertFalse($this->router->match('/foo/bar'));
+
+        // should pass with basepath
+        $actual = $this->router->match('/path/to/sub/foo/bar');
+        $this->assertSame('DirectAction', $actual->values['action']);
+
+        // should get the basepath in place
+        $expect = '/path/to/sub/foo/bar';
         $actual = $this->router->generate('foo.bar');
         $this->assertSame($expect, $actual);
     }

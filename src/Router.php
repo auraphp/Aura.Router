@@ -90,7 +90,7 @@ class Router
     ) {
         $this->routes = $routes;
         $this->generator = $generator;
-        $this->basepath = $basepath;
+        $this->basepath = rtrim($basepath, '/');
     }
 
     /**
