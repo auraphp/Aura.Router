@@ -72,6 +72,13 @@ class Router
      */
     protected $failed_route = null;
 
+    /**
+     *
+     * A basepath to all routes.
+     *
+     * @var string
+     *
+     */
     protected $basepath;
 
     /**
@@ -81,6 +88,8 @@ class Router
      * @param RouteCollection $routes A route collection object.
      *
      * @param Generator $generator A URL path generator.
+     *
+     * @param string $basepath A basepath to to all routes.
      *
      */
     public function __construct(

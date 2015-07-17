@@ -238,6 +238,8 @@ class Route extends AbstractSpec
      * @param array $server A copy of $_SERVER so that this Route can check
      * against the server values.
      *
+     * @param string $basepath A basepath to prefix to the route path.
+     *
      * @return bool
      *
      */
@@ -262,6 +264,8 @@ class Route extends AbstractSpec
      *
      * @param array $server A copy of $_SERVER so that this Route can check
      * against the server values.
+     *
+     * @param string $basepath A basepath to prefix to the route path.
      *
      * @return bool
      *
@@ -390,6 +394,8 @@ class Route extends AbstractSpec
      * Checks that the path matches the Route regex.
      *
      * @param string $path The path to match against.
+     *
+     * @param string $basepath A basepath to prefix to the route path.
      *
      * @return bool True on a match, false if not.
      *

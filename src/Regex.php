@@ -52,6 +52,8 @@ class Regex
      *
      * @param string $path The requested URL path.
      *
+     * @param string $basepath A basepath to prefix to the route path.
+     *
      * @return bool
      *
      */

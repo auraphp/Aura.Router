@@ -13,8 +13,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
     protected function newRouter($basepath = null)
     {
-        $factory = new RouterFactory;
-        return $factory->newInstance($basepath);
+        $factory = new RouterFactory($basepath);
+        return $factory->newInstance();
     }
 
     protected function assertIsRoute($actual)
