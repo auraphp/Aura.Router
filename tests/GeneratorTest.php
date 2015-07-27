@@ -153,4 +153,33 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $url = $this->generator->generate('test', ['id' => 42, 'foo' => 'bar']);
         $this->assertEquals('/path/to/sub/index.php/blog/42/edit', $url);
     }
+
+    public function testGenerateWithHost()
+    {
+        $this->map->route('test', '/blog/{id}/edit')
+            ->host('{host}.example.com');
+
+        $url = $this->generator->generate('test', ['id' => 42, 'host' => 'bar']);
+        $this->assertEquals('//bar.example.com/blog/42/edit', $url);
+    }
+
+    public function testGenerateWithHttpHost()
+    {
+        $this->map->route('test', '/blog/{id}/edit')
+            ->secure(false)
+            ->host('{host}.example.com');
+
+        $url = $this->generator->generate('test', ['id' => 42, 'host' => 'bar']);
+        $this->assertEquals('http://bar.example.com/blog/42/edit', $url);
+    }
+
+    public function testGenerateWithHttpsHost()
+    {
+        $this->map->route('test', '/blog/{id}/edit')
+            ->secure(true)
+            ->host('{host}.example.com');
+
+        $url = $this->generator->generate('test', ['id' => 42, 'host' => 'bar']);
+        $this->assertEquals('https://bar.example.com/blog/42/edit', $url);
+    }
 }
