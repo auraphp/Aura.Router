@@ -28,7 +28,7 @@ class Generator
 
     /**
      *
-     * The route from which the path is being generated.
+     * The route from which the URL is being generated.
      *
      * @var Route
      *
@@ -37,16 +37,16 @@ class Generator
 
     /**
      *
-     * The path being generated.
+     * The URL being generated.
      *
      * @var string
      *
      */
-    protected $path;
+    protected $url;
 
     /**
      *
-     * Data being interpolated into the path.
+     * Data being interpolated into the URL.
      *
      * @var array
      *
@@ -113,7 +113,7 @@ class Generator
      */
     public function generate($name, $data = [])
     {
-        return $this->buildPath($name, $data, false);
+        return $this->build($name, $data, false);
     }
 
     /**
@@ -133,12 +133,12 @@ class Generator
      */
     public function generateRaw($name, $data = [])
     {
-        return $this->buildPath($name, $data, true);
+        return $this->build($name, $data, true);
     }
 
     /**
      *
-     * Gets the path for a Route.
+     * Gets the URL for a Route.
      *
      * @param string $name The route name to look up.
      *
@@ -150,20 +150,38 @@ class Generator
      * @return string
      *
      */
-    protected function buildPath($name, $data, $raw)
+    protected function build($name, $data, $raw)
     {
         $this->raw = $raw;
         $this->route = $this->map->getRoute($name);
-        $this->path = $this->basepath . $this->route->path;
+        $this->buildUrl();
         $this->repl = [];
         $this->data = array_merge($this->route->defaults, $data);
 
         $this->buildTokenReplacements();
         $this->buildOptionalReplacements();
-        $this->path = strtr($this->path, $this->repl);
+        $this->url = strtr($this->url, $this->repl);
         $this->buildWildcardReplacement();
 
-        return $this->path;
+        return $this->url;
+    }
+
+    protected function buildUrl()
+    {
+        $this->url = $this->basepath . $this->route->path;
+
+        $host = $this->route->host;
+        if (! $host) {
+            return;
+        }
+        $this->url = '//' . $host . $this->url;
+
+        $secure = $this->route->secure;
+        if ($secure === null) {
+            return;
+        }
+        $protocol = $secure ? 'https:' : 'http:';
+        $this->url = $protocol . $this->url;
     }
 
     /**
@@ -190,7 +208,7 @@ class Generator
     protected function buildOptionalReplacements()
     {
         // replacements for optional attributes, if any
-        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->path, $matches);
+        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->url, $matches);
         if (! $matches) {
             return;
         }
@@ -241,9 +259,9 @@ class Generator
     {
         $wildcard = $this->route->wildcard;
         if ($wildcard && isset($this->data[$wildcard])) {
-            $this->path = rtrim($this->path, '/');
+            $this->url = rtrim($this->url, '/');
             foreach ($this->data[$wildcard] as $val) {
-                $this->path .= '/' . $this->encode($val);
+                $this->url .= '/' . $this->encode($val);
             }
         }
     }
