@@ -130,7 +130,7 @@ Your application might do something like the following:
 $route = $matcher->match($request);
 if (! $route) {
     // get the first of the best-available non-matched routes
-    $failedRoute = $map->getFailedRoute();
+    $failedRoute = $matcher->getFailedRoute();
 
     // which matching rule failed?
     switch ($failedRoute->failedRule) {
