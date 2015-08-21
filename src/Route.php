@@ -393,6 +393,8 @@ class Route
      * @param string $name The route name.
      *
      * @return $this
+     * 
+     * @throws Exception\ImmutableProperty when the name has already been set.
      *
      */
     public function name($name)
@@ -433,6 +435,8 @@ class Route
      * @param string $path The route path.
      *
      * @return $this
+     *
+     * @throws Exception\ImmutableProperty when the name has already been set.
      *
      */
     public function path($path)
