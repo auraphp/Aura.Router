@@ -46,6 +46,8 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @property-read string $failedRule
  *
+ * @property-read mixed $handler
+ *
  */
 class Route
 {
