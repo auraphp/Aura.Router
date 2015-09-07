@@ -22,6 +22,7 @@ use Aura\Router\Exception;
  * @method Route addHead() addHead($name, $path, $action = null)  Adds a HEAD route
  * @method Route addOptions() addOptions($name, $path, $action = null)  Adds a OPTIONS route
  * @method Route addPatch() addPatch($name, $path, $action = null)  Adds a PATCH route
+ * @method Route addPost() addPost($name, $path, $action = null)  Adds a POST route
  * @method Route addPut() addPut($name, $path, $action = null)  Adds a PUT route
  * @method Route setRouteCallable() setRouteCallable($callable) Sets the callable for modifying a newly-added route before it is returned.
  */
