@@ -121,22 +121,63 @@ class RouterContainer
     {
         $this->basepath = $basepath;
 
-        $this->setLoggerFactory(function () {
-            return new NullLogger();
-        });
+        $this->setLoggerFactory([$this, 'loggerFactory']);
 
-        $this->setRouteFactory(function () {
-            return new Route();
-        });
+        $this->setRouteFactory([$this, 'routeFactory']);
 
-        $self = $this;
-        $this->setMapFactory(function () use ($self) {
-            return new Map($self->getRoute());
-        });
+        $this->setMapFactory([$this, 'mapFactory']);
 
-        $this->setMapBuilder(function (Map $map) {
-            // do nothing
-        });
+        $this->setMapBuilder([$this, 'buildMap']);
+    }
+
+    /**
+     * Creates a Logger
+     *
+     * @return NullLogger
+     *
+     * @access protected
+     */
+    protected function loggerFactory()
+    {
+        return new NullLogger();
+    }
+
+    /**
+     * Creates a new Route
+     *
+     * @return Route
+     *
+     * @access protected
+     */
+    protected function routeFactory()
+    {
+        return new Route();
+    }
+
+    /**
+     * mapFactory
+     *
+     * @return mixed
+     *
+     * @access protected
+     */
+    protected function mapFactory()
+    {
+        return new Map($this->getRoute());
+    }
+
+    /**
+     * Builds a map
+     *
+     * @param Map $map DESCRIPTION
+     *
+     * @return mixed
+     *
+     * @access protected
+     */
+    protected function buildMap(Map $map)
+    {
+        // do nothing
     }
 
     /**
