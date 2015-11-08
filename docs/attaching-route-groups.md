@@ -6,7 +6,7 @@ For example, if you want all your blog-related routes to be mounted at `/blog` i
 
 ```php
 <?php
-$namePrefix = 'blog';
+$namePrefix = 'blog.';
 $pathPrefix = '/blog';
 $map->attach($namePrefix, $pathPrefix, function ($map) {
 
