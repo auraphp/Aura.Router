@@ -1,5 +1,5 @@
-Second 3.x beta release.
+First stable release.
 
-- Expose matching rules through an iterator, not a separate array
+- Default factories now use serializable method calls.
 
-- Add basepath support
+- Honor the route host and the secure flag in Generator.
