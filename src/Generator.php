@@ -166,6 +166,13 @@ class Generator
         return $this->url;
     }
 
+    /**
+     *
+     * Builds the URL property.
+     *
+     * @return null
+     *
+     */
     protected function buildUrl()
     {
         $this->url = $this->basepath . $this->route->path;
