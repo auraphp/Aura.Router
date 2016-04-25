@@ -8,8 +8,6 @@
  */
 namespace Aura\Router;
 
-use Psr\Http\Message\ServerRequestInterface;
-
 /**
  *
  * An individual route with a name, path, attributes, defaults, etc.
