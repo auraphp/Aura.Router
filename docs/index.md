@@ -1,7 +1,7 @@
 # Aura.Router
 
 This is the documentation source for
-<http://auraphp.com/packages/Aura.Router>.
+<http://auraphp.com/packages/3.x/Router/>.
 
 1. [Getting Started](getting-started.md)
 1. [Defining Routes](defining-routes.md)
