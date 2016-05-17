@@ -82,7 +82,17 @@ class Path implements RuleInterface
             return false;
         }
 
-        $route->attributes($this->getAttributes($matches, $route->wildcard));
+        $attributes = $this->getAttributes($matches, $route->wildcard);
+
+        foreach ($this->route->tokens as $name => $pattern) {
+            if (is_callable($pattern)) {
+                if (!$pattern($attributes[$name], $route, $request)) {
+                    return false;
+                }
+            }
+        }
+
+        $route->attributes($attributes);
         return true;
     }
 
@@ -240,7 +250,7 @@ class Path implements RuleInterface
     protected function getSubpattern($name)
     {
         // is there a custom subpattern for the name?
-        if (isset($this->route->tokens[$name])) {
+        if (isset($this->route->tokens[$name]) && is_string($this->route->tokens[$name])) {
             return "(?P<{$name}>{$this->route->tokens[$name]})";
         }
 
