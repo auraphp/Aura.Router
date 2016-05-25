@@ -38,7 +38,7 @@ class Secure implements RuleInterface
         }
 
         $server = $request->getServerParams();
-        $secure = $this->https($server) || $this->port443($server);
+        $secure = $this->https($server) || $this->port443($server) || $this->forwarded($server);
         return $route->secure == $secure;
     }
 
@@ -71,5 +71,20 @@ class Secure implements RuleInterface
     {
         return isset($server['SERVER_PORT'])
             && $server['SERVER_PORT'] == 443;
+    }
+
+    /**
+     *
+     * Is X-Forwarded-Proto https?
+     *
+     * @param array $server The server params.
+     *
+     * @return bool
+     *
+     */
+    protected function forwarded($server)
+    {
+        return isset($server['HTTP_X_FORWARDED_PROTO'])
+            && $server['HTTP_X_FORWARDED_PROTO'] == 'https';
     }
 }

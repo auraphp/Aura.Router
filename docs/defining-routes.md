@@ -141,7 +141,7 @@ $map->post('blog.edit', '/blog/{id}')
 
 ## Secure Protocols
 
-You can use the `secure()` method to specify that a route should only match a secure protcol. (Specifically, `$_SERVER['HTTPS']` must be on, or the request must be on port 443.)
+You can use the `secure()` method to specify that a route should only match a secure protcol. (Specifically, `$_SERVER['HTTPS']` must be on, or the request must be on port 443, or `$_SERVER['HTTP_X_FORWARDED_PROTO']` must equal `https`)
 
 ```php
 <?php
