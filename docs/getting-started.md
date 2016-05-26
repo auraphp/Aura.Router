@@ -83,6 +83,22 @@ $route = $matcher->match($request);
 ?>
 ```
 
+### The $request Object
+
+The `$request` object can be [any of the psr-7 implementation](https://packagist.org/providers/psr/http-message-implementation). The most widely used is  [zend-diactoros](https://zendframework.github.io/zend-diactoros/) . Below is an example how to create the `$request` object via `zend-diactoros`.
+
+```php
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals(
+    $_SERVER,
+    $_GET,
+    $_POST,
+    $_COOKIE,
+    $_FILES
+);
+```
+
+> NB : Make sure you have installed diactoros. Read [documentation](https://zendframework.github.io/zend-diactoros/) for more details regarding installation and usage.
+
 ## Dispatching A Route
 
 This is the point at which your application takes over. The route has two properties that you are most likely to be interested in:
