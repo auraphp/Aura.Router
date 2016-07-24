@@ -474,7 +474,7 @@ class Route
      *
      * Sets whether or not the route must be secure.
      *
-     * @param bool $secure If true, the server must indicate an HTTPS request;
+     * @param bool|null $secure If true, the server must indicate an HTTPS request;
      * if false, it must *not* be HTTPS; if null, it doesn't matter.
      *
      * @return $this
