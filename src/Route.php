@@ -28,11 +28,13 @@ namespace Aura\Router;
  *
  * @property-read array $attributes Attribute values added by the rules.
  *
- * @property-read array $tokens Plceholder token names and regexes.
+ * @property-read array $tokens Placeholder token names and regexes.
  *
  * @property-read string $wildcard The name of the wildcard token.
  *
  * @property-read array $accept
+ *
+ * @property-read mixed $auth The auth value.
  *
  * @property-read array $extras
  *
