@@ -13,7 +13,7 @@ use Aura\Router\Generator;
 
 /**
  *
- * Example Helper class for Aura.Html
+ * Generic Url Helper class
  *
  * @package Aura.Router
  *
@@ -52,7 +52,7 @@ class Url
      * @return Generator|string|false The generator object, or the results of {Aura\Router\Generator::generate()}
      *                                when $name is null
      *
-     * @throws RouteNotFound When the route cannot be found and is not null
+     * @throws RouteNotFound When the route cannot be found, thrown by {Aura\Router\Generator::generate()}
      *
      */
     public function __invoke($name = null, array $data = [])
