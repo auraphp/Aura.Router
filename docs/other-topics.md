@@ -62,3 +62,28 @@ $path = $generator->generate('blog.read', '88');
 echo $path; // "/path/to/subdir/blog/88"
 ?>
 ```
+
+## Usage in a View Helper
+
+You may wish to be able to generate routes from your views. An generic view helper _Helper\Url_ is available to assist you in creating these urls.
+
+The invocation of the view helper can accept the same parameters as the _Generator_  `generate()` method, or will return the _Generator_ otherwise
+
+```php
+<?php
+// create a container with a base path
+$routerContainer = new RouterContainer('/path/to/subdir');
+
+// define a route as normal
+$map = $routerContainer->getMap();
+$map->get('blog.read', '/blog/{id}', ...);
+
+// pass the generator into the helper
+$urlHelper = new Helper\Url($routerContainer->getGenerator());
+
+// somewhere in a view
+echo $urlHelper('blog.read', '88'); // "/path/to/subdir/blog/88"
+
+// alternately, you can get the Generator itself by not passing arguments
+echo $urlHelper()->generateRaw('blog.read', '88'); // "/path/to/subdir/blog/88"
+```
