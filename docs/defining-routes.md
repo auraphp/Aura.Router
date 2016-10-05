@@ -48,13 +48,13 @@ The following will verify that date is a valid DateTime format:
 
 ```php
 <?php
-$map->ger('/calendar/from/{date}')
+$map->get('/calendar/from/{date}')
     ->tokens([
         'date' => function ($date, $route, $request) {
             try {
-                new DateTime($date);
+                new \DateTime($date);
                 return true;
-            } catch(Exception $e) {
+            } catch(\Exception $e) {
                 return false;
             }
         }
