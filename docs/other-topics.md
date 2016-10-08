@@ -65,9 +65,9 @@ echo $path; // "/path/to/subdir/blog/88"
 
 ## Usage in a View Helper
 
-You may wish to be able to generate routes from your views. An generic view helper _Helper\Url_ is available to assist you in creating these urls.
+You may wish to be able to generate routes from your views. A generic view helper _Helper\Url_ is available to assist you in creating these urls.
 
-The invocation of the view helper can accept the same parameters as the _Generator_  `generate()` method, or will return the _Generator_ otherwise
+The invocation of the view helper can accept the same parameters as the _Generator_  `generate()` method. If you need to get the raw URL you can set true as the third parameter when invoking the view helper, this will call `generateRaw()`.
 
 ```php
 <?php
@@ -84,6 +84,6 @@ $urlHelper = new Helper\Url($routerContainer->getGenerator());
 // somewhere in a view
 echo $urlHelper('blog.read', '88'); // "/path/to/subdir/blog/88"
 
-// alternately, you can get the Generator itself by not passing arguments
-echo $urlHelper()->generateRaw('blog.read', '88'); // "/path/to/subdir/blog/88"
+// the raw url can be returned by passing in true as the third argument
+echo $urlHelper('blog.read', '88', true); // "/path/to/subdir/blog/88"
 ```

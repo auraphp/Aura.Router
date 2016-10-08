@@ -45,20 +45,21 @@ class Url
      *
      * Returns the Generator
      *
-     * @param string|null $name The name of the route to lookup.
+     * @param string $name The name of the route to lookup.
      *
-     * @param array $data The data to pass into the route
+     * @param array $data The data to pass into the route.
      *
-     * @return Generator|string|false The generator object, or the results of {Aura\Router\Generator::generate()}
-     *                                when $name is null
+     * @param bool $returnRawUrl Whether or not to return the raw url.
      *
-     * @throws RouteNotFound When the route cannot be found, thrown by {Aura\Router\Generator::generate()}
+     * @return string The results of calling the appropriate _Generator_ method .
+     *
+     * @throws RouteNotFound When the route cannot be found.
      *
      */
-    public function __invoke($name = null, array $data = [])
+    public function __invoke($name, array $data = [], $returnRawUrl = false)
     {
-        return $name === null
-            ? $this->generator
+        return $returnRawUrl
+            ? $this->generator->generateRaw($name, $data)
             : $this->generator->generate($name, $data);
     }
 }
