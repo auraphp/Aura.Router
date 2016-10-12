@@ -49,6 +49,10 @@ class Url
      *
      * @param array $data The data to pass into the route.
      *
+     * @param array | string $queryData The data that is used to create query string.
+     *
+     * @param string $fragment The data to pass into the route.
+     *
      * @param bool $returnRawUrl Whether or not to return the raw url.
      *
      * @return string The results of calling the appropriate _Generator_ method .
@@ -56,10 +60,26 @@ class Url
      * @throws RouteNotFound When the route cannot be found.
      *
      */
-    public function __invoke($name, array $data = [], $returnRawUrl = false)
+    public function __invoke($name, array $data = [], $queryData = [], $fragment = '', $returnRawUrl = false)
     {
-        return $returnRawUrl
+        $url = $returnRawUrl
             ? $this->generator->generateRaw($name, $data)
             : $this->generator->generate($name, $data);
+
+        if (! empty($queryData)) {
+            if (is_array($queryData)) {
+                $url .= '?' . http_build_query($queryData);
+            }
+
+            if (is_string($queryData)) {
+                $url .= '?' . ltrim($queryData, "?");
+            }
+        }
+
+        if (! empty($fragment)) {
+            $url .= '#' . $fragment;
+        }
+
+        return $url;
     }
 }

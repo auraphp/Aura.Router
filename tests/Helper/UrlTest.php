@@ -6,38 +6,64 @@ use Aura\Router\RouterContainer;
 
 class UrlTest extends \PHPUnit_Framework_TestCase
 {
-    protected $map;
-    protected $generator;
+    protected $helper;
 
     protected function setUp()
     {
         parent::setUp();
         $container = new RouterContainer();
-        $this->map = $container->getMap();
-        $this->generator = $container->getGenerator();
+        $map = $container->getMap();
+
+        $map->route('blog.edit', '/blog/{id}/edit')
+              ->tokens([
+                  'id' => '([0-9]+)',
+              ]);
+        $map->route('blog', '/blog');
+
+        $generator = $container->getGenerator();
+
+        $this->helper = new Url($generator);
     }
 
     public function testInvokeReturnsGeneratedRoute()
     {
-        $this->map->route('test', '/blog/{id}/edit')
-                  ->tokens([
-                      'id' => '([0-9]+)',
-                  ]);
-
-        $helper = new Url($this->generator);
-        $this->assertEquals('/blog/4%202/edit', $helper('test', ['id' => '4 2', 'foo' => 'bar']));
+        $helper = $this->helper;
+        $this->assertEquals('/blog/4%202/edit', $helper('blog.edit', ['id' => '4 2']));
     }
 
     public function testInvokeReturnsRaw()
     {
-        $this->map->route('test', '/blog/{id}/edit')
-                  ->tokens([
-                      'id' => '([0-9]+)',
-                  ]);
+        $helper = $this->helper;
+        $this->assertEquals('/blog/4 2/edit', $helper('blog.edit', ['id' => '4 2'], [], '', true));
+    }
 
-        $helper = new Url($this->generator);
+    public function testReturnQueryString()
+    {
+        $helper = $this->helper;
+        $this->assertEquals('/blog?page=1', $helper('blog', [], ['page' => '1']));
+    }
 
-        $this->setExpectedException(RouteNotFound::class);
-        $this->assertEquals('/blog/4 2/edit', $helper('tester', ['id' => '4 2', 'foo' => 'bar']));
+    public function testReturnWithFragment()
+    {
+        $helper = $this->helper;
+        $this->assertEquals('/blog#heading', $helper('blog', [], [], 'heading'));
+    }
+
+    public function testReturnQueryStringWithFragment()
+    {
+        $helper = $this->helper;
+        $this->assertEquals('/blog/42/edit?page=1#heading', $helper('blog.edit', ['id' => '42'], ['page' => 1], 'heading'));
+    }
+
+    public function testPassQueryStringReturnsQueryStringWithFragment()
+    {
+        $helper = $this->helper;
+        $this->assertEquals('/blog/42/edit?page=1#heading', $helper('blog.edit', ['id' => '42'], '?page=1', 'heading'));
+    }
+
+    public function testPassObjectAsQueryParams()
+    {
+        $helper = $this->helper;
+        $this->assertEquals('/blog/42/edit#heading', $helper('blog.edit', ['id' => '42'], new \stdClass(), 'heading'));
     }
 }
