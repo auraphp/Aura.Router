@@ -76,8 +76,8 @@ class Url
             }
         }
 
-        if (! empty($fragment)) {
-            $url .= '#' . $fragment;
+        if (is_string($fragment) && ! empty($fragment)) {
+            $url .= '#' . ltrim($fragment, "#");
         }
 
         return $url;

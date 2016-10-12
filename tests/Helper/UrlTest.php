@@ -64,6 +64,6 @@ class UrlTest extends \PHPUnit_Framework_TestCase
     public function testPassObjectAsQueryParams()
     {
         $helper = $this->helper;
-        $this->assertEquals('/blog/42/edit#heading', $helper('blog.edit', ['id' => '42'], new \stdClass(), 'heading'));
+        $this->assertEquals('/blog/42/edit#heading', $helper('blog.edit', ['id' => '42'], new \stdClass(), '#heading'));
     }
 }

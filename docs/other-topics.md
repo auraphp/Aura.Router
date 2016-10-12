@@ -67,12 +67,12 @@ echo $path; // "/path/to/subdir/blog/88"
 
 You may wish to be able to generate routes from your views. A generic view helper _Helper\Url_ is available to assist you in creating these urls.
 
-The invocation of the view helper can accept the same parameters as the _Generator_  `generate()` method. If you need to get the raw URL you can set true as the third parameter when invoking the view helper, this will call `generateRaw()`.
+The invocation of the view helper can accept the same parameters as the _Generator_  `generate()` method. If you need to get the raw URL you can set true as the fifth parameter when invoking the view helper, this will call `generateRaw()`.
 
 ```php
 <?php
 // create a container with a base path
-$routerContainer = new RouterContainer('/path/to/subdir');
+$routerContainer = new RouterContainer();
 
 // define a route as normal
 $map = $routerContainer->getMap();
@@ -82,8 +82,25 @@ $map->get('blog.read', '/blog/{id}', ...);
 $urlHelper = new Helper\Url($routerContainer->getGenerator());
 
 // somewhere in a view
-echo $urlHelper('blog.read', '88'); // "/path/to/subdir/blog/88"
+echo $urlHelper('blog.read', 'with space'); // "/blog/with%20space"
 
 // the raw url can be returned by passing in true as the third argument
-echo $urlHelper('blog.read', '88', true); // "/path/to/subdir/blog/88"
+echo $urlHelper('blog.read', 'with space', [], '', true); // "/blog/with space"
+```
+
+### Query string
+
+You can pass an array or a string as the 3rd argument to generate query string
+appended to the generated route.
+
+```php
+echo $urlHelper('blog.read', '88', ['page' => '1']); // "/blog/88?page=1"
+echo $urlHelper('blog.read', '88', 'page=1'); // "/blog/88?page=1"
+```
+
+### Fragment
+
+```php
+echo $urlHelper('blog.read', '88', ['page' => '1'], '#read-more'); // "/blog/88?page=1#read-more"
+echo $urlHelper('blog.read', '88', 'page=1', #read-more); // "/blog/88?page=1#read-more"
 ```
