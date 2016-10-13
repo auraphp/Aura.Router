@@ -188,42 +188,4 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $url = $this->generator->generate('test', ['id' => 42, 'host' => 'bar']);
         $this->assertEquals('https://bar.example.com/blog/42/edit', $url);
     }
-
-    /**
-     * @coversNothing
-     */
-    public function testGenerateErrorsWithoutDataArray()
-    {
-        try {
-            $this->generator->generate('test', 'nope');
-        }
-        catch(\PHPUnit_Framework_Exception $e) {
-            $this->assertStringStartsWith(
-                'Argument 2 passed to Aura\\Router\\Generator::generate() must be of the type array, string given',
-                $e->getMessage()
-            );
-            return;
-        }
-
-        $this->fail("Exception was not thrown");
-    }
-
-    /**
-     * @coversNothing
-     */
-    public function testGenerateRawErrorsWhenPassedNonArray()
-    {
-        try {
-            $this->generator->generateRaw('test', 'nope');
-        }
-        catch(\PHPUnit_Framework_Exception $e) {
-            $this->assertStringStartsWith(
-                'Argument 2 passed to Aura\\Router\\Generator::generateRaw() must be of the type array, string given',
-                $e->getMessage()
-            );
-            return;
-        }
-
-        $this->fail("Exception was not thrown");
-    }
 }
