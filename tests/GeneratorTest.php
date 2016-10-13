@@ -194,9 +194,18 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateErrorsWithoutDataArray()
     {
-        $this->expectException(\PHPUnit_Framework_Exception::class);
-        $this->expectExceptionMessage('Argument 2 passed to Aura\\Router\\Generator::generate() must be of the type array, string given');
-        $this->generator->generate('test', 'nope');
+        try {
+            $this->generator->generate('test', 'nope');
+        }
+        catch(\PHPUnit_Framework_Exception $e) {
+            $this->assertStringStartsWith(
+                'Argument 2 passed to Aura\\Router\\Generator::generate() must be of the type array, string given',
+                $e->getMessage()
+            );
+            return;
+        }
+
+        $this->fail("Exception was not thrown");
     }
 
     /**
@@ -204,8 +213,17 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateRawErrorsWhenPassedNonArray()
     {
-        $this->expectException(\PHPUnit_Framework_Exception::class);
-        $this->expectExceptionMessage('Argument 2 passed to Aura\\Router\\Generator::generateRaw() must be of the type array, string given');
-        $this->generator->generateRaw('test', 'nope');
+        try {
+            $this->generator->generateRaw('test', 'nope');
+        }
+        catch(\PHPUnit_Framework_Exception $e) {
+            $this->assertStringStartsWith(
+                'Argument 2 passed to Aura\\Router\\Generator::generateRaw() must be of the type array, string given',
+                $e->getMessage()
+            );
+            return;
+        }
+
+        $this->fail("Exception was not thrown");
     }
 }
