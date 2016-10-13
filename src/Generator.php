@@ -111,7 +111,7 @@ class Generator
      * @throws Exception\RouteNotFound
      *
      */
-    public function generate($name, $data = [])
+    public function generate($name, array $data = [])
     {
         return $this->build($name, $data, false);
     }
@@ -131,7 +131,7 @@ class Generator
      * @throws Exception\RouteNotFound
      *
      */
-    public function generateRaw($name, $data = [])
+    public function generateRaw($name, array $data = [])
     {
         return $this->build($name, $data, true);
     }

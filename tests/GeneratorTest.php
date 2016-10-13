@@ -3,7 +3,14 @@ namespace Aura\Router;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Map
+     */
     protected $map;
+
+    /**
+     * @var Generator
+     */
     protected $generator;
 
     protected function setUp()
@@ -135,7 +142,6 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
             'package' => 'package+name',
             'file' => 'foo/bar/baz.jpg',
         ];
-        $raw = ['file'];
         $actual = $this->generator->generateRaw('test', $data);
         $expect = '/vendor+name/package+name/foo/bar/baz.jpg';
         $this->assertSame($actual, $expect);
@@ -181,5 +187,25 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
 
         $url = $this->generator->generate('test', ['id' => 42, 'host' => 'bar']);
         $this->assertEquals('https://bar.example.com/blog/42/edit', $url);
+    }
+
+    /**
+     * @coversNothing
+     */
+    public function testGenerateErrorsWithoutDataArray()
+    {
+        $this->expectException(\PHPUnit_Framework_Exception::class);
+        $this->expectExceptionMessage('Argument 2 passed to Aura\\Router\\Generator::generate() must be of the type array, string given');
+        $this->generator->generate('test', 'nope');
+    }
+
+    /**
+     * @coversNothing
+     */
+    public function testGenerateRawErrorsWhenPassedNonArray()
+    {
+        $this->expectException(\PHPUnit_Framework_Exception::class);
+        $this->expectExceptionMessage('Argument 2 passed to Aura\\Router\\Generator::generateRaw() must be of the type array, string given');
+        $this->generator->generateRaw('test', 'nope');
     }
 }
