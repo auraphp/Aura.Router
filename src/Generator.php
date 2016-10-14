@@ -150,7 +150,7 @@ class Generator
      * @return string
      *
      */
-    protected function build($name, $data, $raw)
+    protected function build($name, array $data, $raw)
     {
         $this->raw = $raw;
         $this->route = $this->map->getRoute($name);
