@@ -47,7 +47,7 @@ For example, this route named `blog.read` will match against a `GET` request on 
 <?php
 $map->get('blog.read', '/blog/{id}', function ($request, $response) {
     $id = (int) $request->getAttribute('id');
-    $response->body()->write("You asked for blog entry {$id}.");
+    $response->getBody()->write("You asked for blog entry {$id}.");
     return $response;
 });
 ?>
