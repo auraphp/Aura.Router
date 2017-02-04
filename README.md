@@ -44,6 +44,12 @@ on Freenode in the #auraphp channel.
 
 This package is fully documented [here](./docs/index.md).
 
+If you are interested in watching videos, there is one demonstrating the integration over  [youtube](https://www.youtube.com/watch?v=DA60mYS-YoM)
+
+<p align="center">
+[![Aura.Router version 3 video tutorial](https://img.youtube.com/vi/DA60mYS-YoM/0.jpg)](https://www.youtube.com/watch?v=DA60mYS-YoM)
+</p>
+
 [PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
 [PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
 [PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
