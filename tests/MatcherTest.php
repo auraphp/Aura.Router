@@ -238,4 +238,66 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expect, $actual);
         $this->assertRoute($bar, $matcher->getMatchedRoute());
     }
+
+    public function testIsCustomMatchWithClosure()
+    {
+        $route = $this->map->get('foo_bar', '/foo/bar');
+        $route->setIsMatchCallable(function(\Psr\Http\Message\ServerRequestInterface $request, \Aura\Router\Route $route) {
+            $route->extras(['zim' => 'gir']);
+            return true;
+        });
+
+        $request = $this->newRequest('/foo/bar');
+        $match = $this->matcher->match($request);
+        $this->assertIsRoute($match);
+        $this->assertEquals('gir', $match->extras['zim']);
+
+        $route = $this->map->post('foo_bar_baz', '/foo/bar/baz');
+        $route->setIsMatchCallable(function(\Psr\Http\Message\ServerRequestInterface $request, \Aura\Router\Route $route) {
+            return false;
+        });
+        $request = $this->newRequest('/foo/bar/baz');
+        $match = $this->matcher->match($request);
+        $this->assertFalse($match);
+    }
+
+    public function testIsCustomMatchWithCallback()
+    {
+        $route = $this->map->get('foo_bar', '/foo/bar');
+        $route->setIsMatchCallable(array($this, 'callbackForIsMatchTrue'));
+
+        $request = $this->newRequest('/foo/bar');
+        $match = $this->matcher->match($request);
+
+        $this->assertIsRoute($match);
+        $this->assertEquals('gir', $match->extras['zim']);
+
+        // second
+        $route = $this->map->get('foo_bar_baz', '/foo/bar/baz');
+        $route->setIsMatchCallable(array($this, 'callbackForIsMatchFalse'));
+
+        $request = $this->newRequest('/foo/bar/baz');
+        $match = $this->matcher->match($request);
+
+        // even though path is correct, should fail because of the closure
+        $this->assertFalse($match);
+
+        // Get failed route
+        $failedRoute = $this->matcher->getFailedRoute();
+        $this->assertRoute($route, $failedRoute);
+
+        // Get failure reason
+        $this->assertSame(\Aura\Router\Route::FAILED_CUSTOM, $failedRoute->failedRule);
+    }
+
+    public function callbackForIsMatchTrue(\Psr\Http\Message\ServerRequestInterface $request, \Aura\Router\Route $route)
+    {
+        $route->extras(['zim' => 'gir']);
+        return true;
+    }
+
+    public function callbackForIsMatchFalse(\Psr\Http\Message\ServerRequestInterface $request, \Aura\Router\Route $route)
+    {
+        return false;
+    }
 }

@@ -212,3 +212,33 @@ $map->post('blog.add', '/blog');
 $map->delete('blog.delete', '/blog/{id}');
 ?>
 ```
+
+## setIsMatchCallable
+
+> Introduced in version 3.1.0
+
+A custom callable with the signature
+`function(\Psr\Http\Message\ServerRequestInterface $request, \Aura\Router\Route $router)`
+that returns true on a match, or false if not.
+This allows developers to build any kind of matching logic for the route, and
+to change the $route values.
+
+```php
+use Psr\Http\Message\ServerRequestInterface;
+use Aura\Router\Route;
+
+$map->get('blog.browse', '/blog')
+    ->setIsMatchCallable(function(ServerRequestInterface $request, Route $route) {
+
+        $server = $request->getServerParams();
+        // disallow matching if referred from example.com
+        if ($server['HTTP_REFERER'] == 'http://example.com') {
+            return false;
+        }
+
+        // add the referer from $server to the match values
+        $route->extras(['referer' =>  $server['HTTP_REFERER']]);
+
+        return true;
+    });
+```

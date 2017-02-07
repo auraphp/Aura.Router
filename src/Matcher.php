@@ -117,7 +117,11 @@ class Matcher
         foreach ($this->map as $name => $proto) {
             $route = $this->requestRoute($request, $proto, $name, $path);
             if ($route) {
-                return $route;
+                if ($route->isCustomMatch($request)) {
+                    return $route;
+                }
+                $this->failedScore = iterator_count($this->ruleIterator);
+                $this->failedRoute = $route;
             }
         }
 
