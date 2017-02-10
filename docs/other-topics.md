@@ -58,7 +58,7 @@ $route = $matcher->match($request);
 
 // generating a path from the route will add the base path automatically
 $generator = $routerContainer->getGenerator();
-$path = $generator->generate('blog.read', '88');
+$path = $generator->generate('blog.read', ['id' => 88]);
 echo $path; // "/path/to/subdir/blog/88"
 ?>
 ```

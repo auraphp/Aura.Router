@@ -3,7 +3,14 @@ namespace Aura\Router;
 
 class GeneratorTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Map
+     */
     protected $map;
+
+    /**
+     * @var Generator
+     */
     protected $generator;
 
     protected function setUp()
@@ -135,7 +142,6 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
             'package' => 'package+name',
             'file' => 'foo/bar/baz.jpg',
         ];
-        $raw = ['file'];
         $actual = $this->generator->generateRaw('test', $data);
         $expect = '/vendor+name/package+name/foo/bar/baz.jpg';
         $this->assertSame($actual, $expect);
