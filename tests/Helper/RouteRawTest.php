@@ -6,6 +6,7 @@ use Aura\Router\RouterContainer;
 
 class RouteRawTest extends \PHPUnit_Framework_TestCase
 {
+    protected $container;
     protected $map;
     protected $generator;
 
@@ -13,6 +14,7 @@ class RouteRawTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $container = new RouterContainer();
+        $this->container = $container;
         $this->map = $container->getMap();
         $this->generator = $container->getGenerator();
     }
@@ -24,7 +26,7 @@ class RouteRawTest extends \PHPUnit_Framework_TestCase
                       'id' => '([0-9]+)',
                   ]);
 
-        $helper = new RouteRaw($this->generator);
+        $helper = $this->container->newRouteRawHelper();
 
         $this->assertEquals('/blog/4 2/edit', $helper('test', ['id' => '4 2', 'foo' => 'bar']));
     }

@@ -337,4 +337,28 @@ class RouterContainer
         }
         return $this->ruleIterator;
     }
+
+    /**
+     *
+     * Gets a new route generation helper
+     *
+     * @return Helper\Route
+     *
+     */
+    public function newRouteHelper()
+    {
+        return new Helper\Route($this->getGenerator());
+    }
+
+    /**
+     *
+     * Gets a new raw route generation helper
+     *
+     * @return Helper\RouteRaw
+     *
+     */
+    public function newRouteRawHelper()
+    {
+        return new Helper\RouteRaw($this->getGenerator());
+    }
 }
