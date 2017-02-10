@@ -13,12 +13,12 @@ use Aura\Router\Generator;
 
 /**
  *
- * Generic Url Helper class
+ * Generic Raw Route Helper class
  *
  * @package Aura.Router
  *
  */
-class Url
+class RouteRaw
 {
     /**
      *
@@ -49,17 +49,13 @@ class Url
      *
      * @param array $data The data to pass into the route.
      *
-     * @param bool $returnRawUrl Whether or not to return the raw url.
-     *
-     * @return string The results of calling the appropriate _Generator_ method .
+     * @return string The results of calling _Generator::generateRaw_.
      *
      * @throws RouteNotFound When the route cannot be found.
      *
      */
-    public function __invoke($name, array $data = [], $returnRawUrl = false)
+    public function __invoke($name, array $data = [])
     {
-        return $returnRawUrl
-            ? $this->generator->generateRaw($name, $data)
-            : $this->generator->generate($name, $data);
+        return $this->generator->generateRaw($name, $data);
     }
 }
