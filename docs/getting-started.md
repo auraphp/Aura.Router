@@ -208,7 +208,10 @@ foreach ($route->attributes as $key => $val) {
     $request = $request->withAttribute($key, $val);
 }
 $callable = $route->handler;
+
+// You should consider using https://github.com/auraphp/Aura.Dispatcher than the one line code below.
 $response = $callable($request);
+
 foreach ($response->getHeaders() as $name => $values) {
     foreach ($values as $value) {
         header(sprintf('%s: %s', $name, $value), false);
