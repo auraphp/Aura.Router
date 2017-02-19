@@ -15,6 +15,7 @@ $routerContainer = new RouterContainer();
 You can then retrieve a _Map_ for adding routes, a _Matcher_ for matching the incoming request to a route, and a _Generator_ for generating paths from routes.
 
 Let's go step-by-step to add a route, match a request against it, and dispatch it.
+A full working example is provided at the ended of this page.
 
 ## Adding A Route
 
@@ -74,18 +75,15 @@ $matcher = $routerContainer->getMatcher();
 
 Then call the `match()` method to match a PSR-7 _ServerRequestInterface_ instance to a mapped _Route_.
 
-```php
-<?php
-/**
- * @var Psr\Http\Message\ServerRequestInterface $request
- */
-$route = $matcher->match($request);
-?>
+For this you need an implementation of [psr-7](https://packagist.org/providers/psr/http-message-implementation) .
+
+The most widely used one is [zend-diactoros](https://zendframework.github.io/zend-diactoros/).
+
+```
+composer require zendframework/zend-diactoros
 ```
 
-### The $request Object
-
-The `$request` object can be [any of the psr-7 implementation](https://packagist.org/providers/psr/http-message-implementation). The most widely used is  [zend-diactoros](https://zendframework.github.io/zend-diactoros/) . Below is an example how to create the `$request` object via `zend-diactoros`.
+Create an instance of _ServerRequestInterface_ object.
 
 ```php
 $request = Zend\Diactoros\ServerRequestFactory::fromGlobals(
@@ -97,7 +95,16 @@ $request = Zend\Diactoros\ServerRequestFactory::fromGlobals(
 );
 ```
 
-> NB : Make sure you have installed diactoros. Read [documentation](https://zendframework.github.io/zend-diactoros/) for more details regarding installation and usage.
+and pass `$request` to match method.
+
+```php
+<?php
+/**
+ * @var Psr\Http\Message\ServerRequestInterface $request
+ */
+$route = $matcher->match($request);
+?>
+```
 
 ## Dispatching A Route
 
@@ -164,3 +171,59 @@ if (! $route) {
 }
 ?>
 ```
+
+## Full working example
+
+```
+composer require aura/router zendframework/zend-diactoros
+```
+
+```php
+<?php
+// index.php
+require __DIR__ . '/vendor/autoload.php';
+use Aura\Router\RouterContainer;
+$routerContainer = new RouterContainer();
+$map = $routerContainer->getMap();
+$map->get('blog.read', '/blog/{id}', function ($request) {
+    $id = (int) $request->getAttribute('id');
+    $response = new Zend\Diactoros\Response();
+    $response->getBody()->write("You asked for blog entry {$id}.");
+    return $response;
+});
+$matcher = $routerContainer->getMatcher();
+$request = Zend\Diactoros\ServerRequestFactory::fromGlobals(
+    $_SERVER,
+    $_GET,
+    $_POST,
+    $_COOKIE,
+    $_FILES
+);
+$route = $matcher->match($request);
+if (! $route) {
+    echo " No route found";
+    exit;
+}
+foreach ($route->attributes as $key => $val) {
+    $request = $request->withAttribute($key, $val);
+}
+$callable = $route->handler;
+
+// You should consider using https://github.com/auraphp/Aura.Dispatcher than the one line code below.
+$response = $callable($request);
+
+foreach ($response->getHeaders() as $name => $values) {
+    foreach ($values as $value) {
+        header(sprintf('%s: %s', $name, $value), false);
+    }
+}
+echo $response->getBody();
+```
+
+and start built in php server
+
+```
+php -S localhost:8000 -t .
+```
+
+and point your browser to `http://localhost:8000/blog/12` .
