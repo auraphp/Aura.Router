@@ -15,7 +15,7 @@ $map->attach($namePrefix, $pathPrefix, function ($map) {
         'format' => '(\.json|\.atom|\.html)?'
     ]);
 
-    $map->setDefaults([
+    $map->defaults([
         'format' => '.html',
     ]);
 
