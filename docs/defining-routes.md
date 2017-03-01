@@ -38,6 +38,28 @@ $map->post('blog.archive', '/blog/{id}{format}')
 ?>
 ```
 
+## Custom placeholder token matching
+
+Sometimes it's useful to be able to do custom matching of placeholder tokens.
+
+To define a custom callback for placeholder tokens, use the `tokens()` method.
+
+The following will verify that date is a valid DateTime format:
+
+```php
+<?php
+$map->get('/calendar/from/{date}')
+    ->tokens([
+        'date' => function ($date, $route, $request) {
+            try {
+                new \DateTime($date);
+                return true;
+            } catch(\Exception $e) {
+                return false;
+            }
+        }
+    ]);
+```
 
 ## Optional Placeholder Tokens
 

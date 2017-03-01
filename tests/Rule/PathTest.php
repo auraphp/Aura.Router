@@ -67,6 +67,30 @@ class PathTest extends AbstractRuleTest
         $this->assertSame($expect, $route->attributes);
     }
 
+    public function testIsMatchOnDefaultAndCustomSubpatterns()
+    {
+        $route = $this->newRoute('/assets/{file}\.{semver}{format}')
+            ->tokens([
+                'file' => '([\w\d\-\_]+)',
+                'semver' => function ($semver, $route, $request) {
+                    if ($semver === '1.3.1') {
+                        return true;
+                    }
+                    return false;
+                },
+                'format' => '(\.[^/]+)',
+            ]);
+
+        $request = $this->newRequest('/assets/any-file.1.3.1.zip');
+        $this->assertIsMatch($request, $route);
+        $expect = [
+            'file' => 'any-file',
+            'semver' => '1.3.1',
+            'format' => '.zip'
+        ];
+        $this->assertSame($expect, $route->attributes);
+    }
+
     public function testIsMatchOnRFC3986Paths()
     {
         $route = $this->newRoute('/{controller}/{action}/{attribute1}/{attribute2}');
