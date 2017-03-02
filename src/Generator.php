@@ -75,7 +75,7 @@ class Generator
      *
      * The basepath to prefix to generated paths.
      *
-     * @var string
+     * @var string|null
      *
      */
     protected $basepath;
@@ -195,7 +195,7 @@ class Generator
      *
      * Builds urlencoded data for token replacements.
      *
-     * @return array
+     * @return void
      *
      */
     protected function buildTokenReplacements()
@@ -209,7 +209,7 @@ class Generator
      *
      * Builds replacements for attributes in the generated path.
      *
-     * @return string
+     * @return void
      *
      */
     protected function buildOptionalReplacements()
@@ -259,7 +259,7 @@ class Generator
      *
      * Builds a wildcard replacement in the generated path.
      *
-     * @return string
+     * @return void
      *
      */
     protected function buildWildcardReplacement()

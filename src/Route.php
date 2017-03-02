@@ -112,7 +112,7 @@ class Route
      *
      * The rule that failed, if any, during matching.
      *
-     * @var string
+     * @var string|null
      *
      */
     protected $failedRule;
@@ -139,7 +139,7 @@ class Route
      *
      * The name for this route.
      *
-     * @var string
+     * @var string|null
      *
      */
     protected $name;
@@ -157,7 +157,7 @@ class Route
      *
      * The path for this route.
      *
-     * @var string
+     * @var string|null
      *
      */
     protected $path;
@@ -184,7 +184,7 @@ class Route
      *
      * Should this route respond on a secure protocol?
      *
-     * @var bool
+     * @var bool|null
      *
      */
     protected $secure = null;
@@ -193,7 +193,7 @@ class Route
      *
      * A callable to use for special matching logic on this individual Route.
      *
-     * @var callable
+     * @var callable|null
      *
      */
     protected $special;
@@ -211,7 +211,7 @@ class Route
      *
      * Wildcard token name, if any.
      *
-     * @var string
+     * @var string|null
      *
      */
     protected $wildcard = null;
