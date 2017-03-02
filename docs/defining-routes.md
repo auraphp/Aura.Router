@@ -38,7 +38,7 @@ $map->post('blog.archive', '/blog/{id}{format}')
 ?>
 ```
 
-## Custom placeholder token matching
+## Custom Placeholder Token Matching
 
 Sometimes it's useful to be able to do custom matching of placeholder tokens.
 
@@ -205,6 +205,26 @@ $map->post('blog.other', '/blog/other')
 ?>
 ```
 You can then use these extra values in your own custom matching rules.
+
+## Route-Specific Matching Logic
+
+If you need a special matching logic on an individual _Route_, you can use the `special()` method to add a callable to the _Route_ for matching. The method should return a boolean to indicate if the _Route_ is a match or not.
+
+```php
+<?php
+$map->get('foo', '/foo/bar/{baz}')
+    ->special(function ($request, $route) {
+        if ($request->getHeader('Foo') == 'bar') {
+            $route->extras(['foo' => true]);
+            return true;
+        }
+        return false;
+    }
+})
+?>
+```
+
+> N.b.: You can also create a _Rule_ that applies to all routes; see [this section](./custom-matching.md) for more.
 
 ## Default Map Route Specifications
 

@@ -120,17 +120,14 @@ class RouterContainer
     public function __construct($basepath = null)
     {
         $this->basepath = $basepath;
-
         $this->setLoggerFactory([$this, 'loggerFactory']);
-
         $this->setRouteFactory([$this, 'routeFactory']);
-
         $this->setMapFactory([$this, 'mapFactory']);
-
         $this->setMapBuilder([$this, 'buildMap']);
     }
 
     /**
+     * 
      * Creates a Logger
      *
      * @return NullLogger
@@ -333,6 +330,7 @@ class RouterContainer
                 new Rule\Path($this->basepath),
                 new Rule\Allows(),
                 new Rule\Accepts(),
+                new Rule\Special(),
             ]);
         }
         return $this->ruleIterator;

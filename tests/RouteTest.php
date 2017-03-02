@@ -62,4 +62,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route->auth(true);
         $this->assertTrue($route->auth);
     }
+
+    public function testSpecial()
+    {
+        $route = new Route();
+        $callable = ['StaticObject', 'method'];
+        $route->special($callable);
+        $this->assertSame($callable, $route->special);
+    }
 }

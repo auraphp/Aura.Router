@@ -68,6 +68,7 @@ $routerContainer->getRuleIterator()->set([
     new Rule\Path(),
     new Rule\Allows(),
     new Rule\Accepts(),
+    new Rule\Special(),
     // custom rule
     new ApiVersionRule()
 ]);
@@ -87,6 +88,7 @@ $routerContainer->getRuleIterator()->set([
     new Rule\Path(),
     new Rule\Allows(),
     new Rule\Accepts(),
+    new Rule\Special(),
 ]);
 ```
 

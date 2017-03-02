@@ -42,7 +42,9 @@ namespace Aura\Router;
  *
  * @property-read array $allows
  *
- * @property-read bool $routable
+ * @property-read bool $isRoutable
+ *
+ * @property-read callable $special
  *
  * @property-read string $failedRule
  *
@@ -186,6 +188,15 @@ class Route
      *
      */
     protected $secure = null;
+
+    /**
+     *
+     * A callable to use for special matching logic on this individual Route.
+     *
+     * @var callable
+     *
+     */
+    protected $special;
 
     /**
      *
@@ -395,7 +406,7 @@ class Route
      * @param string $name The route name.
      *
      * @return $this
-     * 
+     *
      * @throws Exception\ImmutableProperty when the name has already been set.
      *
      */
@@ -485,6 +496,24 @@ class Route
     public function secure($secure = true)
     {
         $this->secure = ($secure === null) ? null : (bool) $secure;
+        return $this;
+    }
+
+    /**
+     *
+     * A callable to use for special matching logic on this individual Route.
+     *
+     * @param callable|null $special A callable to invoke for special matching
+     * logic on this individiual route. The callable should have the signature
+     * `function ($request, $route) : bool`. (Use null or another empty value
+     * to indicate there is no special matching logic.)
+     *
+     * @return $this
+     *
+     */
+    public function special($special)
+    {
+        $this->special = $special;
         return $this;
     }
 
