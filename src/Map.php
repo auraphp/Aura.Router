@@ -85,7 +85,7 @@ class Map implements IteratorAggregate
      *
      * @param array $routes Use this array of routes.
      *
-     * @return null
+     * @return void
      *
      * @see getRoutes()
      *
@@ -99,7 +99,7 @@ class Map implements IteratorAggregate
      *
      * Gets the route collection.
      *
-     * @return Map
+     * @return array
      *
      * @see setRoutes()
      *
@@ -115,7 +115,7 @@ class Map implements IteratorAggregate
      *
      * @param Route $route The pre-built route.
      *
-     * @return $this
+     * @return void
      *
      * @throws Exception\RouteAlreadyExists when the route name is already
      * mapped.

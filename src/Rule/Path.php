@@ -42,7 +42,7 @@ class Path implements RuleInterface
      *
      * The basepath to prefix when matching the path.
      *
-     * @var string
+     * @var string|null
      *
      */
     protected $basepath;
