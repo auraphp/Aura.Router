@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "zendframework/zend-diactoros": "~1.0",
-        "phpunit/phpunit":"~5.7 || ~4.8"
+        "phpunit/phpunit": "~5.7 || ~4.8"
     },
     "autoload-dev": {
         "psr-4": {
