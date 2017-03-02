@@ -13,7 +13,7 @@ Alternatively, [download a release][], or clone this repository, then map the
 ## Dependencies
 
 This package requires PHP 5.5 or later; it has been tested on PHP 5.6, PHP 7,
-PHP 7.1 and HHVM. We recommend using the latest available version of PHP as a 
+PHP 7.1 and HHVM. We recommend using the latest available version of PHP as a
 matter of principle.
 
 Aura library packages may sometimes depend on external interfaces, but never on
@@ -28,8 +28,8 @@ without compromising flexibility. For specifics, please examine the package
 [![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=3.x)](https://travis-ci.org/auraphp/Aura.Router)
 
 To run the unit tests at the command line, issue `composer install` and then
-`phpunit` at the package root. This requires [Composer][] to be available as
-`composer`, and [PHPUnit][] to be available as `phpunit`.
+`./vendor/bin/phpunit` at the package root. (This requires [Composer][] to be
+available as `composer`.)
 
 This package attempts to comply with [PSR-1][], [PSR-2][], and [PSR-4][]. If
 you notice compliance oversights, please send a patch via pull request.
@@ -44,7 +44,7 @@ on Freenode in the #auraphp channel.
 
 This package is fully documented [here](./docs/index.md).
 
-If you are interested in watching videos, there is one demonstrating the integration over  [youtube](https://www.youtube.com/watch?v=DA60mYS-YoM)
+There is also a video demonstration on [YouTube](https://www.youtube.com/watch?v=DA60mYS-YoM):
 
 <p align="center">
     <a href="https://www.youtube.com/watch?v=DA60mYS-YoM">
