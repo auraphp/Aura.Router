@@ -183,6 +183,15 @@ class Route extends AbstractSpec
 
     /**
      *
+     * Does the route needs authentication
+     *
+     * @var bool
+     *
+     */
+    protected $authenticate = false;
+
+    /**
+     *
      * Constructor.
      *
      * @param Regex $regex A regular expression support object.
@@ -334,6 +343,31 @@ class Route extends AbstractSpec
     public function failedMethod()
     {
         return $this->failed == self::FAILED_METHOD;
+    }
+
+    /**
+     *
+     * Make sure the route needs authentication
+     *
+     * @return $this
+     *
+     */
+    public function authenticate()
+    {
+        $this->authenticate = true;
+        return $this;
+    }
+
+    /**
+     *
+     * Check whether the route needs authentication
+     *
+     * @return bool
+     *
+     */
+    public function needsAuthentication()
+    {
+        return $this->authenticate;
     }
 
     /**
