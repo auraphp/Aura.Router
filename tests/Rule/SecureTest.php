@@ -78,4 +78,40 @@ class SecureTest extends AbstractRuleTest
         $request = $this->newRequest('/foo/bar/baz', ['SERVER_PORT' => '443']);
         $this->assertIsNotMatch($request, $route);
     }
+
+
+    public function testIsSecureMatch_forwarded()
+    {
+        /**
+         * secure required
+         */
+        $proto = $this->newRoute('/foo/bar/baz')
+            ->secure(true);
+
+        // correct
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz', ['HTTP_X_FORWARDED_PROTO' => 'https']);
+        $this->assertIsMatch($request, $route);
+
+        // not secure
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz', ['HTTP_X_FORWARDED_PROTO' => 'http']);
+        $this->assertIsNotMatch($request, $route);
+
+        /**
+         * not-secure required
+         */
+        $proto = $this->newRoute('/foo/bar/baz')
+            ->secure(false);
+
+        // correct
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz', ['HTTP_X_FORWARDED_PROTO' => 'http']);
+        $this->assertIsMatch($request, $route);
+
+        // secured when it should not be
+        $route = clone $proto;
+        $request = $this->newRequest('/foo/bar/baz', ['HTTP_X_FORWARDED_PROTO' => 'https']);
+        $this->assertIsNotMatch($request, $route);
+    }
 }
