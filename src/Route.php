@@ -8,6 +8,8 @@
  */
 namespace Aura\Router;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
  *
  * An individual route with a name, path, attributes, defaults, etc.
@@ -53,6 +55,15 @@ namespace Aura\Router;
  */
 class Route
 {
+    /**
+     *
+     * The route failed to match at isCustomMatch().
+     *
+     * @const string
+     *
+     */
+    const FAILED_CUSTOM = 'FAILED_CUSTOM';
+
     /**
      *
      * Accepts these content types.
@@ -215,6 +226,15 @@ class Route
      *
      */
     protected $wildcard = null;
+
+    /**
+     *
+     * Custom callable for isCustomMatch() logic.
+     *
+     * @var callable
+     *
+     */
+    protected $is_match    = null;
 
     /**
      *
@@ -545,5 +565,48 @@ class Route
     {
         $this->wildcard = $wildcard;
         return $this;
+    }
+
+    /**
+     *
+     * Sets a custom callable to evaluate the route for matching.
+     *
+     * @param callable $is_match A custom callable to evaluate the route.
+     *
+     * @return $this
+     *
+     */
+    public function setIsMatchCallable($is_match)
+    {
+        $this->is_match = $is_match;
+        return $this;
+    }
+
+    /**
+     *
+     * Checks that the custom Route `$is_match` callable returns true, given
+     * the server values.
+     *
+     * @param ServerRequestInterface $request The incoming request.
+     *
+     * @return bool True on a match, false if not.
+     *
+     */
+    public function isCustomMatch(ServerRequestInterface $request)
+    {
+        if (! $this->is_match) {
+            return true;
+        }
+
+        // attempt the match
+        $result = call_user_func($this->is_match, $request, $this);
+
+        // did it match?
+        if (! $result) {
+            $this->failedRule(self::FAILED_CUSTOM);
+            return false;
+        }
+
+        return true;
     }
 }
