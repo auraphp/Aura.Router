@@ -84,6 +84,8 @@ class RuleIterator implements Iterator
      *
      * Iterator: gets the current rule.
      *
+     * @throws Exception\UnexpectedValue
+     *
      * @return RuleInterface
      *
      */

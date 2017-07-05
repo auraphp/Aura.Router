@@ -177,6 +177,8 @@ class Map implements IteratorAggregate
      *
      * @param string $name The route name.
      *
+     * @throws Exception\RouteNotFound
+     *
      * @return Route
      *
      */
