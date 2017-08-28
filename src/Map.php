@@ -58,7 +58,7 @@ class Map implements IteratorAggregate
      *
      * An array of route objects.
      *
-     * @var array
+     * @var Route[]
      *
      */
     protected $routes = [];
@@ -117,7 +117,7 @@ class Map implements IteratorAggregate
      *
      * Sets the array of route objects to use.
      *
-     * @param array $routes Use this array of routes.
+     * @param Route[] $routes Use this array of routes.
      *
      * @return void
      *
@@ -133,7 +133,7 @@ class Map implements IteratorAggregate
      *
      * Gets the route collection.
      *
-     * @return array
+     * @return Route[]
      *
      * @see setRoutes()
      *
@@ -367,7 +367,7 @@ class Map implements IteratorAggregate
      * routes. Its signature is `function (\Aura\Router\Map $map)`; $this
      * Map instance will be passed to the callable.
      *
-     * @return null
+     * @return void
      *
      */
     public function attach($namePrefix, $pathPrefix, callable $callable)
