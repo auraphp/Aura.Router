@@ -235,6 +235,7 @@ foreach ($response->getHeaders() as $name => $values) {
         header(sprintf('%s: %s', $name, $value), false);
     }
 }
+http_response_code($response->getStatusCode());
 echo $response->getBody();
 ```
 
