@@ -227,7 +227,7 @@ foreach ($route->attributes as $key => $val) {
 // (consider using https://github.com/auraphp/Aura.Dispatcher
 // in place of the one callable below.)
 $callable = $route->handler;
-$response = $callable($request, $response);
+$response = $callable($request);
 
 // emit the response
 foreach ($response->getHeaders() as $name => $values) {
