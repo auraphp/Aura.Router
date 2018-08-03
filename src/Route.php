@@ -32,7 +32,7 @@ namespace Aura\Router;
  *
  * @property-read string $wildcard The name of the wildcard token.
  *
- * @property-read array $accept
+ * @property-read array $accepts
  *
  * @property-read mixed $auth The auth value.
  *
