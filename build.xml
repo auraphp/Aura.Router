@@ -1,0 +1,45 @@
+<!-- This is job for test purposes on Aura router php project. -->
+<project name="aurarouter" default="build" basedir="">
+<!--Get environment variables -->
+<property name="phpunit" value="${basedir}/vendor/bin/phpunit"/>
+<target name="clean" description="Cleanup build artifacts">
+<delete dir="${basedir}/tests/results"/>
+</target>
+<target name="prepare" description="Prepare for build">
+<mkdir dir="${basedir}/tests/results"/>
+</target>
+<target name="composerget" description="Composer update dependencies">
+    <exec executable="/bin/bash">
+        <arg value="-c" />
+        <arg value="curl -s https://getcomposer.org/installer | php" />
+    </exec>
+</target>
+<target name="composer-install" description="Installing dependencies">
+    <echo>Installing dependencies</echo>
+    <exec executable="php" failonerror="true">
+        <arg value="${basedir}/composer.phar"/>
+        <arg value="install"/>
+    </exec>
+</target>
+<target name="phpunit">
+<exec executable="${phpunit}" resultproperty="result.phpunit" taskname="phpunit">
+        <arg line="--log-junit ${basedir}/tests/results/testresults.xml" />
+</exec>
+<property name="phpunit.done" value="true" />
+</target>
+
+<target name="lint" unless="lint.done" description="Perform syntax check of sourcecode files">
+<apply executable="php" taskname="lint" failonerror="true" >
+<arg value="-l"/>
+<fileset dir="${basedir}/src">
+<include name="**/*.php"/>
+</fileset>
+<fileset dir="${basedir}/tests">
+<include name="**/*.php"/>
+</fileset>
+</apply>
+<property name="lint.done" value="true"/>
+</target>
+<target name="build" depends="clean, prepare, composerget, composer-install, phpunit, lint"/>
+</project>
+
