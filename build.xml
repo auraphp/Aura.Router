@@ -1,7 +1,6 @@
 <!-- This is job for test purposes on Aura router php project. -->
 <project name="aurarouter" default="build" basedir="">
 <!--Get environment variables -->
-<property name="phpunit" value="${basedir}/vendor/bin/phpunit"/>
 <target name="clean" description="Cleanup build artifacts">
 <delete dir="${basedir}/tests/results"/>
 </target>
