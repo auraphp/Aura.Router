@@ -201,6 +201,10 @@ class Map implements IteratorAggregate
      *
      * @param mixed $handler The route leads to this handler.
      *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
+     *
      * @return Route The newly-added route object.
      *
      */
@@ -224,6 +228,10 @@ class Map implements IteratorAggregate
      *
      * @param mixed $handler The route leads to this handler.
      *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
+     *
      * @return Route The newly-added route object.
      *
      */
@@ -243,6 +251,10 @@ class Map implements IteratorAggregate
      * @param string $path The route path.
      *
      * @param mixed $handler The route leads to this handler.
+     *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
      *
      * @return Route The newly-added route object.
      *
@@ -264,6 +276,10 @@ class Map implements IteratorAggregate
      *
      * @param mixed $handler The route leads to this handler.
      *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
+     *
      * @return Route The newly-added route object.
      *
      */
@@ -283,6 +299,10 @@ class Map implements IteratorAggregate
      * @param string $path The route path.
      *
      * @param mixed $handler The route leads to this handler.
+     *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
      *
      * @return Route The newly-added route object.
      *
@@ -304,6 +324,10 @@ class Map implements IteratorAggregate
      *
      * @param mixed $handler The route leads to this handler.
      *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
+     *
      * @return Route The newly-added route object.
      *
      */
@@ -324,6 +348,10 @@ class Map implements IteratorAggregate
      *
      * @param mixed $handler The route leads to this handler.
      *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
+     *
      * @return Route The newly-added route object.
      *
      */
@@ -343,6 +371,10 @@ class Map implements IteratorAggregate
      * @param string $path The route path.
      *
      * @param mixed $handler The route leads to this handler.
+     *
+     * @throws Exception\ImmutableProperty
+     *
+     * @throws Exception\RouteAlreadyExists
      *
      * @return Route The newly-added route object.
      *
@@ -366,6 +398,8 @@ class Map implements IteratorAggregate
      * @param callable $callable A callable that uses the Map to add new
      * routes. Its signature is `function (\Aura\Router\Map $map)`; $this
      * Map instance will be passed to the callable.
+     *
+     * @throws Exception\ImmutableProperty
      *
      * @return void
      *
