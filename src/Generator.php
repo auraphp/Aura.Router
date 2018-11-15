@@ -147,6 +147,8 @@ class Generator
      *
      * @param bool $raw Leave the data unencoded?
      *
+     * @throws Exception\RouteNotFound
+     *
      * @return string
      *
      */
