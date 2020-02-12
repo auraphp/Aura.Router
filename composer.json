@@ -27,7 +27,7 @@
         }
     },
     "require-dev": {
-        "zendframework/zend-diactoros": "~1.0",
+        "laminas/laminas-diactoros": "~2.2",
         "phpunit/phpunit": "~5.7 || ~4.8"
     },
     "autoload-dev": {
