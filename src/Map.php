@@ -108,6 +108,7 @@ class Map implements IteratorAggregate
      * @return ArrayIterator
      *
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->routes);
