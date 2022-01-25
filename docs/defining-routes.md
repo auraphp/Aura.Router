@@ -148,7 +148,7 @@ $map->get('blog.browse', '/blog')
 ?>
 ```
 
-Note that this is *not* a content negotiation method. It is only a pro-forma check to see if one of the specified types is present in the `Accept` header with a non-zero `q` value. THe handler, or some other layer, should perform content negotation proper.
+Note that this is *not* a content negotiation method. It is only a pro-forma check to see if one of the specified types is present in the `Accept` header with a non-zero `q` value. The route handler, or some other layer, should perform content negotation proper.
 
 ## Multiple HTTP Verbs
 
