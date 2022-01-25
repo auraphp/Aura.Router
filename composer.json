@@ -33,7 +33,6 @@
     "autoload-dev": {
         "psr-4": {
             "Aura\\Router\\": "tests/"
-        },
-        "files": ["tests/polyfill/each.php"]
+        }
     }
 }
