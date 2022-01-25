@@ -1,11 +1,13 @@
 <?php
 namespace Aura\Router;
 
-class MapTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class MapTest extends TestCase
 {
     protected $map;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $container = new RouterContainer();
@@ -28,7 +30,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testRouteAlreadyExists()
     {
         $this->map->route('foo', '/foo');
-        $this->setExpectedException('Aura\Router\Exception\RouteAlreadyExists');
+        $this->expectException('Aura\Router\Exception\RouteAlreadyExists');
         $this->map->route('foo', '/foo');
     }
 
