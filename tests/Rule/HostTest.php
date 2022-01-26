@@ -3,7 +3,7 @@ namespace Aura\Router\Rule;
 
 class HostTest extends AbstractRuleTest
 {
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->rule = new Host();

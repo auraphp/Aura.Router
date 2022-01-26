@@ -1,16 +1,17 @@
 <?php
 namespace Aura\Router;
 
+use PHPUnit\Framework\TestCase;
 use Zend\Diactoros\ServerRequestFactory;
 
-class MatcherTest extends \PHPUnit_Framework_TestCase
+class MatcherTest extends TestCase
 {
     protected $map;
     protected $matcher;
     protected $logger;
     protected $request;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $container = new RouterContainer();

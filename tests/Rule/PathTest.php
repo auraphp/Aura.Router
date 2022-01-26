@@ -3,7 +3,7 @@ namespace Aura\Router\Rule;
 
 class PathTest extends AbstractRuleTest
 {
-    public function setup()
+    public function setUp(): void
     {
         parent::setup();
         $this->rule = new Path();

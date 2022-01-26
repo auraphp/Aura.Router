@@ -3,14 +3,15 @@ namespace Aura\Router\Helper;
 
 use Aura\Router\Exception\RouteNotFound;
 use Aura\Router\RouterContainer;
+use PHPUnit\Framework\TestCase;
 
-class RouteTest extends \PHPUnit_Framework_TestCase
+class RouteTest extends TestCase
 {
     protected $container;
     protected $map;
     protected $generator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $container = new RouterContainer();
