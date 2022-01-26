@@ -44,7 +44,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --ignore-platform-req=php
+        run: composer install --no-interaction --prefer-dist
 
       - name: Run test suite
         run: ./vendor/bin/phpunit
