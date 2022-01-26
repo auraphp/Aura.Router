@@ -212,12 +212,12 @@ class MatcherTest extends TestCase
         $failed = $this->matcher->getFailedRoute();
         $this->assertSame($expect->name, $failed->name);
     }
-
     public function testLogger()
     {
+        $logger = PHP_MAJOR_VERSION === 7 ? new FakeLogger() : new FakeLoggerV3();
         $container = new RouterContainer();
-        $container->setLoggerFactory(function () {
-            return new FakeLogger();
+        $container->setLoggerFactory(function () use ($logger) {
+            return $logger;
         });
 
         $map = $container->getMap();
