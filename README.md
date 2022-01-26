@@ -22,9 +22,8 @@ without compromising flexibility. For specifics, please examine the package
 
 ## Quality
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/quality-score.png?b=3.x)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
-[![Code Coverage](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/coverage.png?b=3.x)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
-[![Build Status](https://travis-ci.org/auraphp/Aura.Router.png?branch=3.x)](https://travis-ci.org/auraphp/Aura.Router)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/quality-score.png?b=4.x)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
+[![Continuous Integration](https://github.com/auraphp/Aura.Router/actions/workflows/continuous-integration.yml/badge.svg?branch=4.x)](https://github.com/auraphp/Aura.Router/actions/workflows/continuous-integration.yml)
 
 To run the unit tests at the command line, issue `composer install` and then
 `./vendor/bin/phpunit` at the package root. (This requires [Composer][] to be
