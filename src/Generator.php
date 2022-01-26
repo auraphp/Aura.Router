@@ -105,8 +105,7 @@ class Generator
      * @param array $data The data to interpolate into the URI; data keys
      * map to attribute tokens in the path.
      *
-     * @return string|false A URI path string if the route name is found, or
-     * boolean false if not.
+     * @return string A URI path string if the route name is found
      *
      * @throws Exception\RouteNotFound
      *
@@ -125,8 +124,7 @@ class Generator
      * @param array $data The data to interpolate into the URI; data keys
      * map to attribute tokens in the path.
      *
-     * @return string|false A URI path string if the route name is found, or
-     * boolean false if not.
+     * @return string A URI path string
      *
      * @throws Exception\RouteNotFound
      *
@@ -170,7 +168,7 @@ class Generator
      *
      * Builds the URL property.
      *
-     * @return null
+     * @return void
      *
      */
     protected function buildUrl()
