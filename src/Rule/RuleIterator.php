@@ -89,6 +89,7 @@ class RuleIterator implements Iterator
      * @return RuleInterface
      *
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $rule = current($this->rules);
@@ -117,6 +118,7 @@ class RuleIterator implements Iterator
      * @return mixed
      *
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->rules);
@@ -126,9 +128,10 @@ class RuleIterator implements Iterator
      *
      * Iterator: moves the iterator forward to the next rule.
      *
-     * @return null
+     * @return void
      *
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->rules);
@@ -141,6 +144,7 @@ class RuleIterator implements Iterator
      * @return null
      *
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->rules);
@@ -153,6 +157,7 @@ class RuleIterator implements Iterator
      * @return bool
      *
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return current($this->rules) !== false;
