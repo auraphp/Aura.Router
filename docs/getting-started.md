@@ -239,7 +239,7 @@ http_response_code($response->getStatusCode());
 echo $response->getBody();
 ```
 
-Now start the built in PHP server ...
+Now start the built-in PHP server ...
 
 ```
 $ php -S localhost:8000 -t .
