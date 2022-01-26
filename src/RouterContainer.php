@@ -94,7 +94,7 @@ class RouterContainer
 
     /**
      *
-     * An collection of route-matching rules to iterate through.
+     * A collection of route-matching rules to iterate through.
      *
      * @var Rule\RuleIterator
      *
