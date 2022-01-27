@@ -159,7 +159,7 @@ class RouterContainer
     /**
      * mapFactory
      *
-     * @return mixed
+     * @return Map
      *
      * @access protected
      */
@@ -173,7 +173,7 @@ class RouterContainer
      *
      * @param Map $map DESCRIPTION
      *
-     * @return mixed
+     * @return void
      *
      * @access protected
      */
