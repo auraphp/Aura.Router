@@ -148,7 +148,7 @@ $map->get('blog.browse', '/blog')
 ?>
 ```
 
-Note that this is *not* a content negotiation method. It is only a pro-forma check to see if one of the specified types is present in the `Accept` header with a non-zero `q` value. The route handler, or some other layer, should perform content negotation proper.
+Note that this is *not* a content negotiation method. It is only a pro-forma check to see if one of the specified types is present in the `Accept` header with a non-zero `q` value. The route handler, or some other layer, should perform content negotiation proper.
 
 ## Multiple HTTP Verbs
 
@@ -163,7 +163,7 @@ $map->post('blog.edit', '/blog/{id}')
 
 ## Secure Protocols
 
-You can use the `secure()` method to specify that a route should only match a secure protcol. (Specifically, `$_SERVER['HTTPS']` must be on, or the request must be on port 443.)
+You can use the `secure()` method to specify that a route should only match a secure protocol. (Specifically, `$_SERVER['HTTPS']` must be on, or the request must be on port 443.)
 
 ```php
 <?php
