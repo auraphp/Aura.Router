@@ -3,7 +3,7 @@ namespace Aura\Router\Rule;
 
 use Aura\Router\Route;
 use PHPUnit\Framework\TestCase;
-use Zend\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 
 abstract class AbstractRuleTest extends TestCase
 {
