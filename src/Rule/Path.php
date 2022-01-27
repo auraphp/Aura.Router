@@ -174,7 +174,7 @@ class Path implements RuleInterface
      *
      * Gets the replacement for optional attributes in the regex.
      *
-     * @param array $list The optional attributes.
+     * @param string $list The optional attributes.
      *
      * @return string
      *
