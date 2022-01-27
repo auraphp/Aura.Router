@@ -2,7 +2,7 @@
 namespace Aura\Router;
 
 use PHPUnit\Framework\TestCase;
-use Zend\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\ServerRequestFactory;
 
 class MatcherTest extends TestCase
 {

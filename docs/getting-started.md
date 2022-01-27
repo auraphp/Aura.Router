@@ -86,7 +86,7 @@ composer require zendframework/zend-diactoros
 Create an instance of _ServerRequestInterface_ object.
 
 ```php
-$request = Zend\Diactoros\ServerRequestFactory::fromGlobals(
+$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
     $_SERVER,
     $_GET,
     $_POST,
@@ -188,7 +188,7 @@ Then create the following file as `index.php`:
 require __DIR__ . '/vendor/autoload.php';
 
 // create a server request object
-$request = Zend\Diactoros\ServerRequestFactory::fromGlobals(
+$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
     $_SERVER,
     $_GET,
     $_POST,
@@ -203,7 +203,7 @@ $map = $routerContainer->getMap();
 // add a route to the map, and a handler for it
 $map->get('blog.read', '/blog/{id}', function ($request) {
     $id = (int) $request->getAttribute('id');
-    $response = new Zend\Diactoros\Response();
+    $response = new Laminas\Diactoros\Response();
     $response->getBody()->write("You asked for blog entry {$id}.");
     return $response;
 });
