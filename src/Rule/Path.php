@@ -86,7 +86,7 @@ class Path implements RuleInterface
 
         foreach ($this->route->tokens as $name => $pattern) {
             if (is_callable($pattern)) {
-                if (!$pattern($attributes[$name], $route, $request)) {
+                if (!$pattern($attributes[$name] ?? null, $route, $request)) {
                     return false;
                 }
             }
