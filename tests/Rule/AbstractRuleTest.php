@@ -74,7 +74,7 @@ abstract class AbstractRuleTest extends TestCase
 
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
-            [$host, $port] = self::extractHostAndPortFromAuthority($server['HTTP_HOST']);
+            list($host, $port) = self::extractHostAndPortFromAuthority($server['HTTP_HOST']);
             if ($host !== null) {
                 $uri = $uri->withHost($host);
             }
