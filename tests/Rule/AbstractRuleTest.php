@@ -2,9 +2,10 @@
 namespace Aura\Router\Rule;
 
 use Aura\Router\Route;
-use Zend\Diactoros\ServerRequestFactory;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use Laminas\Diactoros\ServerRequestFactory;
 
-abstract class AbstractRuleTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractRuleTest extends TestCase
 {
     protected $rule;
 

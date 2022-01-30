@@ -240,7 +240,7 @@ class Matcher
      *
      * Get the first of the closest-matching failed routes.
      *
-     * @return Route
+     * @return ?Route
      *
      */
     public function getFailedRoute()

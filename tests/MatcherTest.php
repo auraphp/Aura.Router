@@ -1,18 +1,19 @@
 <?php
 namespace Aura\Router;
 
-use Zend\Diactoros\ServerRequestFactory;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use Laminas\Diactoros\ServerRequestFactory;
 
-class MatcherTest extends \PHPUnit_Framework_TestCase
+class MatcherTest extends TestCase
 {
     protected $map;
     protected $matcher;
     protected $logger;
     protected $request;
 
-    protected function setUp()
+    protected function set_up()
     {
-        parent::setUp();
+        parent::set_up();
         $container = new RouterContainer();
         $this->map = $container->getMap();
         $this->matcher = $container->getMatcher();
@@ -211,12 +212,12 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         $failed = $this->matcher->getFailedRoute();
         $this->assertSame($expect->name, $failed->name);
     }
-
     public function testLogger()
     {
+        $logger = PHP_MAJOR_VERSION === 7 ? new FakeLogger() : new FakeLoggerV3();
         $container = new RouterContainer();
-        $container->setLoggerFactory(function () {
-            return new FakeLogger();
+        $container->setLoggerFactory(function () use ($logger) {
+            return $logger;
         });
 
         $map = $container->getMap();
