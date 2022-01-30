@@ -2,7 +2,7 @@
 namespace Aura\Router;
 
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
-use Laminas\Diactoros\ServerRequestFactory;
+use GuzzleHttp\Psr7\ServerRequest;
 
 class MatcherTest extends TestCase
 {
@@ -23,7 +23,10 @@ class MatcherTest extends TestCase
     {
         $server['REQUEST_URI'] = $path;
         $server = array_merge($_SERVER, $server);
-        return ServerRequestFactory::fromGlobals($server);
+
+        $method = isset($server['REQUEST_METHOD']) ? $server['REQUEST_METHOD'] : 'GET';
+
+        return new ServerRequest($method, $path, [], null, '1.1', $server);
     }
 
     protected function assertIsRoute($actual)

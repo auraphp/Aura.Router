@@ -2,7 +2,6 @@
 namespace Aura\Router;
 
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
-use Laminas\Diactoros\ServerRequestFactory;
 
 class RouteTest extends TestCase
 {
