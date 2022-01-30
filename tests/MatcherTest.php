@@ -217,7 +217,7 @@ class MatcherTest extends TestCase
     }
     public function testLogger()
     {
-        $logger = PHP_MAJOR_VERSION === 7 ? new FakeLogger() : new FakeLoggerV3();
+        $logger = PHP_MAJOR_VERSION <= 7 ? new FakeLogger() : new FakeLoggerV3();
         $container = new RouterContainer();
         $container->setLoggerFactory(function () use ($logger) {
             return $logger;
