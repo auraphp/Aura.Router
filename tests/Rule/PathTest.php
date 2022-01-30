@@ -196,7 +196,7 @@ class PathTest extends AbstractRuleTest
         $this->assertIsMatch($request, $route);
     }
 
-    public function testIsMatchOnCustomOptionalAttribute(): void
+    public function testIsMatchOnCustomOptionalAttribute()
     {
         $route = $this->newRoute('/foo{/option}')
             ->tokens(['option' => function ($option, $route, $request) {
