@@ -94,7 +94,7 @@ class RouterContainer
 
     /**
      *
-     * An collection of route-matching rules to iterate through.
+     * A collection of route-matching rules to iterate through.
      *
      * @var Rule\RuleIterator
      *
@@ -159,7 +159,7 @@ class RouterContainer
     /**
      * mapFactory
      *
-     * @return mixed
+     * @return Map
      *
      * @access protected
      */
@@ -173,7 +173,7 @@ class RouterContainer
      *
      * @param Map $map DESCRIPTION
      *
-     * @return mixed
+     * @return void
      *
      * @access protected
      */
