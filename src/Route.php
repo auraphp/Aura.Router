@@ -218,7 +218,7 @@ class Route
 
     /**
      *
-     * When cloning the Route, reset the `$attributes` to an empty array, and
+     * When cloning the Route, reset the `$attributes` to defaults, and
      * clear the `$failedRule`.
      *
      */
