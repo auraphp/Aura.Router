@@ -22,6 +22,7 @@ without compromising flexibility. For specifics, please examine the package
 ## Quality
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/auraphp/Aura.Router/badges/quality-score.png?b=3.x)](https://scrutinizer-ci.com/g/auraphp/Aura.Router/)
+[![codecov](https://codecov.io/gh/auraphp/Aura.Router/branch/4.x/graph/badge.svg)](https://codecov.io/gh/auraphp/Aura.Router)
 [![Continuous Integration](https://github.com/auraphp/Aura.Router/actions/workflows/continuous-integration.yml/badge.svg?branch=3.x)](https://github.com/auraphp/Aura.Router/actions/workflows/continuous-integration.yml)
 
 To run the unit tests at the command line, issue `composer install` and then
