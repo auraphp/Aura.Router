@@ -32,7 +32,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          coverage: pcov
+          coverage: xdebug
           tools: none
           ini-values: assert.exception=1, zend.assertions=1
 
@@ -51,7 +51,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Run test suite
-        run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: php -d xdebug.mode=coverage ./vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v2
