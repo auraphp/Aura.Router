@@ -20,6 +20,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Path implements RuleInterface
 {
+    /** https://github.com/nikic/FastRoute/blob/master/src/RouteParser/Std.php */
+    const REGEX = '#\{\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*(?::\s*([^{}]*(?:\{(?-1)\}[^{}]*)*))?\}#';
+    const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]*\s*:*\s*[^{}]*,*)}#';
     /**
      *
      * Use this Route to build the regex.
@@ -158,12 +161,10 @@ class Path implements RuleInterface
      * Expands optional attributes in the regex from ``{/foo,bar,baz}` to
      * `(/{foo}(/{bar}(/{baz})?)?)?`.
      *
-     * @return null
-     *
      */
     protected function setRegexOptionalAttributes()
     {
-        preg_match('#{/([a-z][a-zA-Z0-9_,]*)}#', $this->regex, $matches);
+        preg_match(self::OPT_REGEX, $this->regex, $matches);
         if ($matches) {
             $repl = $this->getRegexOptionalAttributesReplacement($matches[1]);
             $this->regex = str_replace($matches[0], $repl, $this->regex);
@@ -218,19 +219,17 @@ class Path implements RuleInterface
      * Expands attribute names in the regex to named subpatterns; adds default
      * `null` values for attributes without defaults.
      *
-     * @return null
-     *
      */
     protected function setRegexAttributes()
     {
-        $find = '#{([a-z][a-zA-Z0-9_]*)}#';
         $attributes = $this->route->attributes;
         $newAttributes = [];
-        preg_match_all($find, $this->regex, $matches, PREG_SET_ORDER);
+        preg_match_all(self::REGEX, $this->regex, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
             $name = $match[1];
-            $subpattern = $this->getSubpattern($name);
-            $this->regex = str_replace("{{$name}}", $subpattern, $this->regex);
+            $token = isset($match[2]) ? $match[2] : null;
+            $subpattern = $this->getSubpattern($name, $token);
+            $this->regex = str_replace($match[0], $subpattern, $this->regex);
             if (! isset($attributes[$name])) {
                 $newAttributes[$name] = null;
             }
@@ -243,15 +242,21 @@ class Path implements RuleInterface
      * Returns a named subpattern for an attribute name.
      *
      * @param string $name The attribute name.
+     * @param string|null $token The pattern FastRoute format from route
      *
      * @return string The named subpattern.
      *
      */
-    protected function getSubpattern($name)
+    protected function getSubpattern($name, $token = null)
     {
         // is there a custom subpattern for the name?
         if (isset($this->route->tokens[$name]) && is_string($this->route->tokens[$name])) {
-            return "(?P<{$name}>{$this->route->tokens[$name]})";
+            // if $token is null use route token
+            $token = $token ?: $this->route->tokens[$name];
+        }
+
+        if ($token) {
+            return "(?P<{$name}>{$token})";
         }
 
         // use a default subpattern
@@ -261,8 +266,6 @@ class Path implements RuleInterface
     /**
      *
      * Adds a wildcard subpattern to the end of the regex.
-     *
-     * @return null
      *
      */
     protected function setRegexWildcard()
