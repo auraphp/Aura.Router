@@ -69,6 +69,60 @@ class PathTest extends AbstractRuleTest
         $this->assertEquals($expect, $route->attributes);
     }
 
+    public function testIsMatchOnDynamicPathWithFastRouteFormatAndRouteTokens()
+    {
+        $route = $this->newRoute(
+            '/{controller}' .
+            '/{action:[a-zA-Z][a-zA-Z0-9_-]+}' .
+            '/{id:[0-9]+}' .
+            '{format: (\.[^/]+)?}'
+        ) ->tokens([
+            'controller' => '([a-zA-Z][a-zA-Z0-9_-]+)',
+            'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
+            'id' => '([0-9]+)',
+            'format' => '(\.[^/]+)?',
+        ]);;
+
+        $request = $this->newRequest('/foo/bar/42');
+
+        $this->assertIsMatch($request, $route);
+
+        $expect = [
+            'controller' => 'foo',
+            'action' => 'bar',
+            'id' => '42',
+            'format' => null,
+        ];
+        $this->assertEquals($expect, $route->attributes);
+    }
+
+    public function testIsMatchOnDynamicPathWithFastRouteFormatAndFailedRouteTokens()
+    {
+        $route = $this->newRoute(
+            '/{controller:[a-zA-Z][a-zA-Z0-9_-]+}' .
+            '/{action:[a-zA-Z][a-zA-Z0-9_-]+}' .
+            '/{id:[0-9]+}' .
+            '{format: (\.[^/]+)?}'
+        ) ->tokens([
+            'controller' => '(\d+)',
+            'action' => '([a-zA-Z][a-zA-Z0-9_-]+)',
+            'id' => '([0-9]+)',
+            'format' => '(\.[^/]+)?',
+        ]);;
+
+        $request = $this->newRequest('/foo/bar/42');
+
+        $this->assertIsMatch($request, $route);
+
+        $expect = [
+            'controller' => 'foo',
+            'action' => 'bar',
+            'id' => '42',
+            'format' => null,
+        ];
+        $this->assertEquals($expect, $route->attributes);
+    }
+
     public function testIsMatchOnDefaultAndDefinedSubPatterns()
     {
         $route = $this->newRoute('/{controller}/{action}/{id}{format}')
