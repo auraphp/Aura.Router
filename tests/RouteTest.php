@@ -17,8 +17,7 @@ class RouteTest extends TestCase
         $route = new Route();
         $route->path('/foo');
         $this->expectException(
-            'Aura\Router\Exception\ImmutableProperty',
-            'Aura\Router\Route::$path'
+            'Aura\Router\Exception\ImmutableProperty'
         );
         $route->path('/bar');
     }
@@ -28,8 +27,7 @@ class RouteTest extends TestCase
         $route = new Route();
         $route->path('/foo');
         $this->expectException(
-            'Aura\Router\Exception\ImmutableProperty',
-            'Aura\Router\Route::$pathPrefix'
+            'Aura\Router\Exception\ImmutableProperty'
         );
         $route->pathPrefix('/bar');
     }
@@ -39,8 +37,7 @@ class RouteTest extends TestCase
         $route = new Route();
         $route->name('/foo');
         $this->expectException(
-            'Aura\Router\Exception\ImmutableProperty',
-            'Aura\Router\Route::$name'
+            'Aura\Router\Exception\ImmutableProperty'
         );
         $route->name('/bar');
     }
@@ -50,8 +47,7 @@ class RouteTest extends TestCase
         $route = new Route();
         $route->name('/foo');
         $this->expectException(
-            'Aura\Router\Exception\ImmutableProperty',
-            'Aura\Router\Route::$namePrefix'
+            'Aura\Router\Exception\ImmutableProperty'
         );
         $route->namePrefix('/bar');
     }

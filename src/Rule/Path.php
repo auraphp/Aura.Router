@@ -20,9 +20,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Path implements RuleInterface
 {
-    /** https://github.com/nikic/FastRoute/blob/master/src/RouteParser/Std.php */
-    const REGEX = '#\{\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*(?::\s*([^{}]*(?:\{(?-1)\}[^{}]*)*))?\}#';
-    const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]*\s*:*\s*[^{}]*,*)}#';
+    const REGEX = '#{\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*:*\s*([^{}]*{*[^{}]*}*[^{}]*)\s*}#';
+
+    const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]\s*:*\s*[^{}]*{*[^{}]*}*,*)}#';
+
     /**
      *
      * Use this Route to build the regex.
