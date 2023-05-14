@@ -19,10 +19,8 @@ namespace Aura\Router;
 class Generator
 {
     const REGEX = '#{\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*:*\s*([^{}]*{*[^{}]*}*[^{}]*)\s*}#';
-
-    const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]*\s*:*\s*[^\#]*,*)}#';
-
-    const EXPLODE_REGEX = '#\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*(?::\s*([^,]*(?:\{(?-1)\}[^,]*)*))?#';
+    const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]*\s*:*\s*[^/]*{*[^/]*}*[^/]*,*)}#';
+    const EXPLODE_REGEX = '#\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*(?::*\s*([^,]*[{\d+,}]*[^,\w\s])[^}]?)?#';
 
     /**
      *

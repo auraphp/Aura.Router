@@ -193,7 +193,7 @@ class MatcherTest extends TestCase
     public function testMatchWithFastRouteFormat()
     {
         $route = $this->map->route('test',
-            '/{controller:[a-zA-Z][a-zA-Z0-9_-]+}' .
+            '/{controller:[a-zA-Z][a-zA-Z0-9_-]{1,}}' .
             '/{action:[a-zA-Z][a-zA-Z0-9_-]+}' .
             '/{id:[0-9]+}' .
             '{format: (\.[^/]+)?}'

@@ -90,6 +90,14 @@ class GeneratorTest extends TestCase
         $this->assertEquals('/blog/42/edit', $url);
     }
 
+    public function testGenerateWithFastRouteFormatAndOtherQuantifier()
+    {
+        $this->map->route('test', '/blog/{id:([0-9]{1,})}/edit');
+
+        $url = $this->generator->generate('test', ['id' => 42, 'foo' => 'bar']);
+        $this->assertEquals('/blog/42/edit', $url);
+    }
+
     public function testGenerateMatchingException()
     {
         $this->map->route('test', '/blog/{id}/edit')
@@ -178,7 +186,7 @@ class GeneratorTest extends TestCase
 
     public function testGenerateWithOptionalAndFastRouteFormatInOptional()
     {
-        $this->map->route('test', '/archive/{category}{/year:\d{4},month:\d{2},day{2}}');
+        $this->map->route('test', '/archive/{category}{/year:\d{4},month:\d{2},day:\d{2}}');
 
         // some
         $url = $this->generator->generate('test', [
