@@ -22,7 +22,7 @@ class Path implements RuleInterface
 {
     const REGEX = '#{\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*:*\s*([^{}]*{*[^{}]*}*[^{}]*)\s*}#';
     const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]*\s*:*\s*[^/]*{*[^/]*}*[^/]*,*)}#';
-    const EXPLODE_REGEX = '#\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*(?::*\s*([^,]*[{\d+,}]*[^,\w\s])[^}]?)?#';
+    const SPLIT_REGEX = '#\s*,\s*(?![^{]*\})#';
 
     /**
      *
@@ -202,13 +202,12 @@ class Path implements RuleInterface
      */
     protected function getRegexOptionalAttributesReplacementList($list)
     {
-        $newList = [];
-        preg_match_all(self::EXPLODE_REGEX, $list, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $name = $match[1];
-            $token = isset($match[2]) ? $match[2] : null;
-            $newList[] = $name . (isset($token) ? ':' . $token : '');
+        $list = trim($list);
+        $newList = preg_split(self::SPLIT_REGEX, $list);
+        if (empty($newList)) {
+            return [$list];
         }
+
         return $newList;
     }
 
