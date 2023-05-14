@@ -22,7 +22,7 @@ class Path implements RuleInterface
 {
     const REGEX = '#{\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*:*\s*([^{}]*{*[^{}]*}*[^{}]*)\s*}#';
     const OPT_REGEX = '#{\s*/\s*([a-z][a-zA-Z0-9_-]*\s*:*\s*[^/]*{*[^/]*}*[^/]*,*)}#';
-    const SPLIT_REGEX = '#\s*,\s*(?![^{]*\})#';
+    const SPLIT_REGEX = '#\s*,\s*(?![^{]*})#';
 
     /**
      *
@@ -204,7 +204,7 @@ class Path implements RuleInterface
     {
         $list = trim($list);
         $newList = preg_split(self::SPLIT_REGEX, $list);
-        if (empty($newList)) {
+        if (false === $newList) {
             return [$list];
         }
 
