@@ -22,13 +22,11 @@ class RouteTest extends TestCase
 
     public function testInvokeReturnsGeneratedRoute()
     {
-        $this->map->route('test', '/blog/{id}/edit')
-                  ->tokens([
-                      'id' => '([0-9]+)',
-                  ]);
+        $this->map->route('test', '/blog/{id}/edit');
 
         $helper = $this->container->newRouteHelper();
-        $this->assertEquals('/blog/42/edit', $helper('test', ['id' => '42', 'foo' => 'bar']));
+
+        $this->assertEquals('/blog/4%202/edit', $helper('test', ['id' => '4 2', 'foo' => 'bar']));
     }
 
     public function testInvokeGenerateExceptionWithToken()
