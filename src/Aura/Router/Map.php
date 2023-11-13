@@ -22,6 +22,11 @@ use Aura\Router\Exception;
 class Map
 {
     /**
+     * @var DefinitionFactory
+     */
+    private $definition_factory;
+    
+    /**
      * 
      * Currently processing this attached common route information.
      * 
