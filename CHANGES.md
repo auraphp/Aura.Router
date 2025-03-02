@@ -1,3 +1,9 @@
+# 3.4.0
+
+1. Add php 8.3 to the testing matrix by @Koopzington in https://github.com/auraphp/Aura.Router/pull/199
+1. Add php 8.4 to the testing matrix by @NaokiTsuchiya in https://github.com/auraphp/Aura.Router/pull/202
+1. Allow psr/http-message v2 by @NaokiTsuchiya in https://github.com/auraphp/Aura.Router/pull/201
+
 # 3.3.0
 
 1. Add test coverage by @koriym in https://github.com/auraphp/Aura.Router/pull/191
