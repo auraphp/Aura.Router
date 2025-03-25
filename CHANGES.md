@@ -1,3 +1,7 @@
+# 3.4.1
+
+1. Fixes issue #153 (Unable to generate URL with port number) by @harikt in https://github.com/auraphp/Aura.Router/pull/205
+
 # 3.4.0
 
 1. Add php 8.3 to the testing matrix by @Koopzington in https://github.com/auraphp/Aura.Router/pull/199
