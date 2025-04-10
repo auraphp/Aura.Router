@@ -258,7 +258,6 @@ class MatcherTest extends TestCase
         $matcher->match($request);
 
         $expect = [
-            'debug: /bar FAILED Aura\Router\Rule\Path ON foo',
             'debug: /bar MATCHED ON bar',
         ];
         $actual = $logger->lines;

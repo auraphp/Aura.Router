@@ -420,4 +420,40 @@ class Map implements IteratorAggregate
         $callable($this);
         $this->protoRoute = $old;
     }
+
+    /**
+     * Convert all routes into a node tree array structure that contains all possible routes per route segment
+     * This will reduce the amount of possible routes to check
+     *
+     * @return array<string, Route|array<string, mixed>>
+     */
+    public function getAsTreeRouteNode()
+    {
+        $treeRoutes = [];
+        foreach ($this->routes as $route) {
+            if (! $route->isRoutable) {
+                continue;
+            }
+
+            // replace all parameters with {}
+            // This regexp will also work with "{controller:[a-zA-Z][a-zA-Z0-9_-]{1,}}"
+            $routePath = preg_replace('~{(?:[^{}]*|(?R))*}~', '{}', $route->path);
+            $node = &$treeRoutes;
+            foreach (explode('/', trim($routePath, '/')) as $segment) {
+                if (strpos($segment, '{') === 0 || strpos($segment, ':') === 0) {
+                    for ($i = 0; $i <= substr_count($segment, ','); $i++) {
+                        $node = &$node['{}'];
+                        $node[spl_object_hash($route)] = $route;
+                    }
+                    continue;
+                }
+                $node = &$node[$segment];
+            }
+
+            $node[spl_object_hash($route)] = $route;
+            unset($node);
+        }
+
+        return $treeRoutes;
+    }
 }
