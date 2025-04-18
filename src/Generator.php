@@ -187,12 +187,11 @@ class Generator
     protected function buildTokenReplacements()
     {
         preg_match_all(self::REGEX, $this->url, $matches, PREG_SET_ORDER);
-        $data_keys = array_flip(array_keys($this->data));
 
         foreach ($matches as $match) {
             $name = $match[1];
 
-            if (isset($data_keys[$name])) {
+            if (isset($this->data[$name])) {
                 $val = $this->data[$name];
                 $token = isset($match[2]) ? $match[2] : null;
                 if (isset($this->route->tokens[$name]) && is_string($this->route->tokens[$name])) {
