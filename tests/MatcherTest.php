@@ -1,6 +1,8 @@
 <?php
 namespace Aura\Router;
 
+use Aura\Router\Rule\RuleIterator;
+use Psr\Log\LoggerInterface;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 use GuzzleHttp\Psr7\ServerRequest;
 
@@ -263,5 +265,36 @@ class MatcherTest extends TestCase
         $actual = $logger->lines;
         $this->assertSame($expect, $actual);
         $this->assertRoute($bar, $matcher->getMatchedRoute());
+    }
+
+    public function testMatchWithMatchedTree()
+    {
+        $routes = [
+            (new Route())->path('/api/users'),
+            (new Route())->path('/api/users/{id}'),
+            (new Route())->path('/api/users/{id}/delete'),
+            (new Route())->path('/api/archive{/year,month,day}'),
+            (new Route())->path('/api/{controller:[a-zA-Z][a-zA-Z0-9_-]{1,}}/{action}'),
+            (new Route())->path('/not-routeable')->isRoutable(false),
+        ];
+        $map = new Map(new Route());
+        $map->setRoutes($routes);
+
+        $sut = new Matcher(
+            $map,
+            $this->createMock(LoggerInterface::class),
+            new RuleIterator()
+        );
+
+        self::assertNotFalse($sut->match($this->newRequest('/api/users')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/users/1')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/users/1/delete')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/archive')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/archive/2025')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/archive/2025/05')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/archive/2025/05/22')));
+        self::assertNotFalse($sut->match($this->newRequest('/api/valid-controller-name/action')));
+
+        self::assertFalse($sut->match($this->newRequest('/not-routeable')));
     }
 }

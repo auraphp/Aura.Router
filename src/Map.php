@@ -431,20 +431,32 @@ class Map implements IteratorAggregate
     {
         $treeRoutes = [];
         foreach ($this->routes as $route) {
-            if (! $route->isRoutable) {
+            if (! $route->isRoutable || $route->path === null) {
                 continue;
             }
 
-            // replace all parameters with {}
+            // replace "{/year,month,day}" parameters with /{}/{}/{}
+            $routePath = preg_replace_callback(
+                '~{/((?:\w+,?)+)}~',
+                static function (array $matches) {
+                    $variables = explode(',', $matches[1]);
+
+                    return '/' . implode('/', array_fill(0, count($variables), '{}'));
+                },
+                $route->path
+            ) ?: $route->path;
+            $paramsAreOptional = $routePath !== $route->path;
+
             // This regexp will also work with "{controller:[a-zA-Z][a-zA-Z0-9_-]{1,}}"
-            $routePath = preg_replace('~{(?:[^{}]*|(?R))*}~', '{}', $route->path);
+            $routePath = preg_replace('~{(?:[^{}]*|(?R))*}~', '{}', $routePath) ?: $routePath;
             $node = &$treeRoutes;
             foreach (explode('/', trim($routePath, '/')) as $segment) {
-                if (strpos($segment, '{') === 0 || strpos($segment, ':') === 0) {
-                    for ($i = 0; $i <= substr_count($segment, ','); $i++) {
-                        $node = &$node['{}'];
+                if (strpos($segment, '{') === 0) {
+                    if ($paramsAreOptional) {
                         $node[spl_object_hash($route)] = $route;
                     }
+                    $node = &$node['{}'];
+                    $node[spl_object_hash($route)] = $route;
                     continue;
                 }
                 $node = &$node[$segment];
