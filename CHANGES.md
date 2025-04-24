@@ -1,3 +1,7 @@
+# 3.4.2
+
+1. faster lookups instead of nested loops #207 by @henrikthesing
+
 # 3.4.1
 
 1. Fixes issue #153 (Unable to generate URL with port number) by @harikt in https://github.com/auraphp/Aura.Router/pull/205
