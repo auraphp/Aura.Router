@@ -387,23 +387,15 @@ class Map implements IteratorAggregate
         return $route;
     }
 
-    /**
+    /****
+     * Groups routes under a common name and path prefix, applying the prefixes to all routes added within the provided callable.
      *
-     * Attaches routes to a specific path prefix, and prefixes the attached
-     * route names.
+     * Temporarily updates the prototype route with the given name and path prefixes, invokes the callable to add routes using the updated prototype, and then restores the original prototype. All routes added within the callable will have the specified prefixes applied.
      *
-     * @param string $namePrefix The prefix for all route names being attached.
-     *
-     * @param string $pathPrefix The prefix for all route paths being attached.
-     *
-     * @param callable $callable A callable that uses the Map to add new
-     * routes. Its signature is `function (\Aura\Router\Map $map)`; $this
-     * Map instance will be passed to the callable.
-     *
-     * @throws Exception\ImmutableProperty
-     *
-     * @return void
-     *
+     * @param string $namePrefix Prefix to prepend to the names of attached routes.
+     * @param string $pathPrefix Prefix to prepend to the paths of attached routes.
+     * @param callable $callable Function that receives this map instance and adds routes.
+     * @throws Exception\ImmutableProperty If the prototype route's properties are immutable.
      */
     public function attach($namePrefix, $pathPrefix, callable $callable)
     {
@@ -419,5 +411,54 @@ class Map implements IteratorAggregate
         // run the callable and restore the old prototype
         $callable($this);
         $this->protoRoute = $old;
+    }
+
+    /****
+     * Converts all routable routes with defined paths into a hierarchical tree structure keyed by path segments.
+     *
+     * Each route path is normalized by replacing grouped optional parameters and individual parameters with generic placeholders (`{}`), then split into segments to build a nested associative array. Routes are stored at leaf nodes keyed by their object hash, and routes with grouped optional parameters are also stored at parent nodes. This structure optimizes route matching by reducing the number of routes to check per segment.
+     *
+     * @return array<string, Route|array<string, mixed>> Nested array representing the route tree, where each segment is a key and parameter segments use the key '{}'.
+     */
+    public function getAsTreeRouteNode()
+    {
+        $treeRoutes = [];
+        foreach ($this->routes as $route) {
+            if (! $route->isRoutable || $route->path === null) {
+                continue;
+            }
+
+            // replace "{/year,month,day}" parameters with /{}/{}/{}
+            $routePath = preg_replace_callback(
+                '~{/((?:\w+,?)+)}~',
+                static function (array $matches) {
+                    $variables = explode(',', $matches[1]);
+
+                    return '/' . implode('/', array_fill(0, count($variables), '{}'));
+                },
+                $route->path
+            ) ?: $route->path;
+            $paramsAreOptional = $routePath !== $route->path;
+
+            // This regexp will also work with "{controller:[a-zA-Z][a-zA-Z0-9_-]{1,}}"
+            $routePath = preg_replace('~{(?:[^{}]*|(?R))*}~', '{}', $routePath) ?: $routePath;
+            $node = &$treeRoutes;
+            foreach (explode('/', trim($routePath, '/')) as $segment) {
+                if (strpos($segment, '{') === 0) {
+                    if ($paramsAreOptional) {
+                        $node[spl_object_hash($route)] = $route;
+                    }
+                    $node = &$node['{}'];
+                    $node[spl_object_hash($route)] = $route;
+                    continue;
+                }
+                $node = &$node[$segment];
+            }
+
+            $node[spl_object_hash($route)] = $route;
+            unset($node);
+        }
+
+        return $treeRoutes;
     }
 }
