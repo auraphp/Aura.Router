@@ -113,8 +113,12 @@ class Matcher
         $this->failedScore = 0;
         $path = $request->getUri()->getPath();
 
-        foreach ($this->map as $name => $proto) {
-            $route = $this->requestRoute($request, $proto, $name, $path);
+        $possibleRoutes = $this->getMatchedTree($path);
+        foreach ($possibleRoutes as $proto) {
+            if (is_array($proto)) {
+                continue;
+            }
+            $route = $this->requestRoute($request, $proto, $path);
             if ($route) {
                 return $route;
             }
@@ -131,20 +135,18 @@ class Matcher
      *
      * @param Route $proto The proto-route to match against.
      *
-     * @param string $name The route name.
-     *
      * @param string $path The request path.
      *
      * @return mixed False on failure, or a Route on match.
      *
      */
-    protected function requestRoute($request, $proto, $name, $path)
+    protected function requestRoute($request, $proto, $path)
     {
         if (! $proto->isRoutable) {
-            return;
+            return false;
         }
         $route = clone $proto;
-        return $this->applyRules($request, $route, $name, $path);
+        return $this->applyRules($request, $route, $route->name, $path);
     }
 
     /**
@@ -260,5 +262,28 @@ class Matcher
     public function getMatchedRoute()
     {
         return $this->matchedRoute;
+    }
+
+    /**
+     * Split the URL into URL Segments and check for matching routes per segment
+     * This segment could return a list of possible routes
+     *
+     * @param string $path
+     * @return \RecursiveArrayIterator
+     */
+    private function getMatchedTree($path)
+    {
+        $node = $this->map->getAsTreeRouteNode();
+        foreach (explode('/', trim($path, '/')) as $segment) {
+            if (isset($node[$segment])) {
+                $node = $node[$segment];
+                continue;
+            }
+            if (isset($node['{}'])) {
+                $node = $node['{}'];
+            }
+        }
+
+        return new \RecursiveArrayIterator($node);
     }
 }

@@ -137,4 +137,53 @@ class MapTest extends TestCase
         $this->assertIsRoute($actual['page.read']);
         $this->assertEquals('/page/{id}{format}', $actual['page.read']->path);
     }
+
+    public function testGetAsTreeRouteNodeSuccess()
+    {
+        $routes = [
+            (new Route())->path('/api/users'),
+            (new Route())->path('/api/users/{id}'),
+            (new Route())->path('/api/users/{id}/delete'),
+            (new Route())->path('/api/archive{/year,month,day}'),
+            (new Route())->path('/api/{controller:[a-zA-Z][a-zA-Z0-9_-]{1,}}/{action}'),
+            (new Route())->path('/api/users/{id}/not-routeable')->isRoutable(false),
+        ];
+        $sut = new Map(new Route());
+        $sut->setRoutes($routes);
+
+        $result = $sut->getAsTreeRouteNode();
+
+        $this->assertSame([
+            'api' => [
+                'users' => [
+                    spl_object_hash($routes[0]) => $routes[0],
+                    '{}' => [
+                        spl_object_hash($routes[1]) => $routes[1],
+                        spl_object_hash($routes[2]) => $routes[2],
+                        'delete' => [
+                            spl_object_hash($routes[2]) => $routes[2],
+                        ],
+                    ],
+                ],
+                'archive' => [
+                    spl_object_hash($routes[3]) => $routes[3],
+                    '{}' => [ // year
+                        spl_object_hash($routes[3]) => $routes[3],
+                        '{}' => [ // month
+                            spl_object_hash($routes[3]) => $routes[3],
+                            '{}' => [ // day
+                                spl_object_hash($routes[3]) => $routes[3],
+                            ],
+                        ],
+                    ],
+                ],
+                '{}' => [
+                    spl_object_hash($routes[4]) => $routes[4],
+                    '{}' => [
+                        spl_object_hash($routes[4]) => $routes[4],
+                    ],
+                ],
+            ],
+        ], $result);
+    }
 }
