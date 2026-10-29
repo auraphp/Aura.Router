@@ -34,7 +34,7 @@ will be prefixed with `/blog`, so the effective route names and paths become:
 - `blog.browse  =>  /blog`
 - `blog.read    =>  /blog/{id}{format}`
 - `blog.edit    =>  /blog/{id}`
-- `blog.add     =>  /blog/{id}`
+- `blog.add     =>  /blog`
 - `blog.delete  =>  /blog/{id}`
 
 Any defaults you set on the `$map` inside the callable will revert to their previous values when the callable is complete.
