@@ -96,15 +96,13 @@ class Matcher
         $this->ruleIterator = $ruleIterator;
     }
 
-    /**
+    /****
+     * Attempts to find and return the first route that matches the given HTTP request.
      *
-     * Gets a route that matches the request.
+     * Filters candidate routes based on the request path, then applies matching rules to each candidate until a match is found. Returns the matched route or false if no route matches.
      *
-     * @param ServerRequestInterface $request The incoming request.
-     *
-     * @return Route|false Returns a route object when it finds a match, or
-     * boolean false if there is no match.
-     *
+     * @param ServerRequestInterface $request The HTTP request to match against available routes.
+     * @return Route|false The matched route object, or false if no route matches the request.
      */
     public function match(ServerRequestInterface $request)
     {
@@ -113,8 +111,12 @@ class Matcher
         $this->failedScore = 0;
         $path = $request->getUri()->getPath();
 
-        foreach ($this->map as $name => $proto) {
-            $route = $this->requestRoute($request, $proto, $name, $path);
+        $possibleRoutes = $this->getMatchedTree($path);
+        foreach ($possibleRoutes as $proto) {
+            if (is_array($proto)) {
+                continue;
+            }
+            $route = $this->requestRoute($request, $proto, $path);
             if ($route) {
                 return $route;
             }
@@ -123,28 +125,23 @@ class Matcher
         return false;
     }
 
-    /**
+    /****
+     * Attempts to match a proto-route to the given request and path.
      *
-     * Match a request to a route.
+     * Clones the provided proto-route and applies matching rules to determine if it matches the request and path.
      *
-     * @param ServerRequestInterface $request The request to match against.
-     *
-     * @param Route $proto The proto-route to match against.
-     *
-     * @param string $name The route name.
-     *
+     * @param ServerRequestInterface $request The HTTP request to match.
+     * @param Route $proto The proto-route candidate.
      * @param string $path The request path.
-     *
-     * @return mixed False on failure, or a Route on match.
-     *
+     * @return Route|false The matched Route on success, or false if the proto-route is not routable or does not match.
      */
-    protected function requestRoute($request, $proto, $name, $path)
+    protected function requestRoute($request, $proto, $path)
     {
         if (! $proto->isRoutable) {
-            return;
+            return false;
         }
         $route = clone $proto;
-        return $this->applyRules($request, $route, $name, $path);
+        return $this->applyRules($request, $route, $route->name, $path);
     }
 
     /**
@@ -247,18 +244,35 @@ class Matcher
         return $this->failedRoute;
     }
 
-    /**
+    /****
+     * Retrieves the result of the most recent route matching attempt.
      *
-     * Returns the result of the call to match() again so you don't need to
-     * run the matching process again.
-     *
-     * @return Route|false|null Returns null if match() has not been called
-     * yet, false if it has and there was no match, or a Route object if there
-     * was a match.
-     *
+     * @return Route|false|null The matched Route object, false if no route matched, or null if matching has not been attempted.
      */
     public function getMatchedRoute()
     {
         return $this->matchedRoute;
+    }
+
+    /****
+     * Traverses the route map tree according to the given URL path segments and returns an iterator over the matching subtree of routes.
+     *
+     * @param string $path The URL path to match, e.g., "/users/123".
+     * @return \RecursiveArrayIterator Iterator over the subtree of routes matching the path segments.
+     */
+    private function getMatchedTree($path)
+    {
+        $node = $this->map->getAsTreeRouteNode();
+        foreach (explode('/', trim($path, '/')) as $segment) {
+            if (isset($node[$segment])) {
+                $node = $node[$segment];
+                continue;
+            }
+            if (isset($node['{}'])) {
+                $node = $node['{}'];
+            }
+        }
+
+        return new \RecursiveArrayIterator($node);
     }
 }
